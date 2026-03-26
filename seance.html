@@ -152,17 +152,31 @@
   .star:hover, .star.active { filter:grayscale(0); transform:scale(1.15); }
 
   /* ─── BURGER (seance) ─── */
-  .tb-burger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; margin-left:auto; margin-right:4px; }
+  .tb-burger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; margin-right:4px; }
   .tb-burger span { display:block; width:22px; height:2px; background:rgba(255,255,255,0.7); border-radius:2px; transition:all 0.25s; }
   .tb-burger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
   .tb-burger.open span:nth-child(2) { opacity:0; }
   .tb-burger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  /* Nav dropdown (toujours visible) */
+  .tb-nav-btn { display:flex; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:8px; border-radius:8px; transition:background 0.15s; margin-left:auto; }
+  .tb-nav-btn:hover { background:rgba(255,255,255,0.08); }
+  .tb-nav-btn span { display:block; width:22px; height:2px; background:rgba(255,255,255,0.7); border-radius:2px; transition:all 0.25s; }
+  .tb-nav-btn.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .tb-nav-btn.open span:nth-child(2) { opacity:0; }
+  .tb-nav-btn.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  .tb-nav-menu { display:none; position:fixed; top:64px; right:0; width:240px; background:#1a2035; border:1px solid rgba(255,255,255,0.08); border-top:none; border-radius:0 0 0 12px; padding:8px 0; z-index:105; flex-direction:column; box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+  .tb-nav-menu.open { display:flex; }
+  .tb-nav-menu a { padding:11px 20px; font-size:14px; font-weight:500; color:rgba(255,255,255,0.55); text-decoration:none; transition:background 0.15s; }
+  .tb-nav-menu a:hover { background:rgba(255,255,255,0.06); color:white; }
+  .tb-nav-menu .m-sep { height:1px; background:rgba(255,255,255,0.08); margin:4px 0; }
+  .tb-nav-menu .m-cta { margin:6px 12px 10px; padding:11px 16px; background:#2A45B0; color:white !important; border-radius:8px; font-weight:600 !important; text-align:center; display:block; }
   @media (max-width:768px) {
     .side { display:none; }
     .side.open { display:flex; flex-direction:column; position:fixed; top:64px; left:0; bottom:0; z-index:50; width:280px; overflow-y:auto; }
     .tb-burger { display:flex; }
     .side-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:49; }
     .side-overlay.open { display:block; }
+    .tb-nav-menu { width:100%; border-radius:0; }
   }
 </style>
 </head>
@@ -177,7 +191,18 @@
   <div class="tb-session" id="tb-session">Séance avec <strong id="tb-partner">—</strong></div>
   <div class="tb-timer" id="tb-timer">30:00</div>
   <button class="tb-burger" id="tbBurger" onclick="toggleSidePanel()" aria-label="Infos séance"><span></span><span></span><span></span></button>
+  <button class="tb-nav-btn" id="tbNavBtn" onclick="toggleNavMenu()" aria-label="Navigation"><span></span><span></span><span></span></button>
   <button class="tb-end" onclick="endSession()">Terminer la séance</button>
+</div>
+<div class="tb-nav-menu" id="tbNavMenu">
+  <a href="dashboard.html">🏠 Mon espace</a>
+  <a href="secteurs.html">🔍 Explorer les mentors</a>
+  <a href="matching.html">✨ Mon matching</a>
+  <a href="mapping.html">🗺 Mapping entreprises</a>
+  <a href="ressources.html">📚 Ressources</a>
+  <a href="tokens.html">🪙 Mes tokens</a>
+  <div class="m-sep"></div>
+  <a href="secteurs.html" class="m-cta">Réserver une séance →</a>
 </div>
 
 <div class="layout">
@@ -514,6 +539,16 @@ function toggleSidePanel() {
   document.querySelector('.side').classList.toggle('open');
   document.getElementById('sideOverlay').classList.toggle('open');
 }
+function toggleNavMenu() {
+  document.getElementById('tbNavBtn').classList.toggle('open');
+  document.getElementById('tbNavMenu').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#tbNavBtn') && !e.target.closest('#tbNavMenu')) {
+    document.getElementById('tbNavBtn').classList.remove('open');
+    document.getElementById('tbNavMenu').classList.remove('open');
+  }
+});
 </script>
 </body>
 </html>

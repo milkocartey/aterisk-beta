@@ -57,16 +57,20 @@ nav { position:fixed;top:0;left:0;right:0;z-index:100;height:64px;display:flex;a
 .tca{color:rgba(255,255,255,0.6);}
 .nlinks{display:flex;align-items:center;gap:16px;}
 /* ─── BURGER ─── */
-.burger-btn{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+.burger-btn{display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;transition:background 0.15s;}
+.burger-btn:hover{background:rgba(255,255,255,0.08);}
 .burger-btn span{display:block;width:22px;height:2px;background:rgba(255,255,255,0.7);border-radius:2px;transition:all 0.25s;}
 .burger-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
 .burger-btn.open span:nth-child(2){opacity:0;}
 .burger-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
-.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:rgba(13,21,38,0.98);border-bottom:1px solid rgba(255,255,255,0.08);padding:8px 0;z-index:105;flex-direction:column;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
+.mobile-menu{display:none;position:fixed;top:64px;right:0;width:240px;background:rgba(13,21,38,0.98);border:1px solid rgba(255,255,255,0.08);border-top:none;border-radius:0 0 0 12px;padding:8px 0;z-index:105;flex-direction:column;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
 .mobile-menu.open{display:flex;}
-.mobile-menu a{padding:13px 24px;font-size:14px;font-weight:500;color:rgba(255,255,255,0.55);text-decoration:none;transition:background 0.15s;}
+.mobile-menu a{padding:11px 20px;font-size:14px;font-weight:500;color:rgba(255,255,255,0.55);text-decoration:none;transition:background 0.15s;}
 .mobile-menu a:hover{background:rgba(255,255,255,0.06);color:white;}
-@media(max-width:768px){.ntitle{display:none;} .nlinks{display:none;} .burger-btn{display:flex;}}
+.mobile-menu .m-sep{height:1px;background:rgba(255,255,255,0.08);margin:4px 0;}
+.mobile-menu .m-cta{margin:6px 12px 10px;padding:11px 16px;background:#2A45B0;color:white !important;border-radius:8px;font-weight:600 !important;text-align:center;display:block;}
+.mobile-menu .m-cta:hover{background:#3B5CC4 !important;}
+@media(max-width:768px){.ntitle{display:none;} .nlinks{display:none;} .mobile-menu{width:100%;border-radius:0;}}
 </style>
 </head>
 <body>
@@ -80,8 +84,14 @@ nav { position:fixed;top:0;left:0;right:0;z-index:100;height:64px;display:flex;a
   <button class="burger-btn" id="burgerBtn" onclick="toggleBurger()" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="dashboard.html">← Mon espace</a>
-  <a href="ressources.html">Ressources</a>
+  <a href="dashboard.html">🏠 Mon espace</a>
+  <a href="secteurs.html">🔍 Explorer les mentors</a>
+  <a href="matching.html">✨ Mon matching</a>
+  <a href="mapping.html">🗺 Mapping entreprises</a>
+  <a href="ressources.html">📚 Ressources</a>
+  <a href="tokens.html">🪙 Mes tokens</a>
+  <div class="m-sep"></div>
+  <a href="secteurs.html" class="m-cta">Réserver une séance →</a>
 </div>
 <div class="sidebar">
   <input class="sinput" id="search" placeholder="🔍 Rechercher..." oninput="onSearch()">
