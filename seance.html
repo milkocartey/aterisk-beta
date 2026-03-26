@@ -151,12 +151,24 @@
   .star { font-size:32px; cursor:pointer; filter:grayscale(1); transition:all 0.15s; }
   .star:hover, .star.active { filter:grayscale(0); transform:scale(1.15); }
 
+  /* ─── BURGER (seance) ─── */
+  .tb-burger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; margin-left:auto; margin-right:4px; }
+  .tb-burger span { display:block; width:22px; height:2px; background:rgba(255,255,255,0.7); border-radius:2px; transition:all 0.25s; }
+  .tb-burger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .tb-burger.open span:nth-child(2) { opacity:0; }
+  .tb-burger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
   @media (max-width:768px) {
     .side { display:none; }
+    .side.open { display:flex; flex-direction:column; position:fixed; top:64px; left:0; bottom:0; z-index:50; width:280px; overflow-y:auto; }
+    .tb-burger { display:flex; }
+    .side-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:49; }
+    .side-overlay.open { display:block; }
   }
 </style>
 </head>
 <body>
+
+<div class="side-overlay" id="sideOverlay" onclick="toggleSidePanel()"></div>
 
 <!-- TOP BAR -->
 <div class="topbar">
@@ -164,6 +176,7 @@
   <div class="tb-sep"></div>
   <div class="tb-session" id="tb-session">Séance avec <strong id="tb-partner">—</strong></div>
   <div class="tb-timer" id="tb-timer">30:00</div>
+  <button class="tb-burger" id="tbBurger" onclick="toggleSidePanel()" aria-label="Infos séance"><span></span><span></span><span></span></button>
   <button class="tb-end" onclick="endSession()">Terminer la séance</button>
 </div>
 
@@ -494,6 +507,12 @@ function toggleCheck(el) { el.classList.toggle('done'); }
 // ── STAR RATING ───────────────────────────────────────────────────────────────
 function rateStar(n) {
   document.querySelectorAll('.star').forEach((s,i) => s.classList.toggle('active', i < n));
+}
+
+function toggleSidePanel() {
+  document.getElementById('tbBurger').classList.toggle('open');
+  document.querySelector('.side').classList.toggle('open');
+  document.getElementById('sideOverlay').classList.toggle('open');
 }
 </script>
 </body>

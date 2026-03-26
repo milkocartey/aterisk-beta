@@ -212,6 +212,22 @@
   .paywall-links a:hover { text-decoration: underline; }
   .paywall-demo { font-size: 12px; color: var(--muted); margin-top: 14px; cursor: pointer; }
   .paywall-demo:hover { color: var(--blue); }
+
+  /* ─── BURGER ─── */
+  .burger-btn { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; }
+  .burger-btn span { display:block; width:22px; height:2px; background:var(--ink); border-radius:2px; transition:all 0.25s; }
+  .burger-btn.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .burger-btn.open span:nth-child(2) { opacity:0; }
+  .burger-btn.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  .mobile-menu { display:none; position:fixed; top:64px; left:0; right:0; background:white; border-bottom:1px solid var(--border); padding:8px 0; z-index:105; flex-direction:column; box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+  .mobile-menu.open { display:flex; }
+  .mobile-menu a { padding:13px 24px; font-size:14px; font-weight:500; color:var(--muted); text-decoration:none; transition:background 0.15s; }
+  .mobile-menu a:hover { background:var(--blue-pale); color:var(--blue); }
+  .mobile-menu .m-cta { margin:8px 24px 12px; padding:13px 20px; background:var(--blue); color:white !important; border-radius:8px; font-weight:600 !important; text-align:center; }
+  @media (max-width: 768px) {
+    .nav-right { display:none; }
+    .burger-btn { display:flex; }
+  }
 </style>
 </head>
 <body>
@@ -250,7 +266,13 @@
     <a href="mapping.html" class="nav-link">Mapping</a>
     <a href="secteurs.html" class="nav-cta">Réserver une séance →</a>
   </div>
+  <button class="burger-btn" id="burgerBtn" onclick="toggleBurger()" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="dashboard.html">← Mon espace</a>
+  <a href="mapping.html">Mapping</a>
+  <a href="secteurs.html" class="m-cta">Réserver une séance →</a>
+</div>
 
 <div class="page-header">
   <h1>Toutes les ressources <em>pour réussir.</em></h1>
@@ -838,6 +860,16 @@
   }
   loadDynamicRessources();
 
+  function toggleBurger() {
+    document.getElementById('burgerBtn').classList.toggle('open');
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('nav') && !e.target.closest('.mobile-menu')) {
+      document.getElementById('burgerBtn').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+    }
+  });
 </script>
 </body>
 </html>
