@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — CGU & Mentions légales</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;color:#111827;background:#F9FAFB;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(221,227,240,0.6);}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:20px;color:#1A2E7A;text-decoration:none;letter-spacing:1px;}
+.nav-back{font-size:13px;color:#6B7280;text-decoration:none;transition:color 0.2s;}
+.nav-back:hover{color:#1A2E7A;}
+
+.layout{max-width:1000px;margin:0 auto;padding:88px 24px 80px;display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start;}
+
+/* SIDEBAR TOC */
+.toc{position:sticky;top:80px;}
+.toc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#6B7280;margin-bottom:12px;}
+.toc-links{display:flex;flex-direction:column;gap:2px;}
+.toc-link{font-size:13px;color:#6B7280;text-decoration:none;padding:6px 10px;border-radius:6px;transition:all 0.15s;border-left:2px solid transparent;}
+.toc-link:hover{color:#1A2E7A;background:#EEF2FB;}
+.toc-link.active{color:#1A2E7A;font-weight:600;border-left-color:#2A45B0;background:#EEF2FB;}
+
+/* CONTENT */
+.doc-header{margin-bottom:40px;}
+.doc-header h1{font-family:'DM Serif Display',serif;font-size:36px;font-weight:400;margin-bottom:10px;}
+.doc-header .meta{font-size:13px;color:#6B7280;display:flex;gap:20px;flex-wrap:wrap;}
+.doc-header .meta span{display:flex;align-items:center;gap:5px;}
+
+.section{margin-bottom:40px;scroll-margin-top:80px;}
+.section h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:#1A2E7A;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #E8EEF9;}
+.section h3{font-size:15px;font-weight:600;color:#111827;margin:16px 0 8px;}
+.section p{font-size:14px;color:#374151;line-height:1.75;margin-bottom:10px;}
+.section ul{font-size:14px;color:#374151;line-height:1.75;margin-bottom:10px;padding-left:20px;}
+.section ul li{margin-bottom:5px;}
+.section a{color:#2A45B0;text-decoration:none;}
+.section a:hover{text-decoration:underline;}
+
+.highlight-box{background:#EEF2FB;border-left:3px solid #2A45B0;border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13px;color:#374151;line-height:1.6;}
+.warning-box{background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13px;color:#374151;line-height:1.6;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;}
+th{background:#F3F4F6;padding:10px 14px;text-align:left;font-weight:600;border:1px solid #E5E7EB;}
+td{padding:10px 14px;border:1px solid #E5E7EB;color:#374151;vertical-align:top;}
+tr:nth-child(even) td{background:#FAFAFA;}
+
+.back-top{display:inline-block;margin-top:8px;font-size:12px;color:#6B7280;text-decoration:none;cursor:pointer;}
+.back-top:hover{color:#1A2E7A;}
+
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .layout{grid-template-columns:1fr;padding:24px 20px 60px;}
+  .toc{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ATERISK</a>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="tarifs.html" class="nav-back">Tarifs</a>
+    <a href="index.html" class="nav-back">← Accueil</a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Sommaire</div>
+    <div class="toc-links">
+      <a href="#mentions" class="toc-link active" onclick="setActive(this)">1. Mentions légales</a>
+      <a href="#definitions" class="toc-link" onclick="setActive(this)">2. Définitions</a>
+      <a href="#objet" class="toc-link" onclick="setActive(this)">3. Objet de la plateforme</a>
+      <a href="#inscription" class="toc-link" onclick="setActive(this)">4. Inscription & compte</a>
+      <a href="#tokens" class="toc-link" onclick="setActive(this)">5. Tokens & paiement</a>
+      <a href="#seances" class="toc-link" onclick="setActive(this)">6. Séances de mentorat</a>
+      <a href="#mentors" class="toc-link" onclick="setActive(this)">7. Statut des mentors</a>
+      <a href="#ecoles" class="toc-link" onclick="setActive(this)">8. Partenariats écoles</a>
+      <a href="#donnees" class="toc-link" onclick="setActive(this)">9. Données personnelles</a>
+      <a href="#rgpd" class="toc-link" onclick="setActive(this)">10. Vos droits (RGPD)</a>
+      <a href="#responsabilite" class="toc-link" onclick="setActive(this)">11. Responsabilité</a>
+      <a href="#cookies" class="toc-link" onclick="setActive(this)">12. Cookies</a>
+      <a href="#contact" class="toc-link" onclick="setActive(this)">13. Contact</a>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main>
+    <div class="doc-header">
+      <h1>CGU & Mentions légales</h1>
+      <div class="meta">
+        <span>📅 Dernière mise à jour : 21 mars 2026</span>
+        <span>🔖 Version 1.0</span>
+        <span>🇫🇷 Droit français applicable</span>
+      </div>
+    </div>
+
+    <!-- 1. MENTIONS -->
+    <div class="section" id="mentions">
+      <h2>1. Mentions légales</h2>
+      <h3>Éditeur</h3>
+      <p><strong>ATERISK SAS</strong><br>
+      Société par actions simplifiée au capital de 10 000 €<br>
+      RCS Paris — SIREN : 123 456 789<br>
+      Siège social : 75 rue du Faubourg Saint-Antoine, 75011 Paris<br>
+      Email : <a href="mailto:hello@aterisk.fr">hello@aterisk.fr</a></p>
+
+      <h3>Directeur de la publication</h3>
+      <p>Les co-fondateurs d'ATERISK SAS</p>
+
+      <h3>Hébergement</h3>
+      <p>Le site est hébergé par <strong>Hostinger International Ltd</strong>, 61 Lordou Vironos Street, 6023 Larnaca, Chypre — <a href="https://www.hostinger.fr" target="_blank">hostinger.fr</a></p>
+    </div>
+
+    <!-- 2. DEFINITIONS -->
+    <div class="section" id="definitions">
+      <h2>2. Définitions</h2>
+      <table>
+        <tr><th>Terme</th><th>Définition</th></tr>
+        <tr><td><strong>Plateforme</strong></td><td>Le service ATERISK accessible sur aterisk.fr et ses sous-domaines</td></tr>
+        <tr><td><strong>Étudiant</strong></td><td>Toute personne physique inscrite en recherche d'alternance</td></tr>
+        <tr><td><strong>Mentor</strong></td><td>Personne sélectionnée par ATERISK pour animer des séances de mentorat</td></tr>
+        <tr><td><strong>Token</strong></td><td>Unité de compte de la plateforme, valant 10 € et servant à réserver des séances</td></tr>
+        <tr><td><strong>Séance</strong></td><td>Session de mentorat d'une durée de 30 minutes entre un étudiant et un mentor</td></tr>
+        <tr><td><strong>École partenaire</strong></td><td>Établissement d'enseignement ayant souscrit un partenariat ATERISK</td></tr>
+        <tr><td><strong>Placement</strong></td><td>Obtention d'un contrat d'alternance déclarée volontairement par l'étudiant</td></tr>
+      </table>
+    </div>
+
+    <!-- 3. OBJET -->
+    <div class="section" id="objet">
+      <h2>3. Objet de la plateforme</h2>
+      <p>ATERISK est une plateforme de mise en relation entre des étudiants en recherche d'alternance et des mentors sélectionnés. La plateforme propose :</p>
+      <ul>
+        <li>Un service de matching entre étudiants et mentors selon le secteur, le niveau et les objectifs</li>
+        <li>La réservation et la gestion de séances de mentorat en visioconférence</li>
+        <li>Des ressources pédagogiques (templates CV, guides LM, scripts de prospection)</li>
+        <li>Un mapping des entreprises par secteur et par taille</li>
+        <li>Des rapports de séance générés par intelligence artificielle</li>
+      </ul>
+      <div class="highlight-box">
+        <strong>Engagement fondamental :</strong> ATERISK ne perçoit aucune commission sur le placement d'un étudiant. Le financement repose exclusivement sur les abonnements, les tokens et les partenariats avec les établissements d'enseignement.
+      </div>
+    </div>
+
+    <!-- 4. INSCRIPTION -->
+    <div class="section" id="inscription">
+      <h2>4. Inscription & compte utilisateur</h2>
+      <h3>Conditions d'accès</h3>
+      <p>L'accès aux services payants de la plateforme (ressources, matching, séances) est réservé aux personnes majeures ayant créé un compte et souscrit un abonnement actif, ou bénéficiant d'un accès via une école partenaire.</p>
+
+      <h3>Création de compte</h3>
+      <p>L'inscription implique la fourniture d'informations exactes et à jour. L'utilisateur est responsable de la confidentialité de ses identifiants. Toute utilisation du compte sous ses identifiants engage sa responsabilité.</p>
+
+      <h3>Résiliation</h3>
+      <p>L'abonnement mensuel est résiliable à tout moment depuis l'espace utilisateur, sans frais ni préavis. L'accès reste actif jusqu'à la fin de la période en cours. Les tokens non utilisés sont conservés sans date d'expiration.</p>
+
+      <h3>Suspension & résiliation par ATERISK</h3>
+      <p>ATERISK se réserve le droit de suspendre ou résilier tout compte en cas de violation des présentes CGU, de comportement abusif envers un mentor ou un étudiant, ou de tentative de contournement de la plateforme.</p>
+    </div>
+
+    <!-- 5. TOKENS -->
+    <div class="section" id="tokens">
+      <h2>5. Tokens & paiement</h2>
+      <h3>Nature des tokens</h3>
+      <p>Les tokens sont des unités de compte propres à ATERISK, sans valeur légale en dehors de la plateforme. Ils ne constituent pas une monnaie électronique au sens de la directive européenne 2009/110/CE.</p>
+
+      <h3>Tarification</h3>
+      <table>
+        <tr><th>Pack</th><th>Tokens</th><th>Prix TTC</th><th>Prix unitaire</th></tr>
+        <tr><td>À l'unité</td><td>1</td><td>10 €</td><td>10 € / token</td></tr>
+        <tr><td>Standard</td><td>5</td><td>45 €</td><td>9 € / token</td></tr>
+        <tr><td>Intensif</td><td>10</td><td>80 €</td><td>8 € / token</td></tr>
+      </table>
+
+      <h3>Non-remboursabilité & expiration</h3>
+      <p>Les tokens achetés ne sont pas remboursables, sauf en cas de défaillance avérée de la plateforme. Ils n'ont pas de date d'expiration et restent acquis même en cas de résiliation de l'abonnement.</p>
+
+      <div class="warning-box">
+        <strong>Exception remboursement :</strong> Si une séance n'a pas respecté la Charte Mentor ATERISK (mentor absent, retard important, comportement inapproprié), le token consommé est remboursé sur simple signalement dans les 24h suivant la séance à <a href="mailto:hello@aterisk.fr">hello@aterisk.fr</a>.
+      </div>
+
+      <h3>Paiement</h3>
+      <p>Les paiements sont traités par <strong>Stripe Inc.</strong>, prestataire de paiement sécurisé. ATERISK ne stocke aucune donnée bancaire. Les transactions sont effectuées en euros (EUR) TTC.</p>
+
+      <h3>Facturation</h3>
+      <p>Une facture est émise automatiquement par email après chaque achat. Pour toute demande de facture entreprise ou rectification, écrire à <a href="mailto:facturation@aterisk.fr">facturation@aterisk.fr</a>.</p>
+    </div>
+
+    <!-- 6. SÉANCES -->
+    <div class="section" id="seances">
+      <h2>6. Séances de mentorat</h2>
+      <h3>Format & durée</h3>
+      <p>Chaque séance dure 30 minutes et se déroule en visioconférence via le lien partagé lors de la confirmation de réservation. ATERISK ne fournit pas l'outil de visioconférence mais facilite la mise en relation.</p>
+
+      <h3>Annulation étudiant</h3>
+      <p>Une séance peut être annulée sans pénalité jusqu'à <strong>4 heures avant</strong> l'heure prévue. En deçà, le token est consommé sauf accord du mentor.</p>
+
+      <h3>Annulation mentor</h3>
+      <p>Si le mentor annule moins de 4 heures avant la séance, ou ne se présente pas, le token est intégralement restitué à l'étudiant.</p>
+
+      <h3>Rapport de séance</h3>
+      <p>Après chaque séance, un rapport structuré est généré par intelligence artificielle à partir des notes libres du mentor. Ce rapport est envoyé à l'étudiant par email dans les 12 heures suivant la séance. ATERISK ne garantit pas l'exhaustivité du rapport généré par IA.</p>
+
+      <h3>Absence de garantie de résultat</h3>
+      <p>Les mentors et ATERISK ne sauraient garantir l'obtention d'un contrat d'alternance. La plateforme constitue un accompagnement méthodologique, non une prestation de recrutement.</p>
+    </div>
+
+    <!-- 7. MENTORS -->
+    <div class="section" id="mentors">
+      <h2>7. Statut des mentors</h2>
+      <p>Les mentors sont des prestataires indépendants, non salariés d'ATERISK. Leur rémunération correspond à <strong>70% du montant du token consommé</strong> par séance, versé mensuellement.</p>
+
+      <h3>Sélection & charte</h3>
+      <p>Tout mentor doit avoir été validé par l'équipe ATERISK et avoir accepté la Charte Mentor, qui encadre notamment :</p>
+      <ul>
+        <li>L'obligation de prendre contact avec l'étudiant dans les 24h avant la séance</li>
+        <li>La lecture du profil étudiant avant la séance</li>
+        <li>L'envoi d'un récap dans les 12h après la séance</li>
+        <li>L'interdiction de démarcher un étudiant hors plateforme</li>
+        <li>L'interdiction de faire des promesses sur les résultats</li>
+      </ul>
+
+      <h3>Responsabilité des mentors</h3>
+      <p>Les mentors sont responsables du contenu de leurs interventions. ATERISK ne saurait être tenu responsable des conseils prodigués lors des séances. En cas de manquement grave, ATERISK peut résilier l'accès du mentor sans préavis.</p>
+    </div>
+
+    <!-- 8. ÉCOLES -->
+    <div class="section" id="ecoles">
+      <h2>8. Partenariats écoles & CFA</h2>
+      <p>Les établissements partenaires accèdent à la plateforme via un contrat de partenariat distinct. La facturation est réalisée sur la base des étudiants actifs réels du mois, selon les conditions tarifaires négociées.</p>
+
+      <h3>Données des étudiants</h3>
+      <p>Dans le cadre d'un partenariat école, l'établissement a accès aux statistiques agrégées de progression de ses étudiants (taux de placement déclaré, nombre de séances, satisfaction). Il n'a <strong>pas accès</strong> au contenu des séances ni aux rapports individuels, conformément au RGPD.</p>
+
+      <h3>Résiliation école</h3>
+      <p>Le partenariat est résiliable avec un préavis d'un mois. Les tokens déjà achetés par l'école restent utilisables par les étudiants jusqu'à épuisement.</p>
+    </div>
+
+    <!-- 9. DONNÉES -->
+    <div class="section" id="donnees">
+      <h2>9. Données personnelles</h2>
+      <h3>Responsable de traitement</h3>
+      <p>ATERISK SAS, 75 rue du Faubourg Saint-Antoine, 75011 Paris — <a href="mailto:privacy@aterisk.fr">privacy@aterisk.fr</a></p>
+
+      <h3>Données collectées</h3>
+      <table>
+        <tr><th>Catégorie</th><th>Données</th><th>Finalité</th><th>Durée</th></tr>
+        <tr><td>Identification</td><td>Nom, prénom, email</td><td>Gestion du compte</td><td>Durée du compte + 3 ans</td></tr>
+        <tr><td>Profil</td><td>Formation, ville, secteur, niveau</td><td>Matching mentors</td><td>Durée du compte</td></tr>
+        <tr><td>Transactions</td><td>Achats tokens, abonnements</td><td>Facturation, comptabilité</td><td>10 ans (obligation légale)</td></tr>
+        <tr><td>Séances</td><td>Notes mentor, rapports générés</td><td>Service, amélioration IA</td><td>2 ans</td></tr>
+        <tr><td>Navigation</td><td>Pages visitées, actions</td><td>Amélioration du service</td><td>13 mois</td></tr>
+      </table>
+
+      <h3>Bases légales</h3>
+      <p>Les traitements reposent sur l'exécution du contrat (compte, séances, paiements), le consentement (communications marketing), et l'intérêt légitime (amélioration du service, sécurité).</p>
+
+      <h3>Destinataires</h3>
+      <p>Les données sont transmises à : <strong>Stripe</strong> (paiement), <strong>Hostinger</strong> (hébergement), et potentiellement aux mentors (profil étudiant limité aux informations nécessaires à la séance). Aucune vente de données à des tiers.</p>
+    </div>
+
+    <!-- 10. RGPD -->
+    <div class="section" id="rgpd">
+      <h2>10. Vos droits (RGPD)</h2>
+      <p>Conformément au Règlement (UE) 2016/679, vous disposez des droits suivants :</p>
+      <ul>
+        <li><strong>Droit d'accès</strong> — Obtenir une copie de vos données personnelles</li>
+        <li><strong>Droit de rectification</strong> — Corriger des données inexactes</li>
+        <li><strong>Droit à l'effacement</strong> — Demander la suppression de votre compte et données (hors obligations légales)</li>
+        <li><strong>Droit à la portabilité</strong> — Recevoir vos données dans un format structuré</li>
+        <li><strong>Droit d'opposition</strong> — S'opposer aux traitements basés sur l'intérêt légitime</li>
+        <li><strong>Droit à la limitation</strong> — Geler un traitement le temps d'une contestation</li>
+      </ul>
+      <p>Pour exercer vos droits : <a href="mailto:privacy@aterisk.fr">privacy@aterisk.fr</a> — Réponse sous 30 jours.</p>
+      <p>En cas de litige, vous pouvez saisir la <strong>CNIL</strong> : <a href="https://www.cnil.fr" target="_blank">cnil.fr</a></p>
+    </div>
+
+    <!-- 11. RESPONSABILITE -->
+    <div class="section" id="responsabilite">
+      <h2>11. Responsabilité & force majeure</h2>
+      <p>ATERISK s'engage à mettre en œuvre tous les moyens raisonnables pour assurer la disponibilité et la sécurité de la plateforme, sans obligation de résultat.</p>
+      <p>ATERISK ne saurait être tenu responsable :</p>
+      <ul>
+        <li>Du contenu des séances de mentorat</li>
+        <li>Du non-obtention d'un contrat d'alternance</li>
+        <li>De l'exactitude des rapports générés par IA</li>
+        <li>Des interruptions de service liées à des tiers (hébergeur, fournisseurs)</li>
+        <li>De cas de force majeure</li>
+      </ul>
+      <p>La responsabilité d'ATERISK est limitée au montant des sommes effectivement versées par l'utilisateur au cours des 12 derniers mois.</p>
+    </div>
+
+    <!-- 12. COOKIES -->
+    <div class="section" id="cookies">
+      <h2>12. Cookies</h2>
+      <table>
+        <tr><th>Cookie</th><th>Type</th><th>Durée</th><th>Finalité</th></tr>
+        <tr><td>aterisk_session</td><td>Technique</td><td>Session</td><td>Authentification</td></tr>
+        <tr><td>aterisk_subscriber</td><td>Fonctionnel</td><td>Session</td><td>État abonnement (paywall)</td></tr>
+        <tr><td>_stripe_mid</td><td>Paiement</td><td>1 an</td><td>Sécurité des paiements Stripe</td></tr>
+        <tr><td>_ga</td><td>Analytique</td><td>13 mois</td><td>Analytics (Google Analytics — si activé)</td></tr>
+      </table>
+      <p>Les cookies techniques sont nécessaires au fonctionnement. Les cookies analytiques ne sont déposés qu'avec votre consentement explicite.</p>
+    </div>
+
+    <!-- 13. CONTACT -->
+    <div class="section" id="contact">
+      <h2>13. Contact & litiges</h2>
+      <p><strong>Contact général :</strong> <a href="mailto:hello@aterisk.fr">hello@aterisk.fr</a><br>
+      <strong>Support :</strong> <a href="mailto:support@aterisk.fr">support@aterisk.fr</a><br>
+      <strong>Données personnelles :</strong> <a href="mailto:privacy@aterisk.fr">privacy@aterisk.fr</a><br>
+      <strong>Facturation :</strong> <a href="mailto:facturation@aterisk.fr">facturation@aterisk.fr</a></p>
+
+      <h3>Droit applicable</h3>
+      <p>Les présentes CGU sont régies par le droit français. En cas de litige, et après tentative de résolution amiable, les tribunaux compétents de Paris seront saisis.</p>
+
+      <h3>Médiation</h3>
+      <p>Conformément à l'article L.616-1 du Code de la consommation, en cas de litige non résolu, vous pouvez recourir à un médiateur de la consommation. Coordonnées disponibles sur demande à <a href="mailto:hello@aterisk.fr">hello@aterisk.fr</a>.</p>
+    </div>
+
+  </main>
+
+  <footer style="text-align:center;padding:32px 20px;font-size:12px;color:#9CA3AF;border-top:1px solid #DDE3F0;">
+    © 2026 ATERISK SAS — Tous droits réservés · <a href="index.html" style="color:#6B7280">Accueil</a> · <a href="tarifs.html" style="color:#6B7280">Tarifs</a> · <a href="login.html" style="color:#6B7280">Connexion</a>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Devenir mentor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
+    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --green: #16A34A; --green-bg: #DCFCE7; --amber: #92400E; --amber-bg: #FEF3C7;
+    --purple: #4C1D95; --purple-bg: #F5F3FF;
+    --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 48px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(221,227,240,0.6);
+  }
+  .nav-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--blue); text-decoration: none; letter-spacing: 1px; }
+  .nav-back { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--blue); }
+
+  /* LAYOUT */
+  .page { display: flex; justify-content: center; min-height: 100vh; padding-top: 64px; }
+
+  /* TOGGLE BTN */
+  .toggle-sidebar-btn {
+    position: fixed; top: 76px; right: 20px; z-index: 90;
+    display: flex; align-items: center; gap: 8px;
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 24px; padding: 8px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--blue-mid); cursor: pointer;
+    box-shadow: var(--shadow); transition: all 0.2s;
+  }
+  .toggle-sidebar-btn:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
+  .toggle-sidebar-btn .tb-icon { font-size: 14px; transition: transform 0.3s; }
+  .toggle-sidebar-btn.open .tb-icon { transform: rotate(180deg); }
+
+  /* FORM SIDE */
+  .form-side { padding: 56px 48px 80px; width: 100%; max-width: 620px; }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 40px; }
+  .progress-steps { display: flex; gap: 8px; margin-bottom: 10px; }
+  .progress-step { height: 3px; border-radius: 3px; flex: 1; background: var(--border); transition: background 0.4s; }
+  .progress-step.done { background: var(--blue); }
+  .progress-step.active { background: var(--blue-mid); }
+  .progress-label { font-size: 12px; color: var(--muted); }
+  .progress-label span { color: var(--blue); font-weight: 600; }
+
+  /* STEP */
+  .step-block { display: none; animation: fadeIn 0.3s ease; }
+  .step-block.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .step-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-mid); margin-bottom: 12px; }
+  .step-title { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; line-height: 1.2; margin-bottom: 8px; }
+  .step-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+
+  /* FORM ELEMENTS */
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 7px; }
+  .field label .opt { font-weight: 400; color: var(--muted); font-size: 12px; }
+  input[type="text"], input[type="email"], input[type="url"], select, textarea {
+    width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+    background: var(--white); outline: none; transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(42,69,176,0.1); }
+  input::placeholder, textarea::placeholder { color: #C0C8DC; }
+  textarea { resize: none; min-height: 100px; line-height: 1.6; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* CHIPS */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .chip { padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--border); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.18s; background: white; user-select: none; }
+  .chip:hover { border-color: var(--blue-mid); color: var(--blue); }
+  .chip.selected { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
+  .chip-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  /* NIVEAU CARDS */
+  .niveau-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+  .niveau-card { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px; cursor: pointer; transition: all 0.18s; background: white; }
+  .niveau-card:hover { border-color: var(--blue-mid); }
+  .niveau-card.selected { background: var(--blue-light); border-color: var(--blue-mid); }
+  .niveau-card .n-icon { font-size: 22px; margin-bottom: 8px; }
+  .niveau-card .n-label { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .niveau-card .n-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .niveau-card.selected .n-label { color: var(--blue); }
+  .niveau-card .n-prix { font-size: 13px; font-weight: 600; color: var(--green); margin-top: 8px; }
+
+  /* COMPETENCES CHECKBOXES */
+  .comp-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .comp-item { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border: 1.5px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; background: white; }
+  .comp-item:hover { border-color: var(--blue-mid); }
+  .comp-item.selected { background: var(--blue-light); border-color: var(--blue-mid); }
+  .comp-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.18s; font-size: 11px; color: white; }
+  .comp-item.selected .comp-check { background: var(--blue-mid); border-color: var(--blue-mid); }
+  .comp-item.selected .comp-check::after { content: '✓'; }
+  .comp-text { font-size: 14px; color: var(--ink); }
+  .comp-item.selected .comp-text { color: var(--blue); font-weight: 500; }
+
+  /* DISPONIBILITÉS */
+  .dispo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+  .dispo-day { border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 8px; cursor: pointer; transition: all 0.18s; background: white; text-align: center; }
+  .dispo-day:hover { border-color: var(--blue-mid); }
+  .dispo-day.selected { background: var(--blue-light); border-color: var(--blue-mid); }
+  .dispo-day .d-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+  .dispo-day.selected .d-label { color: var(--blue); }
+
+  /* REMUNERATION PREVIEW */
+  .renum-preview { background: var(--green-bg); border: 1px solid #BBF7D0; border-radius: var(--radius); padding: 16px 20px; margin-top: 16px; }
+  .renum-preview h4 { font-size: 13px; font-weight: 600; color: var(--green); margin-bottom: 10px; }
+  .renum-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--green); padding: 4px 0; }
+  .renum-row .r-label { opacity: 0.8; }
+  .renum-row .r-val { font-weight: 700; }
+
+  /* CGU */
+  .cgu-block { display: flex; gap: 12px; align-items: flex-start; margin-top: 20px; }
+  .cgu-block input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; cursor: pointer; accent-color: var(--blue); }
+  .cgu-block label { font-size: 13px; color: var(--muted); line-height: 1.6; cursor: pointer; }
+  .cgu-block label a { color: var(--blue); text-decoration: none; }
+
+  /* BTNS */
+  .step-nav { display: flex; gap: 12px; margin-top: 36px; }
+  .btn-next { flex: 1; background: var(--blue); color: white; border: none; padding: 15px 28px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-next:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
+  .btn-prev { padding: 15px 20px; background: white; color: var(--muted); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+  .btn-prev:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* SUCCESS */
+  .success-block { display: none; text-align: center; padding: 40px 0; }
+  .success-block.active { display: block; animation: fadeIn 0.4s ease; }
+  .success-icon { width: 72px; height: 72px; background: var(--green-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 24px; }
+  .success-block h2 { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 12px; }
+  .success-block p { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 420px; margin: 0 auto 32px; }
+  .next-steps { display: flex; flex-direction: column; gap: 10px; text-align: left; margin-bottom: 32px; }
+  .next-step { display: flex; gap: 12px; align-items: flex-start; background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .next-step-num { width: 28px; height: 28px; background: var(--blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .next-step-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
+
+  /* RIGHT SIDE */
+  .summary-side {
+    position: fixed; top: 64px; right: 0; bottom: 0;
+    width: 400px; background: var(--blue);
+    padding: 48px 40px 40px;
+    display: flex; flex-direction: column; justify-content: flex-start;
+    overflow-y: auto; z-index: 80;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -8px 0 32px rgba(26,46,122,0.2);
+  }
+  .page.with-sidebar .summary-side { transform: translateX(0); }
+  .summary-tag { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+  .summary-title { font-family: 'DM Serif Display', serif; font-size: 26px; color: white; font-weight: 400; margin-bottom: 8px; line-height: 1.2; }
+  .summary-sub { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 36px; line-height: 1.6; }
+
+  /* AVANTAGES */
+  .avantages { display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+  .avantage-item { display: flex; gap: 12px; align-items: flex-start; }
+  .av-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .av-text h4 { font-size: 14px; font-weight: 600; color: white; margin-bottom: 3px; }
+  .av-text p { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+
+  .earning-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius); padding: 20px; margin-top: auto; }
+  .earning-card .ec-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+  .earning-card .ec-val { font-family: 'DM Serif Display', serif; font-size: 34px; color: white; }
+  .earning-card .ec-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .earning-card .ec-detail { font-size: 12px; color: #86EFAC; font-weight: 500; margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+
+  @media (max-width: 900px) {
+    .summary-side { display: none !important; }
+    .form-side { padding: 40px 24px 60px; }
+    nav { padding: 0 20px; }
+    .toggle-sidebar-btn { display: none; }
+  }
+  .field input.field-error, textarea.field-error { border-color: #DC2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.08); }
+  .step-error-banner {
+    display: none; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px;
+    padding: 10px 14px; font-size: 13px; color: #991B1B; margin-bottom: 16px; line-height: 1.5;
+  }
+  .step-error-banner.visible { display: block; animation: shake 0.4s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+  .chip-error { outline: 2px solid #DC2626; outline-offset: -2px; border-radius: 22px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ATERISK</a>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="login.html" class="nav-back">Connexion</a>
+    <a href="index.html" class="nav-back">← Accueil</a>
+  </div>
+</nav>
+
+<button class="toggle-sidebar-btn" id="toggleBtn" onclick="toggleSidebar()">
+  <span>Pourquoi devenir mentor ?</span>
+  <span class="tb-icon">▼</span>
+</button>
+
+<div class="page">
+
+  <!-- FORM SIDE -->
+  <div class="form-side">
+
+    <!-- PROGRESS -->
+    <div class="progress-wrap">
+      <div class="progress-steps">
+        <div class="progress-step active" id="ps1"></div>
+        <div class="progress-step" id="ps2"></div>
+        <div class="progress-step" id="ps3"></div>
+        <div class="progress-step" id="ps4"></div>
+      </div>
+      <div class="progress-label">Étape <span id="step-num">1</span> sur 4</div>
+    </div>
+
+    <!-- STEP 1 — IDENTITÉ -->
+    <div class="step-block active" id="step1">
+      <div class="step-eyebrow">Candidature mentor</div>
+      <h1 class="step-title">Parlons de toi.</h1>
+      <p class="step-sub">On sélectionne rigoureusement nos mentors. Quelques infos pour commencer.</p>
+
+      <div class="field-row">
+        <div class="field"><label>Prénom</label><input type="text" id="m-prenom" placeholder="Thomas" /></div>
+        <div class="field"><label>Nom</label><input type="text" id="m-nom" placeholder="Roux" /></div>
+      </div>
+      <div class="field"><label>Email professionnel</label><input type="email" id="m-email" placeholder="thomas.roux@email.com" /></div>
+      <div class="field"><label>Ville</label><input type="text" id="m-ville" placeholder="Paris, Lyon, Remote..." /></div>
+      <div class="field"><label>Poste actuel</label><input type="text" id="m-poste" placeholder="Manager Commercial chez Decathlon" /></div>
+      <div class="field"><label>LinkedIn <span class="opt">(optionnel mais recommandé)</span></label><input type="url" id="m-linkedin" placeholder="https://linkedin.com/in/thomas-roux" /></div>
+
+      <div class="step-error-banner" id="err1">☝️ Remplis tous les champs obligatoires pour continuer.</div>
+      <div class="step-nav">
+        <button class="btn-next" onclick="goTo(2)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 — PROFIL MENTOR -->
+    <div class="step-block" id="step2">
+      <div class="step-eyebrow">Ton profil</div>
+      <h1 class="step-title">Quel type de mentor es-tu ?</h1>
+      <p class="step-sub">Junior ou Senior — ça détermine ta rémunération et le profil des étudiants que tu accompagneras.</p>
+
+      <div class="field">
+        <label>Niveau mentor</label>
+        <div class="niveau-cards">
+          <div class="niveau-card selected" onclick="selectNiveau(this)">
+            <div class="n-icon">🌱</div>
+            <div class="n-label">Mentor Junior</div>
+            <div class="n-desc">Étudiant Bac+4/5 en alternance ou jeune diplômé (moins de 2 ans d'exp.)</div>
+            <div class="n-prix">7 € / séance de 30 min</div>
+          </div>
+          <div class="niveau-card" onclick="selectNiveau(this)">
+            <div class="n-icon">⭐</div>
+            <div class="n-label">Mentor Senior</div>
+            <div class="n-desc">Professionnel en poste avec 2 ans+ d'expérience, idéalement ayant recruté des alternants</div>
+            <div class="n-prix">10,50 € / séance de 30 min</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:24px">
+        <label>Secteurs dans lesquels tu peux mentorer</label>
+        <div class="chips" id="secteurs-chips">
+          <div class="chip selected" onclick="toggleChip(this)">📣 Marketing & Com'</div>
+          <div class="chip" onclick="toggleChip(this)">💼 Commerce & Vente</div>
+          <div class="chip" onclick="toggleChip(this)">💻 Tech & Digital</div>
+          <div class="chip" onclick="toggleChip(this)">🤝 Ressources Humaines</div>
+          <div class="chip" onclick="toggleChip(this)">📊 Finance & Gestion</div>
+          <div class="chip" onclick="toggleChip(this)">⚖️ Juridique</div>
+          <div class="chip" onclick="toggleChip(this)">🎨 Création & Design</div>
+        </div>
+        <p class="chip-hint">Sélectionne les secteurs où tu as une vraie expérience</p>
+      </div>
+
+      <div class="step-error-banner" id="err2">☝️ Sélectionne au moins un secteur.</div>
+      <div class="step-nav">
+        <button class="btn-prev" onclick="goTo(1)">←</button>
+        <button class="btn-next" onclick="goTo(3)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 — COMPÉTENCES & DISPO -->
+    <div class="step-block" id="step3">
+      <div class="step-eyebrow">Ce que tu apportes</div>
+      <h1 class="step-title">Sur quoi tu peux aider ?</h1>
+      <p class="step-sub">Ces informations permettent le matching avec les étudiants qui en ont le plus besoin.</p>
+
+      <div class="field">
+        <label>Compétences que tu peux transmettre</label>
+        <div class="comp-list">
+          <div class="comp-item selected" onclick="toggleComp(this)"><div class="comp-check"></div><div class="comp-text">📄 Optimisation CV</div></div>
+          <div class="comp-item" onclick="toggleComp(this)"><div class="comp-check"></div><div class="comp-text">✉️ Lettre de motivation & messages de contact</div></div>
+          <div class="comp-item selected" onclick="toggleComp(this)"><div class="comp-check"></div><div class="comp-text">🔗 Stratégie LinkedIn & réseau</div></div>
+          <div class="comp-item selected" onclick="toggleComp(this)"><div class="comp-check"></div><div class="comp-text">🗺️ Accès au marché caché</div></div>
+          <div class="comp-item" onclick="toggleComp(this)"><div class="comp-check"></div><div class="comp-text">🗣️ Préparation aux entretiens</div></div>
+          <div class="comp-item" onclick="toggleComp(this)"><div class="comp-check"></div><div class="comp-text">🎯 Définition du projet professionnel</div></div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:20px">
+        <label>Présente-toi en quelques lignes <span class="opt">(visible sur ton profil)</span></label>
+        <textarea id="m-bio" placeholder="Ex : En alternance chez Decathlon depuis 8 mois, j'ai moi-même envoyé 60 candidatures sans retour avant de changer de méthode. Aujourd'hui je partage ce que j'ai appris sur le réseau et la prospection directe..."></textarea>
+      </div>
+
+      <div class="field" style="margin-top:4px">
+        <label>Disponibilités préférées</label>
+        <div class="dispo-grid">
+          <div class="dispo-day selected" onclick="toggleDispo(this)"><div class="d-label">Lun</div></div>
+          <div class="dispo-day" onclick="toggleDispo(this)"><div class="d-label">Mar</div></div>
+          <div class="dispo-day selected" onclick="toggleDispo(this)"><div class="d-label">Mer</div></div>
+          <div class="dispo-day" onclick="toggleDispo(this)"><div class="d-label">Jeu</div></div>
+          <div class="dispo-day selected" onclick="toggleDispo(this)"><div class="d-label">Ven</div></div>
+          <div class="dispo-day" onclick="toggleDispo(this)"><div class="d-label">Sam</div></div>
+          <div class="dispo-day" onclick="toggleDispo(this)"><div class="d-label">Matin</div></div>
+          <div class="dispo-day selected" onclick="toggleDispo(this)"><div class="d-label">Soir</div></div>
+        </div>
+      </div>
+
+      <div class="step-error-banner" id="err3">☝️ Sélectionne au moins une compétence et rédige ta bio.</div>
+      <div class="step-nav">
+        <button class="btn-prev" onclick="goTo(2)">←</button>
+        <button class="btn-next" onclick="goTo(4)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 — CHARTE & VALIDATION -->
+    <div class="step-block" id="step4">
+      <div class="step-eyebrow">Dernière étape</div>
+      <h1 class="step-title">La charte mentor.</h1>
+      <p class="step-sub">ATERISK sélectionne rigoureusement ses mentors. Lis et accepte la charte avant de soumettre ta candidature.</p>
+
+      <div style="background:white; border:1.5px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:20px;">
+        <h3 style="font-size:14px; font-weight:600; margin-bottom:14px; color:var(--blue)">Charte ATERISK — les engagements du mentor</h3>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; font-size:13px; color:var(--muted)"><span style="color:var(--blue); font-weight:700; flex-shrink:0">1.</span>Prendre contact avec l'étudiant dans les 24h après la réservation</div>
+          <div style="display:flex; gap:10px; font-size:13px; color:var(--muted)"><span style="color:var(--blue); font-weight:700; flex-shrink:0">2.</span>Lire le profil de l'étudiant avant d'arriver en séance</div>
+          <div style="display:flex; gap:10px; font-size:13px; color:var(--muted)"><span style="color:var(--blue); font-weight:700; flex-shrink:0">3.</span>Envoyer un récap court dans les 12h après la séance</div>
+          <div style="display:flex; gap:10px; font-size:13px; color:var(--muted)"><span style="color:var(--blue); font-weight:700; flex-shrink:0">4.</span>Rester dans son domaine de compétence — orienter vers un autre mentor si besoin</div>
+          <div style="display:flex; gap:10px; font-size:13px; color:var(--muted)"><span style="color:var(--blue); font-weight:700; flex-shrink:0">5.</span>Ne jamais démarcher un étudiant hors plateforme ni partager ses données</div>
+          <div style="display:flex; gap:10px; font-size:13px; color:var(--muted)"><span style="color:var(--blue); font-weight:700; flex-shrink:0">6.</span>Ne jamais faire de promesses sur les résultats</div>
+        </div>
+      </div>
+
+      <div class="renum-preview">
+        <h4>💶 Ta rémunération estimée</h4>
+        <div class="renum-row"><span class="r-label">Séance junior (30 min)</span><span class="r-val">7 € / séance</span></div>
+        <div class="renum-row"><span class="r-label">Séance senior (30 min)</span><span class="r-val">10,50 € / séance</span></div>
+        <div class="renum-row" style="padding-top:8px; border-top:1px solid #BBF7D0; margin-top:4px"><span class="r-label">8 séances/mois estimées</span><span class="r-val">~56–84 € / mois</span></div>
+        <div style="font-size:11px; color:var(--green); margin-top:6px; opacity:0.8">+ Mention ATERISK sur ton LinkedIn & CV</div>
+      </div>
+
+      <div class="cgu-block">
+        <input type="checkbox" id="cgu1" />
+        <label for="cgu1">J'ai lu et j'accepte la <a href="cgu.html#mentors">charte mentor ATERISK</a> et les <a href="cgu.html">conditions générales</a>.</label>
+      </div>
+      <div class="cgu-block">
+        <input type="checkbox" id="cgu2" />
+        <label for="cgu2">Je comprends que ma candidature sera examinée par l'équipe ATERISK avant validation — je recevrai une réponse sous 48h.</label>
+      </div>
+
+      <div id="cgu-error" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:13px;color:#991B1B;margin-bottom:12px;">
+        ☝️ Merci d'accepter la charte mentor et les conditions générales avant de soumettre.
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-prev" onclick="goTo(3)">←</button>
+        <button class="btn-next" onclick="submit()" style="background:var(--green)">
+          Soumettre ma candidature ✓
+        </button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-block" id="successBlock">
+      <div class="success-icon">🎉</div>
+      <h2>Candidature reçue !</h2>
+      <p>On examine ton profil avec soin. Tu recevras une réponse dans les 48h. En attendant, prépare ta bio et tes disponibilités.</p>
+      <div class="next-steps">
+        <div class="next-step">
+          <div class="next-step-num">1</div>
+          <div class="next-step-text"><strong>Dans les 48h</strong> — L'équipe ATERISK examine ta candidature et te contacte par email.</div>
+        </div>
+        <div class="next-step">
+          <div class="next-step-num">2</div>
+          <div class="next-step-text"><strong>Si validé</strong> — Tu suis la formation mentor ATERISK (1h en ligne) et signes la charte.</div>
+        </div>
+        <div class="next-step">
+          <div class="next-step-num">3</div>
+          <div class="next-step-text"><strong>Ensuite</strong> — Ton profil est publié, les étudiants peuvent te réserver. Les tokens arrivent à chaque séance.</div>
+        </div>
+      </div>
+      <a href="dashboard-mentor.html" style="display:inline-block; background:var(--blue); color:white; padding:14px 32px; border-radius:10px; text-decoration:none; font-weight:600; font-size:15px;">Retour à l'accueil</a>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="summary-side">
+    <div class="summary-tag">Pourquoi devenir mentor</div>
+    <h2 class="summary-title">Tu as quelque chose à transmettre.</h2>
+    <p class="summary-sub">Rejoins les mentors ATERISK et aide les étudiants à trouver leur alternance — tout en étant rémunéré et valorisé.</p>
+
+    <div class="avantages">
+      <div class="avantage-item">
+        <div class="av-icon">💶</div>
+        <div class="av-text">
+          <h4>Rémunéré à chaque séance</h4>
+          <p>7 € par séance junior · 10,50 € senior — versés directement après chaque session via les tokens consommés.</p>
+        </div>
+      </div>
+      <div class="avantage-item">
+        <div class="av-icon">🏆</div>
+        <div class="av-text">
+          <h4>Valorisé sur LinkedIn & CV</h4>
+          <p>Mention officielle "Mentor certifié ATERISK" — une preuve concrète de leadership et de transmission.</p>
+        </div>
+      </div>
+      <div class="avantage-item">
+        <div class="av-icon">📈</div>
+        <div class="av-text">
+          <h4>Progresser vers le statut senior</h4>
+          <p>Les mentors juniors performants évoluent vers le statut senior — meilleure rémunération, profils plus variés.</p>
+        </div>
+      </div>
+      <div class="avantage-item">
+        <div class="av-icon">🤝</div>
+        <div class="av-text">
+          <h4>Intégrer le réseau ATERISK</h4>
+          <p>Accès à la communauté mentors, aux événements exclusifs et aux opportunités partagées par le réseau.</p>
+        </div>
+      </div>
+      <div class="avantage-item">
+        <div class="av-icon">⏱️</div>
+        <div class="av-text">
+          <h4>Flexible — tu choisis tes créneaux</h4>
+          <p>30 minutes par séance, aux horaires que tu définit. Tu acceptes ou refuses chaque demande.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="earning-card">
+      <div class="ec-label">Estimation mensuelle</div>
+      <div class="ec-val">56 – 84 €</div>
+      <div class="ec-sub">pour 8 séances/mois · Junior</div>
+      <div class="ec-detail">🌱 Senior : 84 – 105 €/mois pour 8 séances</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleSidebar() {
+    const page = document.querySelector('.page');
+    const btn = document.getElementById('toggleBtn');
+    page.classList.toggle('with-sidebar');
+    btn.classList.toggle('open');
+  }
+
+  let currentStep = 1;
+
+  function clearStepErrors() {
+    document.querySelectorAll('.step-error-banner').forEach(e => e.classList.remove('visible'));
+    document.querySelectorAll('.field-error').forEach(e => e.classList.remove('field-error'));
+    document.querySelectorAll('.chip-error').forEach(e => e.classList.remove('chip-error'));
+    const cguErr = document.getElementById('cgu-error');
+    if(cguErr) cguErr.style.display = 'none';
+  }
+
+  function markField(id) {
+    const el = document.getElementById(id);
+    if(el) el.classList.add('field-error');
+  }
+
+  function validateStep(step) {
+    clearStepErrors();
+    if(step === 1) {
+      const fields = ['m-prenom','m-nom','m-email','m-ville','m-poste'];
+      let ok = true;
+      fields.forEach(id => {
+        const val = document.getElementById(id).value.trim();
+        if(!val) { markField(id); ok = false; }
+      });
+      const emailVal = document.getElementById('m-email').value.trim();
+      if(emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { markField('m-email'); ok = false; }
+      if(!ok) {
+        document.getElementById('err1').classList.add('visible');
+        document.getElementById('err1').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return ok;
+    }
+    if(step === 2) {
+      const selected = document.querySelectorAll('#secteurs-chips .chip.selected');
+      if(selected.length === 0) {
+        document.getElementById('err2').classList.add('visible');
+        document.getElementById('secteurs-chips').classList.add('chip-error');
+        document.getElementById('err2').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+      }
+      return true;
+    }
+    if(step === 3) {
+      const comps = document.querySelectorAll('.comp-item.selected');
+      const bio = document.getElementById('m-bio').value.trim();
+      let ok = true;
+      if(comps.length === 0) ok = false;
+      if(!bio) { markField('m-bio'); ok = false; }
+      if(!ok) {
+        document.getElementById('err3').classList.add('visible');
+        document.getElementById('err3').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return ok;
+    }
+    return true;
+  }
+
+  function goTo(step) {
+    if(step > currentStep) {
+      if(!validateStep(currentStep)) return;
+    }
+    document.getElementById('step' + currentStep).classList.remove('active');
+    document.getElementById('step' + step).classList.add('active');
+    currentStep = step;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    for (let i = 1; i <= 4; i++) {
+      const ps = document.getElementById('ps' + i);
+      if (i < currentStep) ps.className = 'progress-step done';
+      else if (i === currentStep) ps.className = 'progress-step active';
+      else ps.className = 'progress-step';
+    }
+    document.getElementById('step-num').textContent = currentStep;
+  }
+
+  function selectNiveau(el) {
+    document.querySelectorAll('.niveau-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    clearStepErrors();
+  }
+
+  function toggleChip(el) { el.classList.toggle('selected'); clearStepErrors(); }
+
+  function toggleComp(el) {
+    el.classList.toggle('selected');
+    const check = el.querySelector('.comp-check');
+    check.style.background = el.classList.contains('selected') ? '' : '';
+    clearStepErrors();
+  }
+
+  function toggleDispo(el) { el.classList.toggle('selected'); }
+
+  function submit() {
+    const cgu1 = document.getElementById('cgu1').checked;
+    const cgu2 = document.getElementById('cgu2').checked;
+    if (!cgu1 || !cgu2) {
+      const err = document.getElementById('cgu-error');
+      err.style.display = 'block';
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // ── Collect form data ──────────────────────────────────────────────────
+    const prenom   = document.getElementById('m-prenom')?.value.trim()  || '';
+    const nom      = document.getElementById('m-nom')?.value.trim()     || '';
+    const email    = document.getElementById('m-email')?.value.trim()   || '';
+    const ville    = document.getElementById('m-ville')?.value.trim()   || '';
+    const poste    = document.getElementById('m-poste')?.value.trim()   || '';
+    const linkedin = document.getElementById('m-linkedin')?.value.trim()|| '';
+    const bio      = document.getElementById('m-bio')?.value.trim()     || '';
+
+    // Niveau
+    const niveauCard = document.querySelector('.niveau-card.selected');
+    const niveau = niveauCard?.querySelector('.n-label')?.textContent.includes('Senior') ? 'senior' : 'junior';
+
+    // Secteurs
+    const secteurs = [...document.querySelectorAll('#secteurs-chips .chip.selected')]
+      .map(el => el.textContent.trim());
+
+    // Compétences
+    const competences = [...document.querySelectorAll('.comp-item.selected .comp-text')]
+      .map(el => el.textContent.trim());
+
+    // Disponibilités
+    const dispos = [...document.querySelectorAll('.dispo-day.selected .d-label')]
+      .map(el => el.textContent.trim());
+
+    // ── Save candidature to localStorage ──────────────────────────────────
+    const candidature = {
+      id: Date.now().toString(36),
+      submittedAt: new Date().toISOString(),
+      status: 'pending', // pending | approved | rejected
+      prenom, nom, email, ville, poste, linkedin, bio,
+      niveau, secteurs, competences, dispos,
+    };
+
+    const existing = JSON.parse(localStorage.getItem('aterisk_candidatures') || '[]');
+    existing.push(candidature);
+    localStorage.setItem('aterisk_candidatures', JSON.stringify(existing));
+
+    // ── Show success ───────────────────────────────────────────────────────
+    document.getElementById('step4').classList.remove('active');
+    document.getElementById('successBlock').classList.add('active');
+    for (let i = 1; i <= 4; i++) document.getElementById('ps' + i).className = 'progress-step done';
+    document.getElementById('step-num').textContent = '✓';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Clear field errors on input
+  document.querySelectorAll('.field input, textarea').forEach(inp => {
+    inp.addEventListener('input', () => {
+      inp.classList.remove('field-error');
+      clearStepErrors();
+    });
+  });
+</script>
+</body>
+</html>

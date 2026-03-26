@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Tarifs</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:#1A2E7A; --blue-mid:#2A45B0; --blue-light:#E8EEF9; --blue-pale:#F3F6FD;
+    --ink:#0D1526; --muted:#6B7280; --border:#DDE3F0; --white:#FFFFFF;
+    --green:#16A34A; --green-bg:#DCFCE7; --amber:#92400E; --amber-bg:#FEF3C7;
+    --radius:12px; --shadow:0 4px 24px rgba(26,46,122,0.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--white);}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(221,227,240,0.6);}
+  .nav-logo{font-family:'DM Serif Display',serif;font-size:20px;color:var(--blue);text-decoration:none;letter-spacing:1px;}
+  .nav-links{display:flex;align-items:center;gap:24px;}
+  .nav-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+  .nav-links a:hover{color:var(--blue);}
+  .nav-links a.active{color:var(--blue);font-weight:600;}
+  .nav-cta{font-size:13px;font-weight:600;color:white;background:var(--blue);padding:9px 20px;border-radius:8px;text-decoration:none;transition:all 0.2s;}
+  .nav-cta:hover{background:var(--blue-mid);}
+
+  /* HERO */
+  .hero{padding:120px 48px 64px;text-align:center;background:linear-gradient(180deg, var(--blue-pale) 0%, white 100%);}
+  .hero-eyebrow{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--blue-mid);margin-bottom:16px;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(32px,4vw,52px);font-weight:400;line-height:1.1;margin-bottom:16px;}
+  .hero h1 em{font-style:italic;color:var(--blue-mid);}
+  .hero p{font-size:17px;color:var(--muted);max-width:520px;margin:0 auto 40px;line-height:1.65;}
+  .token-pill{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:white;padding:12px 24px;border-radius:40px;font-size:14px;font-weight:600;margin-bottom:48px;}
+  .token-pill span{background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:20px;font-size:13px;}
+
+  /* PLANS GRID */
+  .plans{max-width:1060px;margin:0 auto;padding:0 48px 80px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+
+  .plan-card{border:2px solid var(--border);border-radius:16px;padding:28px;position:relative;background:white;transition:all 0.25s;}
+  .plan-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+  .plan-card.featured{border-color:var(--blue);box-shadow:0 0 0 4px rgba(26,46,122,0.08);}
+
+  .plan-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--blue);color:white;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;white-space:nowrap;letter-spacing:0.5px;}
+
+  .plan-icon{font-size:28px;margin-bottom:12px;}
+  .plan-name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;}
+  .plan-title{font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+  .plan-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+
+  .plan-price{margin-bottom:24px;}
+  .plan-price .amount{font-family:'DM Serif Display',serif;font-size:40px;color:var(--ink);line-height:1;}
+  .plan-price .period{font-size:13px;color:var(--muted);margin-top:2px;}
+  .plan-price .free-badge{display:inline-block;background:var(--green-bg);color:var(--green);font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;}
+
+  .plan-divider{height:1px;background:var(--border);margin-bottom:20px;}
+
+  .plan-features{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+  .pf{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#374151;line-height:1.4;}
+  .pf .pf-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+  .pf.muted{color:var(--muted);}
+  .pf.muted .pf-icon{opacity:0.4;}
+
+  .plan-cta{display:block;text-align:center;padding:13px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s;cursor:pointer;border:none;width:100%;}
+  .plan-cta.primary{background:var(--blue);color:white;}
+  .plan-cta.primary:hover{background:var(--blue-mid);transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,46,122,0.25);}
+  .plan-cta.secondary{background:var(--blue-pale);color:var(--blue);border:1.5px solid var(--blue-light);}
+  .plan-cta.secondary:hover{background:var(--blue-light);}
+
+  /* TOKEN SECTION */
+  .tokens-section{background:var(--blue-pale);padding:64px 48px;text-align:center;}
+  .tokens-section h2{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;margin-bottom:10px;}
+  .tokens-section h2 em{font-style:italic;color:var(--blue-mid);}
+  .tokens-section p{font-size:15px;color:var(--muted);margin-bottom:48px;}
+  .tokens-grid{max-width:860px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .token-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;transition:all 0.2s;}
+  .token-card:hover{box-shadow:var(--shadow);border-color:var(--blue-mid);}
+  .token-card.best{border-color:var(--blue);position:relative;}
+  .token-card.best::before{content:'Meilleur rapport';position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--blue);color:white;font-size:10px;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:0.5px;}
+  .tc-amount{font-size:28px;font-weight:700;color:var(--blue);margin-bottom:4px;}
+  .tc-name{font-size:13px;font-weight:600;margin-bottom:6px;}
+  .tc-price{font-size:22px;font-weight:700;margin-bottom:4px;}
+  .tc-unit{font-size:12px;color:var(--muted);margin-bottom:16px;}
+  .tc-saving{font-size:12px;color:var(--green);font-weight:600;background:var(--green-bg);padding:3px 10px;border-radius:20px;margin-bottom:16px;display:inline-block;}
+  .btn-token{display:block;background:var(--blue-pale);color:var(--blue);border:1.5px solid var(--blue-light);padding:10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .btn-token:hover{background:var(--blue);color:white;border-color:var(--blue);}
+
+  /* SCHOOL SECTION */
+  .school-section{padding:64px 48px;max-width:1060px;margin:0 auto;}
+  .school-section h2{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;text-align:center;margin-bottom:10px;}
+  .school-section h2 em{font-style:italic;color:var(--blue-mid);}
+  .school-section .lead{text-align:center;font-size:15px;color:var(--muted);margin-bottom:48px;}
+  .school-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .school-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:28px;}
+  .school-card h3{font-size:16px;font-weight:700;margin-bottom:6px;}
+  .school-card .sc-desc{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+  .sc-price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:20px;}
+  .sc-price{font-size:32px;font-weight:700;color:var(--ink);}
+  .sc-period{font-size:13px;color:var(--muted);}
+  .sc-features{display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
+
+  /* FAQ */
+  .faq{background:var(--blue-pale);padding:64px 48px;}
+  .faq h2{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;text-align:center;margin-bottom:40px;}
+  .faq-grid{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:0;}
+  .faq-item{border-bottom:1px solid var(--border);padding:0;}
+  .faq-q{display:flex;align-items:center;justify-content:space-between;padding:18px 0;cursor:pointer;font-size:15px;font-weight:500;gap:16px;}
+  .faq-q .arrow{font-size:18px;color:var(--muted);transition:transform 0.2s;flex-shrink:0;}
+  .faq-a{font-size:14px;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;}
+  .faq-item.open .faq-a{max-height:200px;padding-bottom:16px;}
+  .faq-item.open .arrow{transform:rotate(45deg);}
+
+  /* CTA */
+  .cta-band{background:var(--blue);padding:64px 48px;text-align:center;}
+  .cta-band h2{font-family:'DM Serif Display',serif;font-size:36px;color:white;font-weight:400;margin-bottom:12px;}
+  .cta-band p{font-size:16px;color:rgba(255,255,255,0.65);margin-bottom:32px;}
+  .cta-btns{display:flex;gap:14px;justify-content:center;}
+  .cta-btns a{padding:14px 28px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;text-decoration:none;transition:all 0.2s;}
+  .cta-btns .btn-w{background:white;color:var(--blue);}
+  .cta-btns .btn-w:hover{background:var(--blue-pale);}
+  .cta-btns .btn-o{background:rgba(255,255,255,0.12);color:white;border:1.5px solid rgba(255,255,255,0.2);}
+  .cta-btns .btn-o:hover{background:rgba(255,255,255,0.2);}
+
+  @media(max-width:900px){
+    nav,hero,.plans,.tokens-section,.school-section,.faq,.cta-band{padding-left:24px;padding-right:24px;}
+    .plans{grid-template-columns:1fr;}
+    .tokens-grid{grid-template-columns:1fr;}
+    .school-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ATERISK</a>
+  <div class="nav-links">
+    <a href="index.html">Accueil</a>
+    <a href="secteurs.html">Mentors</a>
+    <a href="mapping.html">Mapping</a>
+    <a href="tarifs.html" class="active">Tarifs</a>
+    <a href="mentor-inscription.html">Devenir mentor</a>
+    <a href="login.html" style="font-weight:600;color:var(--blue);text-decoration:none">Connexion</a>
+    <a href="inscription.html" class="nav-cta">Commencer →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Tarifs transparents</div>
+  <h1>Simple, <em>sans surprise.</em></h1>
+  <p>Un abonnement pour accéder à la plateforme. Des tokens pour réserver des séances. Pas de commission sur ton placement — jamais.</p>
+  <div class="token-pill">🪙 1 token = 1 séance <span>10 €</span></div>
+</div>
+
+<!-- PLANS -->
+<div class="plans">
+
+  <!-- PLAN GRATUIT -->
+  <div class="plan-card">
+    <div class="plan-icon">🔍</div>
+    <div class="plan-name">Découverte</div>
+    <div class="plan-title">Consulter librement</div>
+    <div class="plan-sub">Explore les mentors et le mapping avant de t'engager.</div>
+    <div class="plan-price"><div class="free-badge">Gratuit</div></div>
+    <div class="plan-divider"></div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-icon">✅</span>Parcourir les profils mentors</div>
+      <div class="pf"><span class="pf-icon">✅</span>Mapping entreprises (450+ acteurs)</div>
+      <div class="pf"><span class="pf-icon">✅</span>Présentation de la plateforme</div>
+      <div class="pf muted"><span class="pf-icon">🔒</span>Ressources & guides secteurs</div>
+      <div class="pf muted"><span class="pf-icon">🔒</span>Templates CV, LM, scripts</div>
+      <div class="pf muted"><span class="pf-icon">🔒</span>Matching personnalisé</div>
+      <div class="pf muted"><span class="pf-icon">🔒</span>Réservation de séances</div>
+    </div>
+    <a href="inscription.html" class="plan-cta secondary">Créer un compte gratuit</a>
+  </div>
+
+  <!-- PLAN ETUDIANT -->
+  <div class="plan-card featured">
+    <div class="plan-badge">⭐ Le plus populaire</div>
+    <div class="plan-icon">🎯</div>
+    <div class="plan-name">Étudiant Direct</div>
+    <div class="plan-title">Accès complet</div>
+    <div class="plan-sub">Tout pour trouver ton alternance. 1 token offert à l'inscription.</div>
+    <div class="plan-price">
+      <div class="amount">19 <span style="font-size:18px;color:var(--muted)">€</span></div>
+      <div class="period">par mois · sans engagement</div>
+    </div>
+    <div class="plan-divider"></div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-icon">✅</span>Toutes les ressources & guides</div>
+      <div class="pf"><span class="pf-icon">✅</span>Templates CV, LM, scripts LinkedIn</div>
+      <div class="pf"><span class="pf-icon">✅</span>Matching personnalisé avec mentors</div>
+      <div class="pf"><span class="pf-icon">✅</span>Dashboard candidatures</div>
+      <div class="pf"><span class="pf-icon">✅</span>Rapport IA après chaque séance</div>
+      <div class="pf"><span class="pf-icon">🎁</span><span style="color:var(--green);font-weight:600">1 token offert à l'inscription</span></div>
+      <div class="pf"><span class="pf-icon">🪙</span>Tokens supplémentaires à 10 €/unité</div>
+    </div>
+    <a href="inscription.html" class="plan-cta primary">Commencer — 1ère séance offerte →</a>
+  </div>
+
+  <!-- PLAN ECOLE -->
+  <div class="plan-card">
+    <div class="plan-icon">🏫</div>
+    <div class="plan-name">Via école partenaire</div>
+    <div class="plan-title">Accès pris en charge</div>
+    <div class="plan-sub">Ton école a souscrit un partenariat. Tu accèdes gratuitement.</div>
+    <div class="plan-price">
+      <div class="free-badge">Gratuit pour toi</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Financé par ton établissement</div>
+    </div>
+    <div class="plan-divider"></div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-icon">✅</span>Toutes les ressources & guides</div>
+      <div class="pf"><span class="pf-icon">✅</span>Templates CV, LM, scripts LinkedIn</div>
+      <div class="pf"><span class="pf-icon">✅</span>Matching personnalisé</div>
+      <div class="pf"><span class="pf-icon">✅</span>Dashboard candidatures</div>
+      <div class="pf"><span class="pf-icon">✅</span>Rapport IA après chaque séance</div>
+      <div class="pf"><span class="pf-icon">🪙</span>Tokens alloués par ton école</div>
+      <div class="pf"><span class="pf-icon">➕</span>Rachat de tokens possible à 10 €/unité</div>
+    </div>
+    <a href="inscription.html" class="plan-cta secondary">Rejoindre via mon école</a>
+  </div>
+
+</div>
+
+<!-- TOKENS -->
+<div class="tokens-section">
+  <h2>Les tokens — <em>réserve des séances.</em></h2>
+  <p>Inclus dans ton abonnement ou achetés séparément. 70% vont directement au mentor.</p>
+  <div class="tokens-grid">
+    <div class="token-card">
+      <div class="tc-amount">1</div>
+      <div class="tc-name">Token à l'unité</div>
+      <div class="tc-price">10 €</div>
+      <div class="tc-unit">10 € / token</div>
+      <a href="tokens.html" class="btn-token">Acheter</a>
+    </div>
+    <div class="token-card best">
+      <div class="tc-amount">5</div>
+      <div class="tc-name">Pack Standard</div>
+      <div class="tc-price">45 €</div>
+      <div class="tc-unit">9 € / token</div>
+      <div class="tc-saving">−10%</div>
+      <a href="tokens.html" class="btn-token">Acheter</a>
+    </div>
+    <div class="token-card">
+      <div class="tc-amount">10</div>
+      <div class="tc-name">Pack Intensif</div>
+      <div class="tc-price">80 €</div>
+      <div class="tc-unit">8 € / token</div>
+      <div class="tc-saving">−20%</div>
+      <a href="tokens.html" class="btn-token">Acheter</a>
+    </div>
+  </div>
+  <p style="margin-top:24px;font-size:13px;color:var(--muted)">
+    💡 Séance junior = 1 token (30 min) · Séance senior = 1,5 token (30 min) · Tokens valables sans date d'expiration
+  </p>
+</div>
+
+<!-- SCHOOL SECTION -->
+<div class="school-section">
+  <h2>Tu es une <em>école ou un CFA ?</em></h2>
+  <p class="lead">Deux formules pour intégrer ATERISK à ton accompagnement étudiants.</p>
+  <div class="school-grid">
+    <div class="school-card">
+      <h3>🎓 Accès ressources</h3>
+      <p class="sc-desc">Tes étudiants accèdent à toutes les ressources ATERISK et au matching avec les mentors. Tu pilotes leur progression depuis ton tableau de bord.</p>
+      <div class="sc-price-row">
+        <div class="sc-price">6 €</div>
+        <div class="sc-period">/ étudiant actif / mois</div>
+      </div>
+      <div class="sc-features">
+        <div class="pf"><span class="pf-icon">✅</span>Ressources & guides secteurs</div>
+        <div class="pf"><span class="pf-icon">✅</span>Matching personnalisé mentors</div>
+        <div class="pf"><span class="pf-icon">✅</span>Dashboard candidatures étudiant</div>
+        <div class="pf"><span class="pf-icon">✅</span>Tableau de bord école en temps réel</div>
+        <div class="pf"><span class="pf-icon">🪙</span>Tokens achetables en packs séparément</div>
+      </div>
+      <a href="mailto:hello@aterisk.fr" class="plan-cta secondary">Nous contacter</a>
+    </div>
+    <div class="school-card" style="border-color:var(--blue);">
+      <h3>🚀 Partenariat complet</h3>
+      <p class="sc-desc">Accès ressources + forfait mensuel incluant tableau de bord avancé, rapport trimestriel de placement et session collective mensuelle animée par un mentor senior.</p>
+      <div class="sc-price-row">
+        <div class="sc-price">6 €</div>
+        <div class="sc-period">/ étudiant + 650 € / mois</div>
+      </div>
+      <div class="sc-features">
+        <div class="pf"><span class="pf-icon">✅</span>Tout l'accès ressources</div>
+        <div class="pf"><span class="pf-icon">✅</span>Tableau de bord + rapport trimestriel</div>
+        <div class="pf"><span class="pf-icon">✅</span>Session collective mensuelle (mentor senior)</div>
+        <div class="pf"><span class="pf-icon">✅</span>Contact dédié ATERISK</div>
+        <div class="pf"><span class="pf-icon">🪙</span>Packs tokens à tarifs préférentiels</div>
+      </div>
+      <a href="mailto:hello@aterisk.fr" class="plan-cta primary">Demander un devis →</a>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:24px">Packs tokens école : Essentiel 20 tokens / 200 € · Standard 50 tokens / 450 € · Premium 100 tokens / 800 €</p>
+</div>
+
+<!-- FAQ -->
+<div class="faq">
+  <h2>Questions fréquentes</h2>
+  <div class="faq-grid">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Est-ce qu'il y a une commission si je trouve mon alternance ? <span class="arrow">+</span></div>
+      <div class="faq-a">Non, jamais. ATERISK ne prélève aucune commission sur ton placement. Tu trouves ton alternance — tu gardes tout. C'est notre engagement fondamental et la raison pour laquelle on fonctionne au token.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Mes tokens expirent-ils ? <span class="arrow">+</span></div>
+      <div class="faq-a">Non. Les tokens que tu achètes sont valables sans date d'expiration. Si tu es abonné(e) et que tu ne renouvelles pas, tes tokens restent disponibles. Si tu étais étudiant(e) via une école et que ton école rejoint ATERISK plus tard, tes tokens existants sont conservés et les tokens école s'y ajoutent.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Quelle est la différence entre mentor junior et senior ? <span class="arrow">+</span></div>
+      <div class="faq-a">Un mentor junior est un étudiant avancé (Bac+4/5) en alternance ou récemment diplômé. Il coûte 1 token (10€). Un mentor senior est un professionnel en poste depuis 1-3 ans, ayant souvent recruté des alternants. Il coûte 1,5 token (15€). Les deux ont été sélectionnés et formés par ATERISK.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Puis-je annuler mon abonnement à tout moment ? <span class="arrow">+</span></div>
+      <div class="faq-a">Oui, sans engagement et sans frais. Tu peux résilier à tout moment depuis ton espace étudiant. Ton accès reste actif jusqu'à la fin de la période en cours, et tes tokens sont conservés.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Mon école n'est pas encore partenaire — que faire ? <span class="arrow">+</span></div>
+      <div class="faq-a">Tu peux t'inscrire directement à 19€/mois. Si ton école rejoint ATERISK par la suite, ton compte sera automatiquement mis à jour et les tokens alloués par ton école s'ajouteront à ton portefeuille existant. Aucune perte, aucune migration.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Que se passe-t-il si je ne suis pas satisfait(e) d'une séance ? <span class="arrow">+</span></div>
+      <div class="faq-a">Contacte-nous dans les 24h suivant la séance. Si le mentor n'a pas respecté la charte ATERISK, ton token te sera remboursé intégralement. La qualité de l'accompagnement est notre priorité.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-band">
+  <h2>Commence dès aujourd'hui.</h2>
+  <p>1 token offert à l'inscription. 1ère séance gratuite. Sans engagement.</p>
+  <div class="cta-btns">
+    <a href="inscription.html" class="btn-w">Trouver mon mentor →</a>
+    <a href="mentor-inscription.html" class="btn-o">Devenir mentor</a>
+  </div>
+</div>
+
+<script>
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if(!wasOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Trouve ton alternance, pas au hasard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A2E7A;
+    --blue-mid: #2A45B0;
+    --blue-light: #E8EEF9;
+    --blue-pale: #F3F6FD;
+    --ink: #0D1526;
+    --muted: #6B7280;
+    --border: #DDE3F0;
+    --white: #FFFFFF;
+    --accent: #F4A200;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 48px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(221,227,240,0.6);
+  }
+
+  .nav-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--blue);
+    letter-spacing: 1px;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--blue); }
+
+  .nav-cta {
+    background: var(--blue) !important;
+    color: white !important;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    transition: all 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--blue-mid) !important; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,46,122,0.25); }
+
+  /* ─── HERO ─── */
+  .hero {
+    display: flex;
+    align-items: center;
+    padding: 120px 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(42,69,176,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 80%, rgba(26,46,122,0.04) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(26,46,122,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,46,122,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+  }
+
+  .hero-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blue-light);
+    color: var(--blue-mid);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--blue-mid);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(38px, 4.5vw, 58px);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--blue-mid);
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 40px;
+    max-width: 440px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover { background: var(--blue-mid); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,46,122,0.28); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--blue);
+    padding: 16px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1.5px solid var(--border);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover { border-color: var(--blue); background: var(--blue-pale); }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 48px;
+  }
+
+  .stat-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s;
+    box-shadow: 0 2px 8px rgba(26,46,122,0.05);
+  }
+
+  .stat-item:hover {
+    border-color: var(--blue-mid);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(26,46,122,0.1);
+  }
+
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--blue);
+    border-radius: 3px 0 0 3px;
+  }
+
+  .stat-item:nth-child(2)::before { background: var(--accent); }
+  .stat-item:nth-child(3)::before { background: #16A34A; }
+
+  .stat-context {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    line-height: 1;
+    color: var(--blue);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .stat-item:nth-child(2) .stat-num { color: #B45309; }
+  .stat-item:nth-child(3) .stat-num { color: #15803D; }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .stat-ring {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .stat-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  /* HERO VISUAL */
+  .hero-visual {
+    position: relative;
+  }
+
+  .card-stack {
+    position: relative;
+    height: 420px;
+  }
+
+  .mentor-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(26,46,122,0.1);
+    padding: 24px;
+    position: absolute;
+    width: 300px;
+    transition: all 0.3s;
+  }
+
+  .mentor-card.card-1 {
+    top: 0; left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    z-index: 1;
+  }
+
+  .mentor-card.card-2 {
+    top: 80px; left: 50%;
+    transform: translateX(-30%) rotate(1.5deg);
+    z-index: 2;
+    box-shadow: 0 20px 60px rgba(26,46,122,0.15);
+  }
+
+  .mentor-card.card-3 {
+    top: 180px; left: 50%;
+    transform: translateX(-65%) rotate(-1deg);
+    z-index: 1;
+  }
+
+  .card-stack:hover .card-1 { transform: translateX(-50%) rotate(-2deg) translateY(-8px); }
+  .card-stack:hover .card-2 { transform: translateX(-30%) rotate(1.5deg) translateY(-4px); }
+  .card-stack:hover .card-3 { transform: translateX(-65%) rotate(-1deg) translateY(-12px); }
+
+  .mentor-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .mentor-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .mentor-card .role {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .mentor-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--blue-light);
+    color: var(--blue-mid);
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-footer .price {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .card-footer .avail {
+    font-size: 11px;
+    color: #16A34A;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .card-footer .avail::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #16A34A;
+  }
+
+  .level-badge {
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .level-badge.junior { background: #FEF3C7; color: #92400E; }
+  .level-badge.senior { background: var(--blue-light); color: var(--blue); }
+
+  /* ─── COMMENT ÇA MARCHE ─── */
+  .section {
+    padding: 40px 48px 64px;
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-mid);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 16px;
+    font-weight: 400;
+  }
+
+  .section-sub {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 520px;
+    margin-bottom: 64px;
+  }
+
+  /* STEPS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    position: relative;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: calc(12.5% + 20px);
+    right: calc(12.5% + 20px);
+    height: 1px;
+    background: linear-gradient(90deg, var(--blue-light), var(--border), var(--blue-light));
+  }
+
+  .step {
+    position: relative;
+  }
+
+  .step-num {
+    width: 56px; height: 56px;
+    background: var(--blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 16px rgba(26,46,122,0.2);
+  }
+
+  .step h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .step p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* ─── POURQUOI ATERISK ─── */
+  .why-section {
+    background: var(--blue);
+    padding: 100px 48px;
+  }
+
+  .why-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .why-section .section-eyebrow { color: rgba(255,255,255,0.5); }
+  .why-section .section-title { color: white; }
+  .why-section .section-sub { color: rgba(255,255,255,0.65); margin-bottom: 0; }
+
+  .why-points {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .why-point {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: all 0.2s;
+  }
+
+  .why-point:hover { background: rgba(255,255,255,0.1); transform: translateX(4px); }
+
+  .why-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .why-point h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+  }
+
+  .why-point p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  /* ─── SECTEURS ─── */
+  .sectors-section {
+    background: var(--blue-pale);
+    padding: 100px 48px;
+  }
+
+  .sectors-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .sector-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .sector-card:hover {
+    border-color: var(--blue-mid);
+    box-shadow: 0 8px 24px rgba(26,46,122,0.1);
+    transform: translateY(-3px);
+  }
+
+  .sector-emoji { font-size: 28px; margin-bottom: 10px; }
+
+  .sector-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .sector-count {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ─── CTA FINAL ─── */
+  .cta-section {
+    padding: 100px 48px;
+    text-align: center;
+  }
+
+  .cta-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cta-section .section-title { margin-bottom: 20px; }
+  .cta-section .section-sub { margin: 0 auto 40px; }
+
+  .cta-pair {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--ink);
+    padding: 40px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  footer .logo {
+    font-family: 'DM Serif Display', serif;
+    color: white;
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  footer p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  @media (min-width: 769px) {
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    .hero-content { grid-template-columns: 1fr; gap: 48px; }
+    .hero-visual { display: none; }
+    .section { padding: 60px 20px; }
+    .steps { grid-template-columns: 1fr; }
+    .steps::before { display: none; }
+    .why-grid { grid-template-columns: 1fr; gap: 40px; }
+    .sectors-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-section, .sectors-section, .cta-section { padding: 60px 20px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+<script>
+  // ── Détection visite précédente ─────────────────────────────────────────
+  // Si l'utilisateur est déjà venu, on affiche une bannière discrète
+  // au lieu de rediriger (la landing doit toujours rester accessible).
+  (function(){
+    const alreadyVisited = localStorage.getItem('aterisk_visited');
+    const user = sessionStorage.getItem('aterisk_user');
+
+    if(alreadyVisited || user) {
+      window.addEventListener('DOMContentLoaded', () => {
+        const bar = document.createElement('div');
+        bar.style.cssText = 'position:fixed;top:64px;left:0;right:0;z-index:99;background:#1A2E7A;color:white;padding:10px 48px;font-size:13px;display:flex;align-items:center;justify-content:space-between;animation:slideDown 0.4s ease';
+        const label = user ? 'Bon retour ! ' : 'Tu as déjà un compte ? ';
+        const dest = user ? (JSON.parse(user).role === 'mentor' ? 'dashboard-mentor.html' : 'dashboard.html') : 'login.html';
+        const btnText = user ? 'Mon espace →' : 'Se connecter →';
+        bar.innerHTML = label + '<a href="' + dest + '" style="color:white;font-weight:600;text-decoration:underline;margin-left:8px">' + btnText + '</a><button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:16px;cursor:pointer;margin-left:auto;padding:0 4px">✕</button>';
+        document.body.appendChild(bar);
+        const style = document.createElement('style');
+        style.textContent = '@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}';
+        document.head.appendChild(style);
+      });
+    }
+
+    localStorage.setItem('aterisk_visited', '1');
+  })();
+</script>
+
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">ATERISK</a>
+  <div class="nav-links">
+    <a href="#comment">Comment ça marche</a>
+    <a href="#secteurs">Secteurs</a>
+    <a href="tarifs.html">Tarifs</a>
+    <a href="ressources.html">Ressources</a>
+    <a href="mapping.html">Mapping</a>
+    <a href="mentor-inscription.html">Devenir mentor</a>
+    <a href="login.html" style="font-size:14px;font-weight:600;color:var(--blue);text-decoration:none;margin-right:4px">Connexion</a><a href="inscription.html" class="nav-cta">Trouver mon mentor →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-tag">Plateforme de mentorat alternance</div>
+      <h1>Trouve ton alternance, <em>pas au hasard.</em></h1>
+      <p class="hero-sub">ATERISK connecte les étudiants avec des mentors qui ont déjà vécu leur recherche. 1ère séance offerte — <em>ATERISK, à nos risques aussi.</em></p>
+      <div class="hero-actions">
+        <a href="inscription.html" class="btn-primary">Trouver mon mentor →</a>
+        <a href="#comment" class="btn-secondary">Comment ça marche</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-context">Le marché</div>
+          <span class="stat-num" data-target="880" data-suffix="K+">0</span>
+          <div class="stat-label">nouveaux contrats signés en 2024</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-context">Le problème</div>
+          <span class="stat-num" data-target="50" data-suffix="%">0</span>
+          <div class="stat-label">étudiants sans alternance à la rentrée</div>
+          <div class="stat-ring">
+            <svg width="44" height="44" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="16" fill="none" stroke="#FEF3C7" stroke-width="5"/>
+              <circle class="ring-fill" cx="22" cy="22" r="16" fill="none" stroke="#B45309" stroke-width="5"
+                data-percent="50" stroke-dasharray="0 100.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-context">La clé</div>
+          <span class="stat-num" data-target="40" data-suffix="%">0</span>
+          <div class="stat-label">des alternances trouvées via le réseau</div>
+          <div class="stat-ring">
+            <svg width="44" height="44" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="16" fill="none" stroke="#DCFCE7" stroke-width="5"/>
+              <circle class="ring-fill" cx="22" cy="22" r="16" fill="none" stroke="#16A34A" stroke-width="5"
+                data-percent="40" stroke-dasharray="0 100.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISUAL CARDS -->
+    <div class="hero-visual">
+      <div class="card-stack">
+        <div class="mentor-card card-1">
+          <div class="level-badge junior">Junior</div>
+          <div class="mentor-avatar" style="background:#FEF3C7">👩‍💼</div>
+          <h4>Sarah L.</h4>
+          <div class="role">Alternante — Marketing Digital, Paris</div>
+          <div class="mentor-tags">
+            <span class="tag">LinkedIn</span>
+            <span class="tag">CV</span>
+            <span class="tag">Candidature</span>
+          </div>
+          <div class="card-footer">
+            <span class="price">dès 14€ / séance</span>
+            <span class="avail">Disponible</span>
+          </div>
+        </div>
+        <div class="mentor-card card-2">
+          <div class="level-badge senior">Senior</div>
+          <div class="mentor-avatar" style="background:#DCFCE7">👨‍💻</div>
+          <h4>Thomas R.</h4>
+          <div class="role">Manager — Stratégie Commerciale, Lyon</div>
+          <div class="mentor-tags">
+            <span class="tag">Réseau</span>
+            <span class="tag">Entretien</span>
+            <span class="tag">Stratégie</span>
+          </div>
+          <div class="card-footer">
+            <span class="price">dès 22€ / séance</span>
+            <span class="avail">Disponible</span>
+          </div>
+        </div>
+        <div class="mentor-card card-3">
+          <div class="level-badge junior">Junior</div>
+          <div class="mentor-avatar" style="background:#EDE9FE">👩‍🎨</div>
+          <h4>Inès M.</h4>
+          <div class="role">Alternante — Communication, Bordeaux</div>
+          <div class="mentor-tags">
+            <span class="tag">Portfolio</span>
+            <span class="tag">LM</span>
+          </div>
+          <div class="card-footer">
+            <span class="price">dès 14€ / séance</span>
+            <span class="avail">Disponible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="section" id="comment">
+  <div class="section-inner">
+    <div class="section-eyebrow">Le processus</div>
+    <h2 class="section-title fade-up">Simple. Rapide. Efficace.</h2>
+    <p class="section-sub fade-up">De l'inscription à la signature de ton contrat — ATERISK t'accompagne à chaque étape.</p>
+    <div class="steps" style="grid-template-columns: repeat(4,1fr)">
+      <div class="step fade-up">
+        <div class="step-num">1</div>
+        <h3>Tu crées ton profil</h3>
+        <p>Secteur visé, formation, niveau de recherche. 2 minutes, et ta première séance découverte est offerte.</p>
+      </div>
+      <div class="step fade-up" style="transition-delay:0.1s">
+        <div class="step-num">2</div>
+        <h3>On te matche avec un mentor</h3>
+        <p>En fonction de ton profil, on sélectionne le mentor le plus pertinent — ou tu explores librement par secteur.</p>
+      </div>
+      <div class="step fade-up" style="transition-delay:0.2s">
+        <div class="step-num">3</div>
+        <h3>Tu avances avec ton mentor</h3>
+        <p>Séances à la carte selon tes besoins. Après chaque séance, un rapport personnalisé avec tes actions est envoyé automatiquement.</p>
+      </div>
+      <div class="step fade-up" style="transition-delay:0.3s">
+        <div class="step-num">4</div>
+        <h3>Tu signes & rejoins les alumni</h3>
+        <p>Tu trouves ton alternance. ATERISK prend 4% de ton salaire pendant 4 mois — et tu intègres le réseau alumni.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POURQUOI ATERISK -->
+<section class="why-section">
+  <div class="why-inner">
+    <div class="why-grid">
+      <div>
+        <div class="section-eyebrow">Pourquoi ATERISK</div>
+        <h2 class="section-title">Le réseau auquel tu n'avais pas accès.</h2>
+        <p class="section-sub">40% des alternances se trouvent via le réseau. ATERISK rend ce réseau accessible à tous — peu importe ton école, ta ville ou ta situation.</p>
+      </div>
+      <div class="why-points">
+        <div class="why-point">
+          <div class="why-icon">🎯</div>
+          <div>
+            <h4>Mentors sélectionnés et formés</h4>
+            <p>Chaque mentor passe une sélection rigoureuse et suit notre formation avant d'accompagner des étudiants.</p>
+          </div>
+        </div>
+        <div class="why-point">
+          <div class="why-icon">📋</div>
+          <div>
+            <h4>Rapport automatique après chaque séance</h4>
+            <p>Pas de prise de notes. Un rapport structuré avec tes actions concrètes est généré et envoyé automatiquement.</p>
+          </div>
+        </div>
+        <div class="why-point">
+          <div class="why-icon">💶</div>
+          <div>
+            <h4>1ère séance offerte</h4>
+            <p>Ta première séance de 30 min avec un mentor est offerte à l'inscription. L'accès à la plateforme est détaillé lors de l'inscription.</p>
+          </div>
+        </div>
+        <div class="why-point">
+          <div class="why-icon">🤝</div>
+          <div>
+            <h4>— ATERISK, à nos risques aussi.</h4>
+            <p>On prend 4% de ton salaire pendant 4 mois, uniquement quand tu signes. Si tu ne trouves pas, on ne touche rien.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTEURS -->
+<section class="sectors-section" id="secteurs">
+  <div class="section-inner">
+    <div class="section-eyebrow">Explorer</div>
+    <h2 class="section-title fade-up">Trouve un mentor dans ton secteur</h2>
+    <p class="section-sub fade-up">Tu vises plusieurs secteurs ? Explore librement et compose ton accompagnement sur-mesure.</p>
+    <div class="sectors-grid">
+      <a href="secteurs.html#marketing" class="sector-card fade-up">
+        <div class="sector-emoji">📣</div>
+        <div class="sector-name">Marketing & Com'</div>
+        <div class="sector-count">12 mentors disponibles</div>
+      </a>
+      <a href="secteurs.html#commerce" class="sector-card fade-up" style="transition-delay:0.05s">
+        <div class="sector-emoji">💼</div>
+        <div class="sector-name">Commerce & Vente</div>
+        <div class="sector-count">9 mentors disponibles</div>
+      </a>
+      <a href="secteurs.html#tech" class="sector-card fade-up" style="transition-delay:0.1s">
+        <div class="sector-emoji">💻</div>
+        <div class="sector-name">Tech & Digital</div>
+        <div class="sector-count">7 mentors disponibles</div>
+      </a>
+      <a href="secteurs.html#rh" class="sector-card fade-up" style="transition-delay:0.15s">
+        <div class="sector-emoji">🤝</div>
+        <div class="sector-name">Ressources Humaines</div>
+        <div class="sector-count">5 mentors disponibles</div>
+      </a>
+      <a href="secteurs.html#finance" class="sector-card fade-up" style="transition-delay:0.2s">
+        <div class="sector-emoji">📊</div>
+        <div class="sector-name">Finance & Gestion</div>
+        <div class="sector-count">6 mentors disponibles</div>
+      </a>
+      <a href="secteurs.html#juridique" class="sector-card fade-up" style="transition-delay:0.25s">
+        <div class="sector-emoji">⚖️</div>
+        <div class="sector-name">Juridique</div>
+        <div class="sector-count">3 mentors disponibles</div>
+      </a>
+      <a href="secteurs.html#creation" class="sector-card fade-up" style="transition-delay:0.3s">
+        <div class="sector-emoji">🎨</div>
+        <div class="sector-name">Création & Design</div>
+        <div class="sector-count">4 mentors disponibles</div>
+      </a>
+      <a href="secteurs.html" class="sector-card fade-up" style="transition-delay:0.35s; border-style: dashed;">
+        <div class="sector-emoji">＋</div>
+        <div class="sector-name">Voir tous les secteurs</div>
+        <div class="sector-count">Explorer</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="section-eyebrow">Prêt ?</div>
+    <h2 class="section-title fade-up">1ère séance <em style="color:var(--blue-mid)">offerte.</em></h2>
+    <p class="section-sub fade-up">On ne prend notre part que quand tu signes ton contrat. Rejoins les étudiants qui ont arrêté d'envoyer des candidatures dans le vide.</p>
+    <div class="cta-pair">
+      <a href="inscription.html" class="btn-primary">Je commence — 1ère séance offerte →</a>
+      <a href="mentor-inscription.html" class="btn-secondary">Devenir mentor</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">ATERISK</div>
+  <p>Ensemble, construisons le réseau qui mène à votre alternance.</p>
+  <p style="color:rgba(255,255,255,0.25); font-size:12px">© 2026 ATERISK</p>
+</footer>
+
+<script>
+  // Fade-up — show immediately if already in viewport, else on scroll
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.fade-up').forEach(el => {
+    fadeObserver.observe(el);
+    // Also check immediately in case already visible
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) el.classList.add('visible');
+  });
+
+  // Stats counter animation
+  function animateCounters() {
+    document.querySelectorAll('.stat-num[data-target]').forEach(el => {
+      const target = parseInt(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      const prefix = el.dataset.prefix || '';
+      const duration = 1600;
+      const start = performance.now();
+
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(ease * target);
+        el.textContent = prefix + value + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    });
+
+    document.querySelectorAll('.ring-fill[data-percent]').forEach(el => {
+      const pct = parseInt(el.dataset.percent);
+      const circumference = 2 * Math.PI * 16;
+      const filled = (pct / 100) * circumference;
+      setTimeout(() => {
+        el.style.transition = 'stroke-dasharray 1.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        el.setAttribute('stroke-dasharray', `${filled} ${circumference}`);
+      }, 200);
+    });
+  }
+
+  // Trigger counters immediately on load
+  animateCounters();
+</script>
+
+<footer style="background:#0D1526;padding:20px 48px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.07)">
+  <span style="font-family:serif;font-size:14px;color:rgba(255,255,255,0.3);letter-spacing:1px">ATERISK</span>
+  <div style="display:flex;gap:20px">
+    <a href="tarifs.html" style="font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none">Tarifs</a>
+    <a href="cgu.html" style="font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none">CGU</a>
+    <a href="cgu.html#donnees" style="font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none">Données personnelles</a>
+    <a href="cgu.html#mentions" style="font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none">Mentions légales</a>
+    <a href="mailto:hello@aterisk.fr" style="font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none">Contact</a>
+  </div>
+  <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:12px">© 2026 ATERISK SAS — Tous droits réservés</p>
+</footer>
+
+</body>
+</html>

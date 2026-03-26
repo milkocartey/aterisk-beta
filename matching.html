@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Ton mentor idéal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A2E7A;
+    --blue-mid: #2A45B0;
+    --blue-light: #E8EEF9;
+    --blue-pale: #F3F6FD;
+    --ink: #0D1526;
+    --muted: #6B7280;
+    --border: #DDE3F0;
+    --white: #FFFFFF;
+    --green: #16A34A;
+    --green-bg: #DCFCE7;
+    --amber: #92400E;
+    --amber-bg: #FEF3C7;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(26,46,122,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 48px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(221,227,240,0.6);
+  }
+  .nav-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--blue); text-decoration: none; letter-spacing: 1px; }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover { color: var(--blue); }
+  .nav-cta { font-size: 13px; font-weight: 600; color: white; background: var(--blue); padding: 9px 20px; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
+  .nav-cta:hover { background: var(--blue-mid); transform: translateY(-1px); }
+  .nav-back { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--blue); }
+  .nav-explore { font-size: 13px; font-weight: 500; color: var(--blue-mid); text-decoration: none; border: 1px solid var(--border); padding: 7px 16px; border-radius: 8px; transition: all 0.2s; }
+  .nav-explore:hover { background: var(--blue-light); }
+
+  /* HEADER */
+  .page-header {
+    padding: 96px 48px 40px;
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  .match-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green-bg); color: var(--green);
+    font-size: 12px; font-weight: 600; padding: 6px 14px;
+    border-radius: 20px; margin-bottom: 16px; letter-spacing: 0.5px;
+  }
+
+  .match-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  .page-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 400; line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 em { font-style: italic; color: var(--blue-mid); }
+
+  .page-header p { font-size: 16px; color: var(--muted); line-height: 1.65; max-width: 520px; }
+
+  /* PROFILE RECAP */
+  .profile-recap {
+    max-width: 1100px; margin: 0 auto 32px;
+    padding: 0 48px;
+  }
+
+  .recap-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 20px;
+    display: flex; align-items: center; gap: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .recap-avatar {
+    width: 44px; height: 44px; background: var(--blue-light);
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+
+  .recap-info h3 { font-size: 15px; font-weight: 600; }
+  .recap-info p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .recap-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+  .recap-tag {
+    font-size: 12px; font-weight: 500; padding: 4px 12px;
+    background: var(--blue-light); color: var(--blue-mid);
+    border-radius: 20px;
+  }
+
+  .recap-edit { font-size: 12px; color: var(--muted); text-decoration: none; margin-left: 12px; flex-shrink: 0; transition: color 0.2s; }
+  .recap-edit:hover { color: var(--blue); }
+
+  /* MAIN LAYOUT */
+  .main { max-width: 1100px; margin: 0 auto; padding: 0 48px 80px; }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .section-header h2 { font-size: 18px; font-weight: 600; }
+  .section-header p { font-size: 13px; color: var(--muted); }
+
+  /* MENTORS GRID */
+  .mentors-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px; }
+
+  /* MENTOR CARD */
+  .mentor-card {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: var(--shadow); transition: all 0.25s;
+    cursor: pointer; position: relative;
+  }
+
+  .mentor-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(26,46,122,0.14); border-color: var(--blue-mid); }
+
+  .mentor-card.featured { border-color: var(--blue-mid); }
+
+  .card-top {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+    padding: 20px;
+    position: relative; overflow: hidden;
+  }
+
+  .card-top::before {
+    content: '';
+    position: absolute; top: -30px; right: -30px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .card-badge-row { display: flex; gap: 8px; margin-bottom: 14px; }
+
+  .level-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 10px;
+    border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+
+  .level-badge.junior { background: rgba(255,255,255,0.15); color: white; }
+  .level-badge.senior { background: var(--amber-bg); color: var(--amber); }
+
+  .match-score {
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 4px; background: var(--green-bg); color: var(--green);
+    margin-left: auto;
+  }
+
+  .card-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 10px;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+
+  .card-name { font-size: 17px; font-weight: 600; color: white; margin-bottom: 2px; }
+  .card-role { font-size: 12px; color: rgba(255,255,255,0.7); }
+
+  .card-body { padding: 18px 20px; }
+
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .card-tag {
+    font-size: 11px; font-weight: 500; padding: 4px 10px;
+    border-radius: 20px; background: var(--blue-light); color: var(--blue-mid);
+  }
+
+  .card-bio { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+
+  .card-meta { display: flex; gap: 16px; padding-top: 14px; border-top: 1px solid var(--border); margin-bottom: 16px; }
+  .card-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .card-meta-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .card-meta-val { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+  .card-avail { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green); font-weight: 500; }
+  .card-avail::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  .card-cta {
+    width: 100%; padding: 12px; background: var(--blue);
+    color: white; border: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+
+  .card-cta:hover { background: var(--blue-mid); }
+
+  .card-cta.secondary {
+    background: transparent; color: var(--blue);
+    border: 1.5px solid var(--border);
+  }
+
+  .card-cta.secondary:hover { border-color: var(--blue); background: var(--blue-light); }
+
+  /* BEST MATCH BANNER */
+  .best-match-banner {
+    position: absolute; top: 0; right: 16px;
+    background: var(--amber-bg); color: var(--amber);
+    font-size: 10px; font-weight: 700; padding: 4px 10px;
+    border-radius: 0 0 8px 8px; letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* EXPLORE LINK */
+  .explore-link {
+    background: white; border: 1.5px dashed var(--border);
+    border-radius: 16px; padding: 40px 20px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px; text-decoration: none;
+    transition: all 0.2s; text-align: center;
+  }
+
+  .explore-link:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
+  .explore-link .e-icon { font-size: 28px; }
+  .explore-link .e-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .explore-link .e-sub { font-size: 13px; color: var(--muted); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(13,21,38,0.5); z-index: 200;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white; border-radius: 20px;
+    width: 100%; max-width: 520px;
+    max-height: 90vh; overflow-y: auto;
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .modal-top {
+    background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+    padding: 28px; border-radius: 20px 20px 0 0;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; background: rgba(255,255,255,0.15);
+    border: none; border-radius: 50%; color: white; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+
+  .modal-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 12px; border: 2px solid rgba(255,255,255,0.2); }
+  .modal-name { font-size: 22px; font-weight: 600; color: white; margin-bottom: 4px; }
+  .modal-role { font-size: 14px; color: rgba(255,255,255,0.7); }
+
+  .modal-body { padding: 24px; }
+  .modal-section { margin-bottom: 20px; }
+  .modal-section-title { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .modal-section p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  .creneaux { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .creneau {
+    padding: 10px 14px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.18s; text-align: center;
+    background: white;
+  }
+  .creneau:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-light); }
+  .creneau.selected { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
+  .creneau .c-date { font-size: 12px; font-weight: 600; }
+  .creneau .c-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .creneau.selected .c-time { color: var(--blue-mid); }
+
+  .btn-reserver {
+    width: 100%; padding: 15px; background: var(--blue);
+    color: white; border: none; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; margin-top: 20px;
+  }
+  .btn-reserver:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    .page-header, .profile-recap, .main { padding-left: 20px; padding-right: 20px; }
+    .mentors-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="dashboard.html" class="nav-logo">ATERISK</a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link">← Mon espace</a>
+    <a href="secteurs.html" class="nav-link">Explorer</a>
+    <a href="ressources.html" class="nav-link">Ressources</a>
+    <a href="secteurs.html" class="nav-cta">Réserver une séance →</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="match-tag">Matching personnalisé</div>
+  <h1>Voici tes mentors <em>idéaux</em>, Lola.</h1>
+  <p>On a sélectionné ces profils en fonction de ton secteur, de ton niveau de recherche et de tes objectifs. Tu peux aussi explorer librement par secteur.</p>
+</div>
+
+<!-- PROFILE RECAP -->
+<div class="profile-recap">
+  <div class="recap-card">
+    <div class="recap-avatar">👩‍🎓</div>
+    <div class="recap-info">
+      <h3>Lola Martin</h3>
+      <p>BTS Commerce · Paris · En cours de recherche</p>
+    </div>
+    <div class="recap-tags">
+      <span class="recap-tag">📣 Marketing</span>
+      <span class="recap-tag">💼 Commerce</span>
+      <span class="recap-tag">CV · Réseau</span>
+    </div>
+    <a href="inscription.html" class="recap-edit">Modifier →</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="section-header">
+    <div>
+      <h2>3 mentors sélectionnés pour toi</h2>
+      <p>Trié par pertinence — basé sur ton secteur et tes objectifs</p>
+    </div>
+  </div>
+
+  <div class="mentors-grid">
+
+    <!-- MENTOR 1 — BEST MATCH -->
+    <div class="mentor-card featured" onclick="openModal('sarah')">
+      <div class="best-match-banner">⭐ Meilleur match</div>
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="level-badge junior">Junior</span>
+          <span class="match-score">98% compatible</span>
+        </div>
+        <div class="card-avatar">👩‍💼</div>
+        <div class="card-name">Sarah L.</div>
+        <div class="card-role">Alternante — Marketing Digital · Paris</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag">LinkedIn</span>
+          <span class="card-tag">CV</span>
+          <span class="card-tag">Candidature</span>
+          <span class="card-tag">Marketing digital</span>
+        </div>
+        <p class="card-bio">En alternance chez une agence parisienne depuis 8 mois. A passé par la même galère que toi — 0 réponse pendant 3 semaines avant de trouver la bonne méthode.</p>
+        <div class="card-meta">
+          <div class="card-meta-item">
+            <span class="card-meta-label">Séance</span>
+            <span class="card-meta-val">14€</span>
+          </div>
+          <div class="card-meta-item">
+            <span class="card-meta-label">Avis</span>
+            <span class="card-meta-val">★ 4.9 (23)</span>
+          </div>
+          <div class="card-meta-item">
+            <span class="card-meta-label">Placés</span>
+            <span class="card-meta-val">12 étudiants</span>
+          </div>
+        </div>
+        <div class="card-avail" style="margin-bottom:12px">Disponible dès demain</div>
+        <button class="card-cta" onclick="openModal('sarah'); event.stopPropagation()">Réserver ma séance →</button>
+      </div>
+    </div>
+
+    <!-- MENTOR 2 -->
+    <div class="mentor-card" onclick="openModal('thomas')">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="level-badge senior">Senior</span>
+          <span class="match-score">91% compatible</span>
+        </div>
+        <div class="card-avatar">👨‍💼</div>
+        <div class="card-name">Thomas R.</div>
+        <div class="card-role">Manager Commercial · Lyon (remote OK)</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag">Réseau</span>
+          <span class="card-tag">Entretien</span>
+          <span class="card-tag">Stratégie</span>
+          <span class="card-tag">Commerce B2B</span>
+        </div>
+        <p class="card-bio">7 ans en commerce B2B, a recruté et encadré des alternants. Expert du marché caché et de l'approche directe entreprises.</p>
+        <div class="card-meta">
+          <div class="card-meta-item">
+            <span class="card-meta-label">Séance</span>
+            <span class="card-meta-val">22€</span>
+          </div>
+          <div class="card-meta-item">
+            <span class="card-meta-label">Avis</span>
+            <span class="card-meta-val">★ 4.8 (41)</span>
+          </div>
+          <div class="card-meta-item">
+            <span class="card-meta-label">Placés</span>
+            <span class="card-meta-val">28 étudiants</span>
+          </div>
+        </div>
+        <div class="card-avail" style="margin-bottom:12px">Disponible cette semaine</div>
+        <button class="card-cta" onclick="openModal('thomas'); event.stopPropagation()">Réserver ma séance →</button>
+      </div>
+    </div>
+
+    <!-- MENTOR 3 -->
+    <div class="mentor-card" onclick="openModal('ines')">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="level-badge junior">Junior</span>
+          <span class="match-score">86% compatible</span>
+        </div>
+        <div class="card-avatar">👩‍🎨</div>
+        <div class="card-name">Inès M.</div>
+        <div class="card-role">Alternante — Communication · Bordeaux</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="card-tag">LM</span>
+          <span class="card-tag">Portfolio</span>
+          <span class="card-tag">Com' événementielle</span>
+        </div>
+        <p class="card-bio">Alternante en agence de communication événementielle. Spécialiste de la lettre de motivation percutante et du pitch de 2 minutes.</p>
+        <div class="card-meta">
+          <div class="card-meta-item">
+            <span class="card-meta-label">Séance</span>
+            <span class="card-meta-val">14€</span>
+          </div>
+          <div class="card-meta-item">
+            <span class="card-meta-label">Avis</span>
+            <span class="card-meta-val">★ 4.7 (17)</span>
+          </div>
+          <div class="card-meta-item">
+            <span class="card-meta-label">Placés</span>
+            <span class="card-meta-val">8 étudiants</span>
+          </div>
+        </div>
+        <div class="card-avail" style="margin-bottom:12px">Disponible cette semaine</div>
+        <button class="card-cta secondary" onclick="openModal('ines'); event.stopPropagation()">Voir le profil</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EXPLORER LIEN -->
+  <div style="text-align:center; margin-bottom: 20px;">
+    <p style="font-size:14px; color:var(--muted)">Ces profils ne te conviennent pas ? Tu peux chercher toi-même.</p>
+  </div>
+  <a href="secteurs.html" class="explore-link">
+    <div class="e-icon">🔍</div>
+    <div class="e-title">Explorer tous les mentors par secteur</div>
+    <div class="e-sub">Marketing, Commerce, Tech, RH, Finance et plus encore</div>
+  </a>
+
+</div>
+
+<!-- MODAL SARAH -->
+<div class="modal-overlay" id="modal-sarah">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal('sarah')">✕</button>
+      <div class="modal-avatar">👩‍💼</div>
+      <div class="modal-name">Sarah L.</div>
+      <div class="modal-role">Alternante — Marketing Digital · Paris · Junior</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">À propos</div>
+        <p>En alternance chez une agence de marketing digital depuis 8 mois. Avant ça, j'ai envoyé 50 candidatures sans réponse — puis j'ai changé de méthode. J'accompagne maintenant des étudiants sur le CV, la stratégie de candidature et l'approche LinkedIn.</p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Ce qu'on peut travailler ensemble</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span style="background:var(--blue-light); color:var(--blue-mid); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Optimisation CV</span>
+          <span style="background:var(--blue-light); color:var(--blue-mid); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Stratégie LinkedIn</span>
+          <span style="background:var(--blue-light); color:var(--blue-mid); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Candidature spontanée</span>
+          <span style="background:var(--blue-light); color:var(--blue-mid); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Message de relance</span>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Choisir un créneau — Séance découverte offerte</div>
+        <div class="creneaux">
+          <div class="creneau selected" onclick="selectCreneau(this)">
+            <div class="c-date">Lun 23 mars</div>
+            <div class="c-time">10h00 — 10h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Lun 23 mars</div>
+            <div class="c-time">14h00 — 14h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Mar 24 mars</div>
+            <div class="c-time">09h00 — 09h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Mar 24 mars</div>
+            <div class="c-time">17h00 — 17h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Mer 25 mars</div>
+            <div class="c-time">11h00 — 11h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Jeu 26 mars</div>
+            <div class="c-time">16h00 — 16h30</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--green-bg); border-radius:8px; padding:12px 16px; font-size:13px; color:var(--green); font-weight:500; display:flex; gap:8px; align-items:center;">
+        <span>🎁</span> Ta séance découverte est offerte — aucun paiement maintenant.
+      </div>
+      <button class="btn-reserver" onclick="reserver()">Confirmer ma séance découverte →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL THOMAS -->
+<div class="modal-overlay" id="modal-thomas">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal('thomas')">✕</button>
+      <div class="modal-avatar">👨‍💼</div>
+      <div class="modal-name">Thomas R.</div>
+      <div class="modal-role">Manager Commercial · Lyon · Senior</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">À propos</div>
+        <p>7 ans en commerce B2B dans des PME et scale-ups. J'ai recruté et encadré une dizaine d'alternants. Je suis expert du marché caché et de l'approche directe entreprises — 80% de mes étudiants trouvent via ce canal.</p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Ce qu'on peut travailler ensemble</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span style="background:var(--amber-bg); color:var(--amber); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Réseau & marché caché</span>
+          <span style="background:var(--amber-bg); color:var(--amber); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Préparation entretien</span>
+          <span style="background:var(--amber-bg); color:var(--amber); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Stratégie de recherche</span>
+          <span style="background:var(--amber-bg); color:var(--amber); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Pitch professionnel</span>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Choisir un créneau — Séance découverte offerte</div>
+        <div class="creneaux">
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Lun 23 mars</div>
+            <div class="c-time">12h00 — 12h30</div>
+          </div>
+          <div class="creneau selected" onclick="selectCreneau(this)">
+            <div class="c-date">Mer 25 mars</div>
+            <div class="c-time">09h00 — 09h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Ven 27 mars</div>
+            <div class="c-time">14h00 — 14h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Lun 30 mars</div>
+            <div class="c-time">10h00 — 10h30</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--green-bg); border-radius:8px; padding:12px 16px; font-size:13px; color:var(--green); font-weight:500; display:flex; gap:8px; align-items:center;">
+        <span>🎁</span> Ta séance découverte est offerte — aucun paiement maintenant.
+      </div>
+      <button class="btn-reserver" onclick="reserver()">Confirmer ma séance découverte →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INES -->
+<div class="modal-overlay" id="modal-ines">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal('ines')">✕</button>
+      <div class="modal-avatar">👩‍🎨</div>
+      <div class="modal-name">Inès M.</div>
+      <div class="modal-role">Alternante — Communication · Bordeaux · Junior</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">À propos</div>
+        <p>Alternante en agence de communication événementielle depuis 6 mois. Spécialisée dans la LM percutante et la création de portfolio. J'aide les étudiants à raconter leur histoire différemment.</p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Ce qu'on peut travailler ensemble</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span style="background:var(--blue-light); color:var(--blue-mid); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Lettre de motivation</span>
+          <span style="background:var(--blue-light); color:var(--blue-mid); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Portfolio créatif</span>
+          <span style="background:var(--blue-light); color:var(--blue-mid); font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px;">Communication événementielle</span>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Choisir un créneau — Séance découverte offerte</div>
+        <div class="creneaux">
+          <div class="creneau selected" onclick="selectCreneau(this)">
+            <div class="c-date">Mar 24 mars</div>
+            <div class="c-time">11h00 — 11h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Jeu 26 mars</div>
+            <div class="c-time">15h00 — 15h30</div>
+          </div>
+          <div class="creneau" onclick="selectCreneau(this)">
+            <div class="c-date">Ven 27 mars</div>
+            <div class="c-time">10h00 — 10h30</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--green-bg); border-radius:8px; padding:12px 16px; font-size:13px; color:var(--green); font-weight:500; display:flex; gap:8px; align-items:center;">
+        <span>🎁</span> Ta séance découverte est offerte — aucun paiement maintenant.
+      </div>
+      <button class="btn-reserver" onclick="reserver()">Confirmer ma séance découverte →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(id) {
+    document.getElementById('modal-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function selectCreneau(el) {
+    el.closest('.creneaux').querySelectorAll('.creneau').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function reserver() {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+    document.body.style.overflow = '';
+    window.location.href = 'dashboard.html';
+  }
+
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+</script>
+</body>
+</html>

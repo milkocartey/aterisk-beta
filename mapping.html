@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Mapping des entreprises</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:#0D1526; overflow:hidden; height:100vh; color:white; }
+nav { position:fixed;top:0;left:0;right:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(13,21,38,0.97);border-bottom:1px solid rgba(255,255,255,0.08); }
+.nlogo { font-family:'DM Serif Display',serif;font-size:20px;letter-spacing:1px;color:white;text-decoration:none; }
+.ntitle { font-size:12px;color:rgba(255,255,255,0.4); }
+.nback { font-size:13px;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s; }
+.nback:hover{color:white;}
+#canvas { position:fixed;top:64px;left:0;display:block;cursor:grab; }
+#canvas:active{cursor:grabbing;}
+.sidebar { position:fixed;top:64px;left:0;bottom:0;width:206px;z-index:50;background:rgba(13,21,38,0.96);border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;padding:12px 8px;overflow-y:auto; }
+.sidebar::-webkit-scrollbar{width:3px;} .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);}
+.sinput { width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:7px 10px;color:white;font-size:12px;outline:none;margin-bottom:10px; }
+.sinput::placeholder{color:rgba(255,255,255,0.3);}
+.slbl { font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:6px;padding:0 2px; }
+.sbtn { display:flex;align-items:center;gap:6px;width:100%;padding:5px 7px;border-radius:5px;border:none;background:transparent;font-size:11px;font-weight:500;color:rgba(255,255,255,0.4);cursor:pointer;text-align:left;transition:all 0.15s; }
+.sbtn:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85);}
+.sbtn.on{color:white;background:rgba(255,255,255,0.05);}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.scnt{margin-left:auto;font-size:9px;opacity:0.35;}
+.legend{position:fixed;bottom:14px;left:216px;z-index:50;background:rgba(13,21,38,0.92);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 13px;}
+.lttl{font-size:9px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:7px;}
+.lrow{display:flex;align-items:center;gap:7px;margin-bottom:4px;font-size:10px;color:rgba(255,255,255,0.45);}
+.lc{border-radius:50%;background:rgba(255,255,255,0.22);flex-shrink:0;}
+.zbttns{position:fixed;bottom:58px;right:14px;display:flex;flex-direction:column;gap:4px;z-index:50;}
+.zbtn{width:32px;height:32px;background:rgba(13,21,38,0.92);border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:rgba(255,255,255,0.55);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.zbtn:hover{background:rgba(255,255,255,0.1);color:white;}
+.stats{position:fixed;bottom:14px;right:14px;z-index:50;background:rgba(13,21,38,0.92);border:1px solid rgba(255,255,255,0.07);border-radius:7px;padding:7px 13px;font-size:11px;color:rgba(255,255,255,0.4);}
+.stats b{color:white;}
+.info{position:fixed;top:62px;right:14px;width:270px;z-index:50;background:rgba(13,21,38,0.97);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;display:none;max-height:calc(100vh - 80px);overflow-y:auto;}
+.info.show{display:block;}
+.iclose{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.07);border:none;color:rgba(255,255,255,0.4);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
+.iclose:hover{background:rgba(255,255,255,0.15);color:white;}
+.ibadge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:8px;}
+.iname{font-size:17px;font-weight:700;color:white;margin-bottom:2px;padding-right:20px;}
+.isub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:11px;}
+.irow{display:flex;gap:5px;font-size:11px;margin-bottom:4px;}
+.irl{color:rgba(255,255,255,0.35);min-width:58px;}
+.irv{color:rgba(255,255,255,0.8);font-weight:500;}
+.idesc{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;margin:11px 0;}
+.ilink{display:block;text-align:center;background:#2A45B0;color:white;text-decoration:none;padding:9px;border-radius:7px;font-size:12px;font-weight:600;margin-top:12px;}
+.ilink:hover{background:#3B5CC4;}
+.iconns{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.07);}
+.icttl{font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.ctag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);margin:2px;}
+.tip{position:fixed;pointer-events:none;background:rgba(13,21,38,0.97);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:9px 12px;font-size:12px;display:none;z-index:200;max-width:210px;}
+.tip.show{display:block;}
+.tname{font-weight:700;color:white;margin-bottom:2px;}
+.tsec{font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px;}
+.tca{color:rgba(255,255,255,0.6);}
+</style>
+</head>
+<body>
+<nav>
+  <a href="dashboard.html" class="nlogo">ATERISK</a>
+  <span class="ntitle">Mapping entreprises — 450+ acteurs, 15 secteurs</span>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="dashboard.html" class="nback">← Mon espace</a>
+    <a href="ressources.html" class="nback">Ressources</a>
+  </div>
+</nav>
+<div class="sidebar">
+  <input class="sinput" id="search" placeholder="🔍 Rechercher..." oninput="onSearch()">
+  <div class="slbl">Secteurs</div>
+  <div id="sbtns"></div>
+</div>
+<div class="legend">
+  <div class="lttl">Taille = Chiffre d'affaires</div>
+  <div class="lrow"><div class="lc" style="width:24px;height:24px"></div>&gt; 10 Md€</div>
+  <div class="lrow"><div class="lc" style="width:17px;height:17px"></div>1 – 10 Md€</div>
+  <div class="lrow"><div class="lc" style="width:11px;height:11px"></div>100M – 1Md€</div>
+  <div class="lrow"><div class="lc" style="width:7px;height:7px"></div>&lt; 100M€</div>
+</div>
+<div class="zbttns">
+  <button class="zbtn" onclick="zoomBy(1.3)">+</button>
+  <button class="zbtn" onclick="zoomBy(1/1.3)">−</button>
+  <button class="zbtn" style="font-size:12px" onclick="resetView()">⌂</button>
+</div>
+<div class="stats"><b id="stN">0</b> affichées · <b id="stL">0</b> liens · <b id="stS">15</b> secteurs</div>
+<div class="info" id="ip">
+  <button class="iclose" onclick="closeInfo()">✕</button>
+  <div class="ibadge" id="ib"></div>
+  <div class="iname" id="in"></div>
+  <div class="isub" id="is"></div>
+  <div class="irow"><span class="irl">CA estimé</span><span class="irv" id="ica"></span></div>
+  <div class="irow"><span class="irl">Effectif</span><span class="irv" id="ief"></span></div>
+  <div class="irow"><span class="irl">Siège</span><span class="irv" id="isi"></span></div>
+  <div class="idesc" id="ide"></div>
+  <div class="iconns"><div class="icttl">Écosystème lié</div><div id="ico"></div></div>
+  <a href="#" class="ilink" id="ilk" target="_blank">Voir le site →</a>
+</div>
+<div class="tip" id="tip">
+  <div class="tname" id="tn"></div>
+  <div class="tsec" id="ts"></div>
+  <div class="tca" id="tc"></div>
+</div>
+<canvas id="canvas"></canvas>
+<script>
+const SEC={
+  telecom:   {l:"Télécoms",        c:"#3B82F6",e:"📡"},
+  tech:      {l:"Tech & Digital",  c:"#8B5CF6",e:"💻"},
+  marketing: {l:"Marketing & Com'",c:"#EC4899",e:"📣"},
+  commerce:  {l:"Commerce",        c:"#F59E0B",e:"🛍️"},
+  finance:   {l:"Finance",         c:"#10B981",e:"💳"},
+  energie:   {l:"Énergie",         c:"#F97316",e:"⚡"},
+  industrie: {l:"Industrie",       c:"#94A3B8",e:"🏭"},
+  transport: {l:"Transport",       c:"#14B8A6",e:"🚚"},
+  sante:     {l:"Santé",           c:"#EF4444",e:"🏥"},
+  immobilier:{l:"Immobilier",      c:"#A78BFA",e:"🏠"},
+  media:     {l:"Médias",          c:"#FB7185",e:"📺"},
+  conseil:   {l:"Conseil",         c:"#34D399",e:"📊"},
+  rh:        {l:"RH & Recrutement",c:"#60A5FA",e:"🤝"},
+  luxe:      {l:"Luxe & Mode",     c:"#C084FC",e:"💎"},
+  agroali:   {l:"Agroalimentaire", c:"#86EFAC",e:"🌾"},
+};
+const SK=Object.keys(SEC);
+function nodeR(ca){if(ca>=50000)return 38;if(ca>=10000)return 30;if(ca>=1000)return 22;if(ca>=100)return 15;if(ca>=20)return 10;return 7;}
+function caStr(ca){return ca>=1000?(ca/1000).toFixed(0)+"Md€":ca+"M€";}
+const ND=[
+// TÉLÉCOMS
+{id:"orange",l:"Orange",s:"telecom",ca:44000,eff:"137 000",sg:"Paris",desc:"Leader français des télécoms, 26 pays, 250M clients.",url:"https://orange.com"},
+{id:"sfr",l:"SFR",s:"telecom",ca:13000,eff:"33 000",sg:"Paris",desc:"2e opérateur français, filiale d'Altice.",url:"https://sfr.fr"},
+{id:"bouygtel",l:"Bouygues Telecom",s:"telecom",ca:8000,eff:"9 500",sg:"Paris",desc:"Opérateur télécom filiale du groupe Bouygues.",url:"https://bouyguestelecom.fr"},
+{id:"free",l:"Free / Iliad",s:"telecom",ca:6500,eff:"17 000",sg:"Paris",desc:"Opérateur disrupteur, pionnier du très haut débit.",url:"https://free.fr"},
+{id:"nokia",l:"Nokia France",s:"telecom",ca:3000,eff:"5 000",sg:"Paris",desc:"Équipementier réseaux télécom et 5G.",url:"https://nokia.com"},
+{id:"ericsson",l:"Ericsson France",s:"telecom",ca:2000,eff:"2 000",sg:"Massy",desc:"Équipementier 5G, partenaire des opérateurs.",url:"https://ericsson.com"},
+{id:"huawei",l:"Huawei France",s:"telecom",ca:1500,eff:"1 800",sg:"Paris",desc:"Équipementier réseau et smartphones.",url:"https://huawei.com"},
+{id:"circet",l:"Circet",s:"telecom",ca:2500,eff:"14 000",sg:"Paris",desc:"Déploiement fibre optique et réseaux télécom.",url:"https://circet.fr"},
+{id:"webhelp",l:"Webhelp",s:"telecom",ca:1200,eff:"50 000",sg:"Paris",desc:"Externalisation relation client pour opérateurs.",url:"https://webhelp.com"},
+{id:"intelcia",l:"Intelcia",s:"telecom",ca:600,eff:"25 000",sg:"Paris",desc:"Centre d'appels et relation client télécom.",url:"https://intelcia.com"},
+{id:"comverse",l:"Comverse",s:"telecom",ca:300,eff:"1 500",sg:"Paris",desc:"Logiciels BSS/OSS pour opérateurs télécom.",url:"https://comverse.com"},
+{id:"netcracker",l:"NetCracker",s:"telecom",ca:400,eff:"2 000",sg:"Paris",desc:"Logiciels d'orchestration et OSS/BSS pour télécom.",url:"https://netcracker.com"},
+{id:"colt",l:"Colt Technology",s:"telecom",ca:1600,eff:"7 000",sg:"Paris",desc:"Réseau haut débit B2B en Europe.",url:"https://colt.net"},
+{id:"zayo",l:"Zayo France",s:"telecom",ca:500,eff:"500",sg:"Paris",desc:"Infrastructure fibre noire et connectivité.",url:"https://zayo.com"},
+{id:"axione",l:"Axione",s:"telecom",ca:400,eff:"1 800",sg:"Bordeaux",desc:"Déploiement et exploitation réseaux fibre.",url:"https://axione.fr"},
+{id:"sogetrel",l:"Sogetrel",s:"telecom",ca:800,eff:"9 000",sg:"Sèvres",desc:"Intégration et maintenance réseaux télécom.",url:"https://sogetrel.fr"},
+{id:"altitude",l:"Altitude Infrastructure",s:"telecom",ca:200,eff:"600",sg:"Paris",desc:"Opérateur d'infrastructure fibre FTTH.",url:"https://altitude-infra.com"},
+{id:"xp_fiber",l:"XP Fibre",s:"telecom",ca:500,eff:"400",sg:"Paris",desc:"Opérateur d'infrastructure fibre pour zones rurales.",url:"https://xp-fibre.fr"},
+{id:"eurofiber",l:"Eurofiber France",s:"telecom",ca:150,eff:"200",sg:"Paris",desc:"Réseau fibre noire pour entreprises.",url:"https://eurofiber.fr"},
+{id:"jaguar",l:"Jaguar Network",s:"telecom",ca:80,eff:"250",sg:"Marseille",desc:"Opérateur télécom B2B, datacenter.",url:"https://jaguar-network.com"},
+{id:"viaccess",l:"Viaccess-Orca",s:"telecom",ca:100,eff:"350",sg:"Paris",desc:"Solutions DRM et TV connectée pour opérateurs.",url:"https://viaccess-orca.com"},
+{id:"openio",l:"OVHcloud Telecom",s:"telecom",ca:600,eff:"1 200",sg:"Roubaix",desc:"Offres télécom et connectivité cloud.",url:"https://ovhcloud.com"},
+{id:"leosat",l:"OneWeb France",s:"telecom",ca:200,eff:"300",sg:"Paris",desc:"Internet par satellite LEO.",url:"https://oneweb.net"},
+{id:"sewan",l:"Sewan",s:"telecom",ca:150,eff:"600",sg:"Paris",desc:"Opérateur télécom cloud pour entreprises.",url:"https://sewan.fr"},
+{id:"phibee",l:"Phibee Telecom",s:"telecom",ca:30,eff:"80",sg:"Paris",desc:"Opérateur virtuel B2B sur réseau Orange.",url:"https://phibee-telecom.fr"},
+{id:"meanwhile",l:"Meanwhile",s:"telecom",ca:20,eff:"60",sg:"Paris",desc:"MVNO spécialisé ultra-data pour entreprises.",url:"https://meanwhile.fr"},
+{id:"netgem",l:"Netgem",s:"telecom",ca:60,eff:"200",sg:"Paris",desc:"Plateforme TV et box pour opérateurs.",url:"https://netgem.com"},
+{id:"amdocs",l:"Amdocs France",s:"telecom",ca:500,eff:"800",sg:"Paris",desc:"Logiciels de facturation et CRM pour opérateurs.",url:"https://amdocs.com"},
+{id:"telindus",l:"Telindus",s:"telecom",ca:350,eff:"1 200",sg:"Paris",desc:"Intégrateur réseaux et sécurité pour télécom.",url:"https://telindus.fr"},
+{id:"broadpeak",l:"Broadpeak",s:"telecom",ca:25,eff:"120",sg:"Cesson-Sévigné",desc:"Solutions de streaming vidéo pour opérateurs.",url:"https://broadpeak.tv"},
+// TECH
+{id:"capgemini",l:"Capgemini",s:"tech",ca:22000,eff:"350 000",sg:"Paris",desc:"Intégrateur IT mondial, conseil et transformation digitale.",url:"https://capgemini.com"},
+{id:"atos",l:"Atos",s:"tech",ca:10000,eff:"100 000",sg:"Bezons",desc:"IT et infogérance pour secteurs stratégiques.",url:"https://atos.net"},
+{id:"microsoft",l:"Microsoft France",s:"tech",ca:10000,eff:"3 500",sg:"Issy",desc:"Cloud Azure, Office 365, Teams.",url:"https://microsoft.com/fr-fr"},
+{id:"google",l:"Google France",s:"tech",ca:8000,eff:"2 000",sg:"Paris",desc:"Moteur de recherche, cloud, publicité digitale.",url:"https://google.fr"},
+{id:"meta",l:"Meta France",s:"tech",ca:5000,eff:"1 000",sg:"Paris",desc:"Facebook, Instagram, WhatsApp.",url:"https://meta.com"},
+{id:"dassault",l:"Dassault Systèmes",s:"tech",ca:5900,eff:"22 000",sg:"Vélizy",desc:"Leader mondial du PLM et 3D Experience.",url:"https://3ds.com"},
+{id:"salesforce",l:"Salesforce",s:"tech",ca:3000,eff:"1 200",sg:"Paris",desc:"Leader CRM cloud mondial.",url:"https://salesforce.com/fr"},
+{id:"sap",l:"SAP France",s:"tech",ca:4000,eff:"3 000",sg:"Paris",desc:"ERP et solutions business software.",url:"https://sap.com/france"},
+{id:"criteo",l:"Criteo",s:"tech",ca:1900,eff:"3 500",sg:"Paris",desc:"Plateforme retargeting pub, licorne française.",url:"https://criteo.com"},
+{id:"hubspot",l:"HubSpot",s:"tech",ca:2000,eff:"500",sg:"Paris",desc:"Plateforme marketing et CRM inbound.",url:"https://hubspot.fr"},
+{id:"alan",l:"Alan",s:"tech",ca:300,eff:"500",sg:"Paris",desc:"Assurance santé digitale, licorne française.",url:"https://alan.com"},
+{id:"qonto",l:"Qonto",s:"tech",ca:200,eff:"1 000",sg:"Paris",desc:"Fintech B2B, compte pro pour PME.",url:"https://qonto.com"},
+{id:"contentsq",l:"Contentsquare",s:"tech",ca:500,eff:"2 000",sg:"Paris",desc:"Analytics UX, valorisée 5Md$.",url:"https://contentsquare.com"},
+{id:"dataiku",l:"Dataiku",s:"tech",ca:300,eff:"1 000",sg:"Paris",desc:"Plateforme data science et IA enterprise.",url:"https://dataiku.com"},
+{id:"docusign",l:"DocuSign France",s:"tech",ca:400,eff:"300",sg:"Paris",desc:"Signature électronique et gestion contrats.",url:"https://docusign.fr"},
+{id:"talend",l:"Talend",s:"tech",ca:350,eff:"1 400",sg:"Suresnes",desc:"Intégration et qualité de données.",url:"https://talend.com"},
+{id:"mirakl",l:"Mirakl",s:"tech",ca:100,eff:"700",sg:"Paris",desc:"Plateforme SaaS pour marketplace B2B/B2C.",url:"https://mirakl.com"},
+{id:"pennylane",l:"Pennylane",s:"tech",ca:50,eff:"400",sg:"Paris",desc:"Logiciel compta & finance pour PME.",url:"https://pennylane.com"},
+{id:"doctrine",l:"Doctrine.fr",s:"tech",ca:30,eff:"200",sg:"Paris",desc:"Legaltech, jurisprudence par IA.",url:"https://doctrine.fr"},
+{id:"lumapps",l:"LumApps",s:"tech",ca:60,eff:"400",sg:"Paris",desc:"Digital workplace et intranet social.",url:"https://lumapps.com"},
+{id:"talentsoft",l:"Talentsoft",s:"tech",ca:80,eff:"500",sg:"Paris",desc:"SIRH cloud pour gestion des talents.",url:"https://cegid.com"},
+{id:"sinequa",l:"Sinequa",s:"tech",ca:40,eff:"250",sg:"Paris",desc:"Recherche cognitive enterprise par IA.",url:"https://sinequa.com"},
+{id:"exl",l:"EXL France",s:"tech",ca:200,eff:"400",sg:"Paris",desc:"Analytics avancé et transformation digitale.",url:"https://exlservice.com"},
+{id:"outscale",l:"3DS Outscale",s:"tech",ca:150,eff:"300",sg:"Saint-Cloud",desc:"Cloud souverain français, filiale Dassault.",url:"https://outscale.com"},
+{id:"scaleway",l:"Scaleway",s:"tech",ca:200,eff:"600",sg:"Paris",desc:"Cloud computing européen, filiale Iliad.",url:"https://scaleway.com"},
+{id:"clever",l:"Clever Cloud",s:"tech",ca:20,eff:"100",sg:"Nantes",desc:"PaaS cloud souverain pour développeurs.",url:"https://clever-cloud.com"},
+{id:"indy",l:"Indy",s:"tech",ca:30,eff:"200",sg:"Paris",desc:"Comptabilité automatisée pour indépendants.",url:"https://indy.fr"},
+{id:"payfit",l:"PayFit",s:"tech",ca:100,eff:"800",sg:"Paris",desc:"Paie et RH automatisées pour PME.",url:"https://payfit.com"},
+{id:"wakam",l:"Wakam",s:"tech",ca:350,eff:"400",sg:"Paris",desc:"Insurtech B2B2C, assurance embarquée.",url:"https://wakam.com"},
+{id:"spendesk",l:"Spendesk",s:"tech",ca:80,eff:"500",sg:"Paris",desc:"Gestion des dépenses pro pour équipes finance.",url:"https://spendesk.com"},
+// MARKETING
+{id:"publicis",l:"Publicis",s:"marketing",ca:13000,eff:"95 000",sg:"Paris",desc:"1er groupe de com' mondial, toutes disciplines.",url:"https://publicisgroupe.com"},
+{id:"havas",l:"Havas",s:"marketing",ca:2800,eff:"22 000",sg:"Puteaux",desc:"Groupe de communication, filiale de Vivendi.",url:"https://havas.com"},
+{id:"wpp",l:"WPP / Ogilvy",s:"marketing",ca:18000,eff:"100 000",sg:"Paris",desc:"1er groupe mondial de com' et publicité.",url:"https://wpp.com"},
+{id:"dentsu",l:"Dentsu France",s:"marketing",ca:1200,eff:"3 000",sg:"Paris",desc:"Agence globale, data et créativité.",url:"https://dentsu.com"},
+{id:"artefact",l:"Artefact",s:"marketing",ca:200,eff:"1 500",sg:"Paris",desc:"Data marketing et IA appliquée.",url:"https://artefact.com"},
+{id:"fiftyfive",l:"fifty-five",s:"marketing",ca:80,eff:"500",sg:"Paris",desc:"Agence data-driven marketing.",url:"https://fifty-five.com"},
+{id:"converteo",l:"Converteo",s:"marketing",ca:60,eff:"400",sg:"Paris",desc:"Conseil data et analytics marketing.",url:"https://converteo.com"},
+{id:"jellyfish",l:"Jellyfish",s:"marketing",ca:300,eff:"2 000",sg:"Paris",desc:"Agence performance digitale mondiale.",url:"https://jellyfish.com"},
+{id:"buzzman",l:"Buzzman",s:"marketing",ca:30,eff:"150",sg:"Paris",desc:"Agence créative indépendante primée.",url:"https://buzzman.fr"},
+{id:"tbwa",l:"TBWA France",s:"marketing",ca:300,eff:"800",sg:"Paris",desc:"Agence Disruption, filiale Omnicom.",url:"https://tbwa-france.fr"},
+{id:"bbdo",l:"BBDO Paris",s:"marketing",ca:200,eff:"400",sg:"Paris",desc:"Agence créative internationale.",url:"https://bbdo.fr"},
+{id:"ddb",l:"DDB Paris",s:"marketing",ca:180,eff:"350",sg:"Paris",desc:"Agence créative du groupe Omnicom.",url:"https://ddb.fr"},
+{id:"grey",l:"Grey Paris",s:"marketing",ca:100,eff:"200",sg:"Paris",desc:"Agence créative internationale du groupe WPP.",url:"https://grey.com"},
+{id:"herezie",l:"Herezie",s:"marketing",ca:25,eff:"80",sg:"Paris",desc:"Agence indépendante créative et digitale.",url:"https://herezie.com"},
+{id:"betc",l:"BETC",s:"marketing",ca:150,eff:"500",sg:"Paris",desc:"Agence créative Havas, Evian, Canal+.",url:"https://betc.fr"},
+{id:"celine",l:"Marcel",s:"marketing",ca:80,eff:"200",sg:"Paris",desc:"Agence Publicis Groupe, Samsung, Renault.",url:"https://marcel.agency"},
+{id:"mcdermott",l:"McCann Paris",s:"marketing",ca:120,eff:"300",sg:"Paris",desc:"Agence internationale du groupe IPG.",url:"https://mccannparis.fr"},
+{id:"netbooster",l:"NetBooster",s:"marketing",ca:80,eff:"600",sg:"Paris",desc:"Agence performance digitale européenne.",url:"https://netbooster.com"},
+{id:"iprospect",l:"iProspect",s:"marketing",ca:500,eff:"1 200",sg:"Paris",desc:"Agence media performance du groupe Dentsu.",url:"https://iprospect.com"},
+{id:"seo_sem",l:"Eskimoz",s:"marketing",ca:30,eff:"200",sg:"Paris",desc:"Agence SEO/SEA indépendante.",url:"https://eskimoz.fr"},
+{id:"contentseo",l:"Webrankinfo",s:"marketing",ca:5,eff:"20",sg:"Bordeaux",desc:"Référence SEO française indépendante.",url:"https://webrankinfo.com"},
+{id:"adthink",l:"AdThink",s:"marketing",ca:20,eff:"80",sg:"Villeurbanne",desc:"Solutions programmatiques data.",url:"https://adthink.com"},
+{id:"smartly",l:"Smartly.io France",s:"marketing",ca:50,eff:"100",sg:"Paris",desc:"Automatisation publicité sociale.",url:"https://smartly.io"},
+{id:"sprinklr",l:"Sprinklr France",s:"marketing",ca:80,eff:"150",sg:"Paris",desc:"Plateforme unified-CXM et social media.",url:"https://sprinklr.com"},
+{id:"talkwalker",l:"Talkwalker",s:"marketing",ca:60,eff:"350",sg:"Paris",desc:"Social listening et analytics médias.",url:"https://talkwalker.com"},
+{id:"semrush",l:"SEMrush France",s:"marketing",ca:200,eff:"200",sg:"Paris",desc:"Plateforme SEO et marketing digital.",url:"https://semrush.com"},
+{id:"hootsuite",l:"Hootsuite France",s:"marketing",ca:100,eff:"150",sg:"Paris",desc:"Gestion des réseaux sociaux enterprise.",url:"https://hootsuite.com"},
+{id:"hubvisory",l:"Hubvisory",s:"marketing",ca:20,eff:"120",sg:"Paris",desc:"Cabinet conseil en stratégie digitale.",url:"https://hubvisory.com"},
+{id:"performics",l:"Performics",s:"marketing",ca:100,eff:"400",sg:"Paris",desc:"Agence performance, filiale Publicis.",url:"https://performics.fr"},
+{id:"altima",l:"Altima.e",s:"marketing",ca:30,eff:"150",sg:"Bordeaux",desc:"Agence e-commerce et marketing digital.",url:"https://altima.fr"},
+// COMMERCE
+{id:"lvmh",l:"LVMH",s:"commerce",ca:86000,eff:"213 000",sg:"Paris",desc:"1er groupe de luxe mondial, 75 maisons.",url:"https://lvmh.fr"},
+{id:"carrefour",l:"Carrefour",s:"commerce",ca:93000,eff:"320 000",sg:"Massy",desc:"2e distributeur mondial.",url:"https://carrefour.fr"},
+{id:"decathlon",l:"Decathlon",s:"commerce",ca:14000,eff:"100 000",sg:"Villeneuve d'Ascq",desc:"Leader mondial du sport.",url:"https://decathlon.fr"},
+{id:"loreal",l:"L'Oréal",s:"commerce",ca:38000,eff:"88 000",sg:"Clichy",desc:"1er groupe beauté mondial.",url:"https://loreal.com"},
+{id:"fnac",l:"Fnac-Darty",s:"commerce",ca:8300,eff:"25 000",sg:"Ivry",desc:"Distribution culturelle et électronique.",url:"https://fnacdarty.com"},
+{id:"leroy",l:"Leroy Merlin",s:"commerce",ca:6000,eff:"28 000",sg:"Lezennes",desc:"Leader bricolage, filiale Adeo.",url:"https://leroymerlin.fr"},
+{id:"veepee",l:"Veepee",s:"commerce",ca:1400,eff:"5 000",sg:"Saint-Denis",desc:"Ventes privées en ligne.",url:"https://veepee.fr"},
+{id:"sezane",l:"Sézane",s:"commerce",ca:150,eff:"500",sg:"Paris",desc:"Marque mode premium born digital.",url:"https://sezane.com"},
+{id:"amazon_fr",l:"Amazon France",s:"commerce",ca:15000,eff:"18 000",sg:"Clichy",desc:"Leader e-commerce et cloud en France.",url:"https://amazon.fr"},
+{id:"cdiscount",l:"Cdiscount",s:"commerce",ca:2500,eff:"3 000",sg:"Bordeaux",desc:"Marketplace généraliste, filiale Casino.",url:"https://cdiscount.com"},
+{id:"boulanger",l:"Boulanger",s:"commerce",ca:2800,eff:"10 000",sg:"Templemars",desc:"Spécialiste électronique et électroménager.",url:"https://boulanger.com"},
+{id:"laredoute",l:"La Redoute",s:"commerce",ca:1000,eff:"2 000",sg:"Roubaix",desc:"Vente à distance mode et maison.",url:"https://laredoute.fr"},
+{id:"zalando_fr",l:"Zalando France",s:"commerce",ca:2000,eff:"500",sg:"Paris",desc:"Plateforme mode en ligne européenne.",url:"https://zalando.fr"},
+{id:"showroom",l:"Showroomprivé",s:"commerce",ca:700,eff:"1 300",sg:"Aubervilliers",desc:"Ventes événementielles mode.",url:"https://showroomprive.com"},
+{id:"madura",l:"Maisons du Monde",s:"commerce",ca:1100,eff:"7 000",sg:"Nantes",desc:"Décoration et mobilier multi-canal.",url:"https://maisonsdumonde.com"},
+{id:"nature",l:"Nature & Découvertes",s:"commerce",ca:400,eff:"2 000",sg:"Versailles",desc:"Retail bien-être et nature.",url:"https://natureetdecouvertes.com"},
+{id:"kiabi",l:"Kiabi",s:"commerce",ca:2000,eff:"10 000",sg:"Hem",desc:"Mode familiale accessible.",url:"https://kiabi.com"},
+{id:"intersport",l:"Intersport France",s:"commerce",ca:2800,eff:"12 000",sg:"Longjumeau",desc:"Sport multi-enseignes, groupement.",url:"https://intersport.fr"},
+{id:"darty",l:"Darty",s:"commerce",ca:3000,eff:"8 000",sg:"Ivry",desc:"Spécialiste électroménager et électronique.",url:"https://darty.com"},
+{id:"bazchic",l:"BazarChic",s:"commerce",ca:80,eff:"200",sg:"Paris",desc:"Ventes privées mode et maison.",url:"https://bazarchic.com"},
+{id:"smallable",l:"Smallable",s:"commerce",ca:30,eff:"100",sg:"Paris",desc:"Mode et déco enfant haut de gamme.",url:"https://smallable.com"},
+{id:"made_fr",l:"Made.com France",s:"commerce",ca:100,eff:"200",sg:"Paris",desc:"Mobilier design direct fabricant.",url:"https://made.com"},
+{id:"etsy_fr",l:"Etsy France",s:"commerce",ca:80,eff:"100",sg:"Paris",desc:"Marketplace créateurs et artisans.",url:"https://etsy.com"},
+{id:"vinted_fr",l:"Vinted France",s:"commerce",ca:400,eff:"600",sg:"Paris",desc:"C2C mode seconde main, licorne.",url:"https://vinted.fr"},
+{id:"leboncoin",l:"Leboncoin",s:"commerce",ca:500,eff:"1 000",sg:"Paris",desc:"1ère marketplace généraliste France.",url:"https://leboncoin.fr"},
+{id:"backmarket",l:"Back Market",s:"commerce",ca:400,eff:"1 000",sg:"Paris",desc:"Marketplace reconditionné, licorne.",url:"https://backmarket.fr"},
+{id:"doctolib_shop",l:"Doctolib Store",s:"commerce",ca:30,eff:"100",sg:"Paris",desc:"E-commerce santé et bien-être.",url:"https://store.doctolib.com"},
+{id:"jumia_fr",l:"Jumia",s:"commerce",ca:200,eff:"300",sg:"Paris",desc:"Marketplace Afrique, cotée NYSE.",url:"https://jumia.fr"},
+{id:"nocibe",l:"Nocibé",s:"commerce",ca:900,eff:"5 000",sg:"Villeneuve d'Ascq",desc:"Réseau parfumeries, filiale Douglas.",url:"https://nocibe.fr"},
+{id:"izipizi",l:"IZIPIZI",s:"commerce",ca:60,eff:"300",sg:"Paris",desc:"Lunettes et accessoires design abordables.",url:"https://izipizi.com"},
+// FINANCE
+{id:"bnp",l:"BNP Paribas",s:"finance",ca:45000,eff:"190 000",sg:"Paris",desc:"1ère banque française, acteur mondial.",url:"https://bnpparibas.com"},
+{id:"sg",l:"Société Générale",s:"finance",ca:28000,eff:"117 000",sg:"Paris",desc:"Grande banque universelle française.",url:"https://societegenerale.com"},
+{id:"creditagr",l:"Crédit Agricole",s:"finance",ca:25000,eff:"145 000",sg:"Montrouge",desc:"1er bancassureur de France.",url:"https://credit-agricole.com"},
+{id:"axa",l:"AXA",s:"finance",ca:107000,eff:"145 000",sg:"Paris",desc:"1er assureur mondial.",url:"https://axa.fr"},
+{id:"amundi",l:"Amundi",s:"finance",ca:3000,eff:"5 500",sg:"Paris",desc:"1er gérant d'actifs européen.",url:"https://amundi.com"},
+{id:"natixis",l:"Natixis",s:"finance",ca:10000,eff:"16 000",sg:"Paris",desc:"Banque de financement et d'investissement.",url:"https://natixis.com"},
+{id:"ledger",l:"Ledger",s:"finance",ca:400,eff:"900",sg:"Paris",desc:"Licorne hardware crypto, wallets sécurisés.",url:"https://ledger.com"},
+{id:"lydia",l:"Lydia",s:"finance",ca:80,eff:"350",sg:"Paris",desc:"App paiement mobile et services financiers.",url:"https://lydia-app.com"},
+{id:"younited",l:"Younited Credit",s:"finance",ca:150,eff:"600",sg:"Paris",desc:"Fintech crédit conso, présent en 5 pays.",url:"https://younited-credit.com"},
+{id:"bpce",l:"Banque Populaire",s:"finance",ca:15000,eff:"100 000",sg:"Paris",desc:"Groupe BPCE, 2e réseau bancaire français.",url:"https://banquepopulaire.fr"},
+{id:"creditmut",l:"Crédit Mutuel",s:"finance",ca:18000,eff:"80 000",sg:"Strasbourg",desc:"Groupe bancaire mutualiste.",url:"https://creditmutuel.fr"},
+{id:"lapostebq",l:"La Banque Postale",s:"finance",ca:7000,eff:"20 000",sg:"Paris",desc:"Banque publique accessible à tous.",url:"https://labanquepostale.fr"},
+{id:"fortuneo",l:"Fortuneo",s:"finance",ca:200,eff:"500",sg:"Brest",desc:"Banque en ligne, filiale Crédit Mutuel Arkéa.",url:"https://fortuneo.fr"},
+{id:"boursorama",l:"Boursorama",s:"finance",ca:400,eff:"2 500",sg:"Paris",desc:"Banque en ligne, filiale Société Générale.",url:"https://boursorama.fr"},
+{id:"qonto2",l:"Qonto Business",s:"finance",ca:200,eff:"1 000",sg:"Paris",desc:"Fintech B2B, compte pro pour PME.",url:"https://qonto.com"},
+{id:"swan",l:"Swan",s:"finance",ca:30,eff:"150",sg:"Paris",desc:"Banking-as-a-Service pour embed finance.",url:"https://swan.io"},
+{id:"spendesk",l:"Spendesk",s:"finance",ca:80,eff:"500",sg:"Paris",desc:"Gestion des dépenses pro pour équipes.",url:"https://spendesk.com"},
+{id:"treezor",l:"Treezor",s:"finance",ca:40,eff:"150",sg:"Paris",desc:"BaaS, émetteur de monnaie électronique.",url:"https://treezor.com"},
+{id:"lendopolis",l:"Lendopolis",s:"finance",ca:20,eff:"60",sg:"Paris",desc:"Crowdfunding obligataire PME.",url:"https://lendopolis.com"},
+{id:"october",l:"October",s:"finance",ca:30,eff:"100",sg:"Paris",desc:"Plateforme de prêts aux PME européennes.",url:"https://october.eu"},
+{id:"defacto",l:"Defacto",s:"finance",ca:15,eff:"60",sg:"Paris",desc:"Financement instantané B2B.",url:"https://getdefacto.com"},
+{id:"brigde",l:"Bridge",s:"finance",ca:20,eff:"80",sg:"Paris",desc:"Open banking, agrégateur bancaire.",url:"https://bridgeapi.io"},
+{id:"linxo",l:"Linxo",s:"finance",ca:25,eff:"100",sg:"Aix-en-Provence",desc:"Agrégateur bancaire B2B et B2C.",url:"https://linxo.com"},
+{id:"luko",l:"Luko",s:"finance",ca:50,eff:"250",sg:"Paris",desc:"Insurtech habitation néo-assurance.",url:"https://luko.eu"},
+{id:"shift",l:"Shift Technology",s:"finance",ca:80,eff:"400",sg:"Paris",desc:"IA anti-fraude pour assureurs.",url:"https://shift-technology.com"},
+{id:"foxo",l:"Foxo",s:"finance",ca:10,eff:"40",sg:"Paris",desc:"Néo-assurance vie digitale.",url:"https://foxo.fr"},
+{id:"regnology",l:"Regnology",s:"finance",ca:100,eff:"1 000",sg:"Paris",desc:"Reporting réglementaire pour banques.",url:"https://regnology.net"},
+{id:"harvest",l:"Harvest",s:"finance",ca:60,eff:"400",sg:"Paris",desc:"Logiciels de gestion patrimoniale.",url:"https://harvest.fr"},
+{id:"efront",l:"eFront",s:"finance",ca:120,eff:"800",sg:"Paris",desc:"Logiciels pour private equity et alternatifs.",url:"https://efront.com"},
+{id:"nalo",l:"Nalo",s:"finance",ca:15,eff:"60",sg:"Paris",desc:"Gestion de patrimoine personnalisée en ligne.",url:"https://nalo.fr"},
+// ÉNERGIE
+{id:"edf",l:"EDF",s:"energie",ca:143000,eff:"165 000",sg:"Paris",desc:"1er électricien français, nucléaire.",url:"https://edf.fr"},
+{id:"total",l:"TotalEnergies",s:"energie",ca:218000,eff:"101 000",sg:"Paris",desc:"Géant pétrolier et énergies renouvelables.",url:"https://totalenergies.com"},
+{id:"engie",l:"ENGIE",s:"energie",ca:94000,eff:"96 000",sg:"Paris",desc:"Transition énergétique et services.",url:"https://engie.fr"},
+{id:"schneider",l:"Schneider Electric",s:"energie",ca:36000,eff:"135 000",sg:"Rueil-M.",desc:"Spécialiste de la gestion de l'énergie.",url:"https://se.com/fr"},
+{id:"neoen",l:"Neoen",s:"energie",ca:500,eff:"500",sg:"Paris",desc:"Producteur EnR solaire et éolien.",url:"https://neoen.com"},
+{id:"voltalia",l:"Voltalia",s:"energie",ca:300,eff:"1 500",sg:"Paris",desc:"Producteur et fournisseur EnR.",url:"https://voltalia.com"},
+{id:"deepki",l:"Deepki",s:"energie",ca:80,eff:"400",sg:"Paris",desc:"Logiciel ESG et performance énergétique.",url:"https://deepki.com"},
+{id:"enedis",l:"Enedis",s:"energie",ca:17000,eff:"40 000",sg:"Paris",desc:"Gestionnaire réseau de distribution électrique.",url:"https://enedis.fr"},
+{id:"grdf",l:"GRDF",s:"energie",ca:6000,eff:"14 000",sg:"Paris",desc:"Gestionnaire réseau de distribution gaz.",url:"https://grdf.fr"},
+{id:"grtgaz",l:"GRTgaz",s:"energie",ca:1800,eff:"3 000",sg:"Bois-Colombes",desc:"Transporteur gaz naturel français.",url:"https://grtgaz.com"},
+{id:"rte",l:"RTE",s:"energie",ca:5000,eff:"10 000",sg:"Paris",desc:"Gestionnaire réseau transport électricité.",url:"https://rte-france.com"},
+{id:"valorem",l:"Valorem",s:"energie",ca:200,eff:"600",sg:"Bordeaux",desc:"Développeur éolien et solaire.",url:"https://valorem.fr"},
+{id:"akuo",l:"Akuo",s:"energie",ca:300,eff:"400",sg:"Paris",desc:"Producteur EnR multi-technologies.",url:"https://akuoenergy.com"},
+{id:"enercoop",l:"Enercoop",s:"energie",ca:250,eff:"200",sg:"Paris",desc:"Coopérative énergie 100% renouvelable.",url:"https://enercoop.fr"},
+{id:"ekwateur",l:"ekWateur",s:"energie",ca:200,eff:"150",sg:"Paris",desc:"Fournisseur énergie verte et biogaz.",url:"https://ekwateur.fr"},
+{id:"greenyellow",l:"GreenYellow",s:"energie",ca:400,eff:"800",sg:"Paris",desc:"Transition énergétique pour entreprises.",url:"https://greenyellow.com"},
+{id:"solairedirect",l:"Solairedirect",s:"energie",ca:300,eff:"700",sg:"Paris",desc:"Développeur solaire, filiale Engie.",url:"https://solairedirect.com"},
+{id:"qair",l:"Qair",s:"energie",ca:150,eff:"300",sg:"Montpellier",desc:"Développeur multi-EnR.",url:"https://qair.energy"},
+{id:"lhoist",l:"Lhoist Énergie",s:"energie",ca:50,eff:"100",sg:"Paris",desc:"Conseil transition énergétique industrie.",url:"https://lhoist.com"},
+{id:"mylight",l:"mylight150",s:"energie",ca:30,eff:"100",sg:"Toulouse",desc:"Autoconsommation solaire résidentielle.",url:"https://mylight150.com"},
+{id:"sunna",l:"Sunna Design",s:"energie",ca:15,eff:"60",sg:"Blanquefort",desc:"Éclairage solaire autonome pour territoires.",url:"https://sunna-design.com"},
+{id:"lacroix",l:"LACROIX Energy",s:"energie",ca:200,eff:"2 000",sg:"Saint-Herblain",desc:"Équipements smart grid et réseaux.",url:"https://lacroix-energy.com"},
+{id:"biogas",l:"GRDF BioGNV",s:"energie",ca:100,eff:"200",sg:"Paris",desc:"Biométhane et mobilité gaz.",url:"https://grdf.fr"},
+{id:"verso",l:"Verso Energy",s:"energie",ca:40,eff:"150",sg:"Paris",desc:"Stockage énergie et flexibilité réseau.",url:"https://verso.energy"},
+{id:"hellio",l:"Hellio",s:"energie",ca:200,eff:"900",sg:"Paris",desc:"Conseil et financement rénovation énergétique.",url:"https://hellio.com"},
+{id:"urbansolar",l:"Urban Solar Energy",s:"energie",ca:20,eff:"80",sg:"Bordeaux",desc:"Intégration solaire architecture.",url:"https://urban-solar-energy.com"},
+{id:"enr_s",l:"EnR Solutions",s:"energie",ca:15,eff:"50",sg:"Paris",desc:"Conseil financement projets EnR.",url:"https://enrsolutions.fr"},
+{id:"ogga",l:"Ogga",s:"energie",ca:10,eff:"40",sg:"Paris",desc:"Autoconsommation collective intelligente.",url:"https://ogga.fr"},
+{id:"alterea",l:"Alterea",s:"energie",ca:150,eff:"300",sg:"Paris",desc:"Développeur EnR et sobriété énergétique.",url:"https://alterea.fr"},
+{id:"total_sp",l:"TotalEnergies Solar",s:"energie",ca:800,eff:"2 000",sg:"Paris",desc:"Division solaire de TotalEnergies.",url:"https://totalenergies.com"},
+// INDUSTRIE
+{id:"airbus",l:"Airbus",s:"industrie",ca:58800,eff:"134 000",sg:"Toulouse",desc:"Leader mondial de l'aéronautique civile.",url:"https://airbus.com"},
+{id:"safran",l:"Safran",s:"industrie",ca:19000,eff:"83 000",sg:"Paris",desc:"Motoriste et équipementier aéronautique.",url:"https://safran-group.com"},
+{id:"thales",l:"Thales",s:"industrie",ca:19400,eff:"81 000",sg:"Paris",desc:"Électronique de défense et transport.",url:"https://thalesgroup.com"},
+{id:"stellantis",l:"Stellantis",s:"industrie",ca:188000,eff:"260 000",sg:"Paris",desc:"Groupe auto Peugeot/Citroën/Fiat/Opel.",url:"https://stellantis.com"},
+{id:"renault",l:"Renault",s:"industrie",ca:46000,eff:"111 000",sg:"Boulogne-B.",desc:"Constructeur auto, leader VE en France.",url:"https://renaultgroup.com"},
+{id:"michelin",l:"Michelin",s:"industrie",ca:28600,eff:"132 000",sg:"Clermont-F.",desc:"Leader mondial du pneumatique.",url:"https://michelin.fr"},
+{id:"lisi",l:"LISI",s:"industrie",ca:1700,eff:"12 000",sg:"Paris",desc:"Assemblages et fixations aéro et auto.",url:"https://lisi-group.com"},
+{id:"daf",l:"DAF Trucks",s:"industrie",ca:3000,eff:"2 000",sg:"Paris",desc:"Fabricant de camions, filiale PACCAR.",url:"https://daf.fr"},
+{id:"plastic",l:"Plastic Omnium",s:"industrie",ca:8000,eff:"28 000",sg:"Lyon",desc:"Équipementier auto et nouvelles mobilités.",url:"https://plasticomnium.com"},
+{id:"faurecia",l:"Faurecia / FORVIA",s:"industrie",ca:23500,eff:"113 000",sg:"Nanterre",desc:"Leader mondial équipements auto.",url:"https://forvia.com"},
+{id:"valeo",l:"Valeo",s:"industrie",ca:20000,eff:"103 000",sg:"Paris",desc:"Équipementier auto spécialiste mobilité.",url:"https://valeo.com"},
+{id:"knorr",l:"Knorr-Bremse France",s:"industrie",ca:500,eff:"1 000",sg:"Paris",desc:"Systèmes de freinage ferroviaire.",url:"https://knorr-bremse.com"},
+{id:"naval",l:"Naval Group",s:"industrie",ca:4200,eff:"16 000",sg:"Paris",desc:"Construction navale militaire.",url:"https://naval-group.com"},
+{id:"mbda",l:"MBDA",s:"industrie",ca:4500,eff:"13 000",sg:"Paris",desc:"Systèmes de missiles européens.",url:"https://mbda-systems.com"},
+{id:"nexter",l:"KNDS France",s:"industrie",ca:1800,eff:"4 000",sg:"Paris",desc:"Véhicules blindés et systèmes d'armes.",url:"https://knds.com"},
+{id:"hermesaero",l:"Hermès Aéro",s:"industrie",ca:300,eff:"2 000",sg:"Rochefort",desc:"Drones et systèmes aériens.",url:"https://hermesairborne.com"},
+{id:"lateo",l:"Latécoère",s:"industrie",ca:600,eff:"5 000",sg:"Toulouse",desc:"Aérostructures et câblages aéronautiques.",url:"https://latecoere.aero"},
+{id:"stelia",l:"Stelia Aerospace",s:"industrie",ca:1200,eff:"7 000",sg:"Colomiers",desc:"Aérostructures, filiale Airbus.",url:"https://stelia-aerospace.com"},
+{id:"hutchinson",l:"Hutchinson",s:"industrie",ca:4000,eff:"40 000",sg:"Paris",desc:"Composants caoutchouc multi-industries.",url:"https://hutchinson.com"},
+{id:"derichebourg",l:"Derichebourg",s:"industrie",ca:5000,eff:"45 000",sg:"Vincennes",desc:"Services aéro, maintenance industrielle.",url:"https://derichebourg.com"},
+{id:"soitec",l:"Soitec",s:"industrie",ca:1000,eff:"4 000",sg:"Grenoble",desc:"Semi-conducteurs pour électronique et 5G.",url:"https://soitec.com"},
+{id:"idemia",l:"IDEMIA",s:"industrie",ca:2000,eff:"15 000",sg:"Courbevoie",desc:"Identité augmentée et biométrie.",url:"https://idemia.com"},
+{id:"stmicro",l:"STMicroelectronics",s:"industrie",ca:16000,eff:"50 000",sg:"Genève/Paris",desc:"Semi-conducteurs, leader mondial.",url:"https://st.com"},
+{id:"mersen",l:"Mersen",s:"industrie",ca:1000,eff:"6 500",sg:"Paris",desc:"Matériaux avancés et protection électrique.",url:"https://mersen.com"},
+{id:"nexans",l:"Nexans",s:"industrie",ca:7500,eff:"27 000",sg:"Paris",desc:"Leader câbles et solutions électriques.",url:"https://nexans.com"},
+{id:"legrand",l:"Legrand",s:"industrie",ca:8700,eff:"40 000",sg:"Limoges",desc:"Infrastructures électriques et numériques.",url:"https://legrand.fr"},
+{id:"ingra",l:"Ingram Micro",s:"industrie",ca:1000,eff:"1 500",sg:"Paris",desc:"Distribution IT et services technologiques.",url:"https://ingrammicro.com"},
+{id:"mecacorp",l:"Mecacorp",s:"industrie",ca:30,eff:"150",sg:"Toulouse",desc:"Usinage aéronautique haute précision.",url:"https://mecacorp.fr"},
+{id:"potez",l:"Potez Aéronautique",s:"industrie",ca:80,eff:"600",sg:"Aire-sur-Adour",desc:"Assemblage et pièces aéronautiques.",url:"https://potez.com"},
+{id:"carbone",l:"Carbone Savoie",s:"industrie",ca:40,eff:"300",sg:"Venthon",desc:"Produits en carbone et graphite.",url:"https://carbonesavoie.com"},
+// TRANSPORT
+{id:"sncf",l:"SNCF",s:"transport",ca:40000,eff:"270 000",sg:"Paris",desc:"Réseau ferroviaire national, mobilités.",url:"https://sncf.com"},
+{id:"ratp",l:"RATP Group",s:"transport",ca:6000,eff:"60 000",sg:"Paris",desc:"Transports parisiens et mobilités urbaines.",url:"https://ratp.fr"},
+{id:"geodis",l:"Geodis",s:"transport",ca:14000,eff:"49 000",sg:"Levallois",desc:"Filiale logistique SNCF, n°6 mondial.",url:"https://geodis.com"},
+{id:"blablacar",l:"BlaBlaCar",s:"transport",ca:220,eff:"900",sg:"Paris",desc:"Covoiturage longue distance, licorne.",url:"https://blablacar.fr"},
+{id:"lime",l:"Lime",s:"transport",ca:300,eff:"500",sg:"Paris",desc:"Trottinettes et vélos free-floating.",url:"https://li.me"},
+{id:"karos",l:"Karos",s:"transport",ca:20,eff:"100",sg:"Paris",desc:"Covoiturage courte distance domicile-travail.",url:"https://karos.fr"},
+{id:"airfrance",l:"Air France",s:"transport",ca:16000,eff:"67 000",sg:"Tremblay-en-F.",desc:"Compagnie aérienne nationale française.",url:"https://airfrance.fr"},
+{id:"safran_a",l:"Aéroports de Paris",s:"transport",ca:4500,eff:"9 000",sg:"Tremblay-en-F.",desc:"Gestionnaire CDG, Orly, Le Bourget.",url:"https://groupeadp.fr"},
+{id:"laposte",l:"La Poste",s:"transport",ca:34000,eff:"250 000",sg:"Paris",desc:"Services postaux et logistique France.",url:"https://laposte.fr"},
+{id:"chronopost",l:"Chronopost",s:"transport",ca:1500,eff:"4 000",sg:"Paris",desc:"Express et colis, filiale La Poste.",url:"https://chronopost.fr"},
+{id:"dhl_fr",l:"DHL France",s:"transport",ca:3000,eff:"8 000",sg:"Paris",desc:"Express international et logistique.",url:"https://dhl.fr"},
+{id:"fedex_fr",l:"FedEx France",s:"transport",ca:1500,eff:"4 000",sg:"Paris",desc:"Express et fret aérien mondial.",url:"https://fedex.com/fr-fr"},
+{id:"ups_fr",l:"UPS France",s:"transport",ca:1200,eff:"3 000",sg:"Paris",desc:"Transport express et supply chain.",url:"https://ups.com"},
+{id:"colisprive",l:"Colis Privé",s:"transport",ca:800,eff:"6 000",sg:"Paris",desc:"Livraison colis e-commerce.",url:"https://colisprive.fr"},
+{id:"stuart",l:"Stuart",s:"transport",ca:150,eff:"500",sg:"Paris",desc:"Livraison urbaine B2B last-mile.",url:"https://stuartdelivery.com"},
+{id:"frete",l:"Fretlink",s:"transport",ca:50,eff:"200",sg:"Paris",desc:"Bourse de fret digitale en Europe.",url:"https://fretlink.com"},
+{id:"shippeo",l:"Shippeo",s:"transport",ca:40,eff:"200",sg:"Paris",desc:"Visibilité temps réel des transports.",url:"https://shippeo.com"},
+{id:"wakeo",l:"Wakeo",s:"transport",ca:20,eff:"100",sg:"Paris",desc:"Prédictive supply chain visibility.",url:"https://wakeo.co"},
+{id:"shipup",l:"Shipup",s:"transport",ca:15,eff:"60",sg:"Paris",desc:"Expérience post-achat et tracking colis.",url:"https://shipup.co"},
+{id:"voi",l:"Voi Technology",s:"transport",ca:100,eff:"300",sg:"Paris",desc:"Trottinettes électriques sharing.",url:"https://voiscooters.com"},
+{id:"tier",l:"TIER Mobility",s:"transport",ca:200,eff:"400",sg:"Paris",desc:"Micro-mobilité durable européenne.",url:"https://tier.app"},
+{id:"getaround",l:"Getaround",s:"transport",ca:150,eff:"400",sg:"Paris",desc:"Autopartage entre particuliers.",url:"https://getaround.com"},
+{id:"virtuo",l:"Virtuo",s:"transport",ca:30,eff:"100",sg:"Paris",desc:"Location voiture 100% digitale.",url:"https://govirtuo.com"},
+{id:"navya",l:"Navya",s:"transport",ca:20,eff:"300",sg:"Villeurbanne",desc:"Véhicules autonomes navettes.",url:"https://navya.tech"},
+{id:"easymile",l:"EasyMile",s:"transport",ca:30,eff:"200",sg:"Toulouse",desc:"Navettes autonomes électriques.",url:"https://easymile.com"},
+{id:"viatransport",l:"Via.com",s:"transport",ca:200,eff:"500",sg:"Paris",desc:"Plateforme SaaS mobilité urbaine.",url:"https://ridewithvia.com"},
+{id:"ilevia",l:"Ilévia",s:"transport",ca:400,eff:"2 500",sg:"Villeneuve d'Ascq",desc:"Opérateur transports en commun Lille.",url:"https://ilevia.fr"},
+{id:"transdev",l:"Transdev",s:"transport",ca:8000,eff:"80 000",sg:"Issy-les-M.",desc:"Opérateur de mobilité urbaine mondial.",url:"https://transdev.com"},
+{id:"keolis",l:"Keolis",s:"transport",ca:6000,eff:"68 000",sg:"Paris",desc:"Opérateur mobilité, filiale SNCF.",url:"https://keolis.com"},
+{id:"bolloretrans",l:"Bolloré Logistics",s:"transport",ca:7000,eff:"22 000",sg:"Paris",desc:"Transport maritime et aérien de fret.",url:"https://bollore-logistics.com"},
+// SANTÉ
+{id:"sanofi",l:"Sanofi",s:"sante",ca:43000,eff:"100 000",sg:"Paris",desc:"Géant pharmaceutique français mondial.",url:"https://sanofi.com"},
+{id:"korian",l:"Korian",s:"sante",ca:4300,eff:"57 000",sg:"Paris",desc:"Leader européen établissements pour seniors.",url:"https://korian.fr"},
+{id:"doctolib",l:"Doctolib",s:"sante",ca:600,eff:"3 000",sg:"Paris",desc:"Licorne santé, prise de RDV médicaux.",url:"https://doctolib.fr"},
+{id:"biomerieux",l:"bioMérieux",s:"sante",ca:3900,eff:"14 000",sg:"Lyon",desc:"Diagnostics biologiques in vitro.",url:"https://biomerieux.fr"},
+{id:"owkin",l:"Owkin",s:"sante",ca:100,eff:"300",sg:"Paris",desc:"IA médicale pour la recherche clinique.",url:"https://owkin.com"},
+{id:"withings",l:"Withings",s:"sante",ca:100,eff:"400",sg:"Paris",desc:"Objets connectés santé.",url:"https://withings.com"},
+{id:"ipsen",l:"Ipsen",s:"sante",ca:3100,eff:"5 700",sg:"Paris",desc:"Biopharmaceutique spécialités thérapeutiques.",url:"https://ipsen.com"},
+{id:"servier",l:"Servier",s:"sante",ca:5000,eff:"22 000",sg:"Suresnes",desc:"Groupe pharmaceutique indépendant français.",url:"https://servier.fr"},
+{id:"pierre_fab",l:"Pierre Fabre",s:"sante",ca:2900,eff:"13 000",sg:"Castres",desc:"Santé et cosmétique, labo indépendant.",url:"https://pierre-fabre.com"},
+{id:"aguettant",l:"Aguettant",s:"sante",ca:100,eff:"400",sg:"Lyon",desc:"Médicaments injectables en urgences.",url:"https://aguettant.com"},
+{id:"biomnis",l:"Biomnis",s:"sante",ca:200,eff:"1 000",sg:"Lyon",desc:"Laboratoire de biologie spécialisée.",url:"https://biomnis.com"},
+{id:"eurofins",l:"Eurofins",s:"sante",ca:6800,eff:"60 000",sg:"Paris",desc:"Laboratoires analyses biologique.",url:"https://eurofins.fr"},
+{id:"clariane",l:"Clariane",s:"sante",ca:4500,eff:"55 000",sg:"Paris",desc:"Soins et accompagnement seniors.",url:"https://clariane.com"},
+{id:"generale",l:"Générale de Santé",s:"sante",ca:2000,eff:"25 000",sg:"Paris",desc:"Hospitalisation privée, filiale Ramsay.",url:"https://ramsaygds.fr"},
+{id:"elsan",l:"Elsan",s:"sante",ca:1800,eff:"20 000",sg:"Paris",desc:"Groupe hospitalier privé français.",url:"https://elsan.care"},
+{id:"maat",l:"Maat Pharma",s:"sante",ca:30,eff:"100",sg:"Lyon",desc:"Microbiote intestinal thérapeutique.",url:"https://maat-pharma.com"},
+{id:"carbonio",l:"Carmat",s:"sante",ca:20,eff:"200",sg:"Vélizy",desc:"Cœur artificiel total bioprosthétique.",url:"https://carmatsa.com"},
+{id:"voluntis",l:"Voluntis",s:"sante",ca:15,eff:"80",sg:"Paris",desc:"Thérapeutique digitale pour patients.",url:"https://voluntis.com"},
+{id:"lifen",l:"Lifen",s:"sante",ca:25,eff:"100",sg:"Paris",desc:"Plateforme d'interopérabilité santé.",url:"https://lifen.fr"},
+{id:"cardiologs",l:"Cardiologs",s:"sante",ca:20,eff:"80",sg:"Paris",desc:"IA pour interprétation ECG.",url:"https://cardiologs.com"},
+{id:"therapanacea",l:"TheraPanacea",s:"sante",ca:15,eff:"60",sg:"Paris",desc:"IA pour radiothérapie oncologique.",url:"https://therapanacea.eu"},
+{id:"dochospi",l:"DocHospital",s:"sante",ca:10,eff:"40",sg:"Paris",desc:"Logiciel DPI pour hôpitaux.",url:"https://dochospital.fr"},
+{id:"incepto",l:"Incepto Medical",s:"sante",ca:10,eff:"50",sg:"Paris",desc:"Marketplace IA pour radiologues.",url:"https://incepto-medical.com"},
+{id:"pixmeo",l:"Pixmeo",s:"sante",ca:20,eff:"60",sg:"Genève/Paris",desc:"Logiciel imagerie médicale DICOM.",url:"https://pixmeo.com"},
+{id:"medtronic",l:"Medtronic France",s:"sante",ca:1500,eff:"3 000",sg:"Paris",desc:"Dispositifs médicaux leader mondial.",url:"https://medtronic.com/fr-fr"},
+{id:"bd_fr",l:"Becton Dickinson France",s:"sante",ca:1200,eff:"2 500",sg:"Paris",desc:"Dispositifs médicaux et diagnostics.",url:"https://bd.com"},
+{id:"abbott",l:"Abbott France",s:"sante",ca:1000,eff:"2 000",sg:"Paris",desc:"Diagnostics, nutrition, dispositifs.",url:"https://abbott.fr"},
+{id:"philipsmed",l:"Philips Santé",s:"sante",ca:1500,eff:"2 000",sg:"Paris",desc:"Imagerie médicale et monitoring.",url:"https://philips.fr/healthcare"},
+{id:"gleamer",l:"Gleamer",s:"sante",ca:10,eff:"50",sg:"Paris",desc:"IA détection fractures radiologie.",url:"https://gleamer.ai"},
+{id:"ortho",l:"Ortho Clinical Diagnostics",s:"sante",ca:400,eff:"600",sg:"Paris",desc:"Diagnostics in vitro pour hôpitaux.",url:"https://orthoclinicaldiagnostics.com"},
+// IMMOBILIER
+{id:"nexity",l:"Nexity",s:"immobilier",ca:5000,eff:"10 000",sg:"Paris",desc:"1er promoteur immobilier français.",url:"https://nexity.fr"},
+{id:"bouygimmo",l:"Bouygues Immobilier",s:"immobilier",ca:2800,eff:"2 500",sg:"Paris",desc:"Promoteur et aménageur urbain.",url:"https://bouygues-immobilier.com"},
+{id:"seloger",l:"SeLoger",s:"immobilier",ca:400,eff:"2 000",sg:"Paris",desc:"1er portail immobilier français.",url:"https://seloger.com"},
+{id:"hosman",l:"Hosman",s:"immobilier",ca:30,eff:"200",sg:"Paris",desc:"Agence immobilière digitale à frais fixes.",url:"https://hosman.co"},
+{id:"masteos",l:"Masteos",s:"immobilier",ca:80,eff:"300",sg:"Paris",desc:"Investissement locatif clé-en-main.",url:"https://masteos.com"},
+{id:"gecina",l:"Gecina",s:"immobilier",ca:900,eff:"500",sg:"Paris",desc:"Foncière cotée, patrimoine parisien.",url:"https://gecina.fr"},
+{id:"unibail",l:"Unibail-Rodamco",s:"immobilier",ca:2500,eff:"3 500",sg:"Paris",desc:"Leader mondial centres commerciaux.",url:"https://urw.com"},
+{id:"covivio",l:"Covivio",s:"immobilier",ca:1000,eff:"1 000",sg:"Paris",desc:"Foncière diversifiée Europe.",url:"https://covivio.immo"},
+{id:"icade",l:"Icade",s:"immobilier",ca:1500,eff:"1 500",sg:"Saint-Denis",desc:"Foncière tertiaire et promotion.",url:"https://icade.fr"},
+{id:"kaufman",l:"Kaufman & Broad",s:"immobilier",ca:1400,eff:"1 500",sg:"Paris",desc:"Promoteur résidentiel.",url:"https://k-b.fr"},
+{id:"vinci_immo",l:"Vinci Immobilier",s:"immobilier",ca:1200,eff:"1 000",sg:"Neuilly",desc:"Promotion immobilière résidentielle.",url:"https://vinci-immobilier.com"},
+{id:"emerige",l:"Emerige",s:"immobilier",ca:500,eff:"300",sg:"Paris",desc:"Promoteur et investisseur immobilier.",url:"https://emerige.com"},
+{id:"foncia",l:"Foncia",s:"immobilier",ca:800,eff:"10 000",sg:"Paris",desc:"1er gestionnaire de copropriétés France.",url:"https://foncia.fr"},
+{id:"orpi",l:"Orpi",s:"immobilier",ca:500,eff:"8 000",sg:"Paris",desc:"Réseau coopératif d'agences immobilières.",url:"https://orpi.com"},
+{id:"iiad",l:"IIAD",s:"immobilier",ca:20,eff:"60",sg:"Paris",desc:"Formation et conseil en immobilier.",url:"https://iiad.fr"},
+{id:"beanstock",l:"Beanstock",s:"immobilier",ca:20,eff:"80",sg:"Paris",desc:"Investissement locatif simplifié.",url:"https://beanstock.fr"},
+{id:"logia",l:"Logia",s:"immobilier",ca:15,eff:"60",sg:"Paris",desc:"PropTech gestion locative digitale.",url:"https://logia.io"},
+{id:"flatsy",l:"Flatsy",s:"immobilier",ca:10,eff:"40",sg:"Paris",desc:"Automatisation visites immobilières.",url:"https://flatsy.fr"},
+{id:"smovin",l:"Smovin",s:"immobilier",ca:10,eff:"50",sg:"Paris",desc:"Logiciel gestion locative en ligne.",url:"https://smovin.fr"},
+{id:"ublo",l:"Ublo",s:"immobilier",ca:5,eff:"25",sg:"Paris",desc:"SaaS gestion immeuble.",url:"https://ublo.immo"},
+{id:"citesia",l:"Citesia",s:"immobilier",ca:5,eff:"20",sg:"Paris",desc:"PropTech analyse marché immo.",url:"https://citesia.com"},
+{id:"homepilot",l:"Home Pilot",s:"immobilier",ca:10,eff:"40",sg:"Paris",desc:"Gestion locative déléguée.",url:"https://homepilot.fr"},
+{id:"meilleurs_agents",l:"Meilleurs Agents",s:"immobilier",ca:50,eff:"200",sg:"Paris",desc:"Estimation en ligne et mise en relation.",url:"https://meilleursagents.com"},
+{id:"bien_ici",l:"BienIci",s:"immobilier",ca:30,eff:"100",sg:"Paris",desc:"Portail immobilier digital.",url:"https://bienici.com"},
+{id:"pretto",l:"Pretto",s:"immobilier",ca:40,eff:"200",sg:"Paris",desc:"Courtier crédit immobilier digital.",url:"https://pretto.fr"},
+{id:"meilleurtaux",l:"Meilleurtaux",s:"immobilier",ca:200,eff:"1 500",sg:"Paris",desc:"Courtier crédit et assurance.",url:"https://meilleurtaux.com"},
+{id:"realadvisor",l:"RealAdvisor",s:"immobilier",ca:15,eff:"80",sg:"Paris",desc:"IA estimation immobilière.",url:"https://realadvisor.fr"},
+{id:"zelok",l:"Zelok",s:"immobilier",ca:5,eff:"30",sg:"Paris",desc:"Dossier locatif numérique.",url:"https://zelok.fr"},
+{id:"effia",l:"Effia Stationnement",s:"immobilier",ca:300,eff:"2 000",sg:"Saint-Denis",desc:"Gestion de parcs de stationnement.",url:"https://effia.fr"},
+{id:"prim_invest",l:"Primestone",s:"immobilier",ca:10,eff:"30",sg:"Paris",desc:"Club deal immobilier digitalisé.",url:"https://primestone.com"},
+// MÉDIAS
+{id:"tf1",l:"Groupe TF1",s:"media",ca:2500,eff:"3 800",sg:"Boulogne-B.",desc:"1er groupe audiovisuel privé français.",url:"https://groupe-tf1.fr"},
+{id:"m6",l:"Groupe M6",s:"media",ca:1400,eff:"1 800",sg:"Neuilly",desc:"M6, W9, 6ter et services digitaux.",url:"https://groupem6.fr"},
+{id:"vivendi",l:"Vivendi",s:"media",ca:9000,eff:"23 000",sg:"Paris",desc:"Canal+, Havas, CNews — groupe media.",url:"https://vivendi.com"},
+{id:"prisma",l:"Prisma Media",s:"media",ca:400,eff:"1 200",sg:"Paris",desc:"Gala, Capital, Femme Actuelle...",url:"https://prismamedia.com"},
+{id:"brut",l:"Brut.",s:"media",ca:80,eff:"300",sg:"Paris",desc:"Médias vidéo social-first, génération Z.",url:"https://brut.media"},
+{id:"france_tv",l:"France Télévisions",s:"media",ca:3000,eff:"10 000",sg:"Paris",desc:"Service public audiovisuel national.",url:"https://france.tv"},
+{id:"radiofrance",l:"Radio France",s:"media",ca:700,eff:"4 500",sg:"Paris",desc:"Service public radio : France Inter, BFM.",url:"https://radiofrance.fr"},
+{id:"rtl",l:"RTL Group France",s:"media",ca:500,eff:"1 000",sg:"Paris",desc:"Radio RTL, premier réseau radio français.",url:"https://rtl.fr"},
+{id:"europe1",l:"Europe 1",s:"media",ca:100,eff:"300",sg:"Paris",desc:"Radio généraliste, filiale Lagardère.",url:"https://europe1.fr"},
+{id:"lagardere",l:"Lagardère",s:"media",ca:7000,eff:"28 000",sg:"Paris",desc:"Édition, radio, retail travel.",url:"https://lagardere.com"},
+{id:"hachette",l:"Hachette Livre",s:"media",ca:3000,eff:"8 000",sg:"Paris",desc:"1er éditeur français, filiale Lagardère.",url:"https://hachette.com"},
+{id:"leparisien",l:"Le Parisien / Aujourd'hui",s:"media",ca:250,eff:"1 000",sg:"Paris",desc:"Quotidien régional parisien, filiale LVMH.",url:"https://leparisien.fr"},
+{id:"lemonde",l:"Le Monde",s:"media",ca:300,eff:"1 000",sg:"Paris",desc:"Journal de référence français.",url:"https://lemonde.fr"},
+{id:"lefigaro",l:"Le Figaro",s:"media",ca:350,eff:"1 200",sg:"Paris",desc:"Quotidien nationale, groupe Dassault.",url:"https://lefigaro.fr"},
+{id:"lesechos",l:"Les Echos",s:"media",ca:200,eff:"600",sg:"Paris",desc:"Presse économique, filiale LVMH.",url:"https://lesechos.fr"},
+{id:"konbini",l:"Konbini",s:"media",ca:30,eff:"150",sg:"Paris",desc:"Média digital lifestyle jeunes.",url:"https://konbini.com"},
+{id:"numerama",l:"Numerama",s:"media",ca:10,eff:"50",sg:"Paris",desc:"Pure player tech et numérique.",url:"https://numerama.com"},
+{id:"madmoizelle",l:"Madmoizelle",s:"media",ca:15,eff:"60",sg:"Paris",desc:"Média féminin digital indépendant.",url:"https://madmoizelle.com"},
+{id:"melty",l:"Melty Group",s:"media",ca:20,eff:"80",sg:"Paris",desc:"Réseau médias digitaux jeunes.",url:"https://melty.fr"},
+{id:"webedia",l:"Webedia",s:"media",ca:200,eff:"2 000",sg:"Paris",desc:"Groupe médias digitaux JV, AlloCiné.",url:"https://webedia.fr"},
+{id:"allocine",l:"AlloCiné",s:"media",ca:50,eff:"200",sg:"Paris",desc:"Référence cinéma et séries en France.",url:"https://allocine.fr"},
+{id:"dailymotion",l:"Dailymotion",s:"media",ca:80,eff:"300",sg:"Paris",desc:"Plateforme vidéo, filiale Vivendi.",url:"https://dailymotion.com"},
+{id:"aufeminin",l:"aufeminin",s:"media",ca:100,eff:"300",sg:"Paris",desc:"Médias féminins numériques, filiale TF1.",url:"https://aufeminin.com"},
+{id:"france24",l:"France 24",s:"media",ca:400,eff:"1 500",sg:"Paris",desc:"Chaîne info internationale française.",url:"https://france24.com"},
+{id:"mediapart",l:"Mediapart",s:"media",ca:30,eff:"120",sg:"Paris",desc:"Pure player journalisme d'investigation.",url:"https://mediapart.fr"},
+{id:"streetpress",l:"StreetPress",s:"media",ca:5,eff:"25",sg:"Paris",desc:"Média indépendant investigation.",url:"https://streetpress.com"},
+{id:"neonmag",l:"Neon",s:"media",ca:8,eff:"30",sg:"Paris",desc:"Magazine culture pop.",url:"https://neonmag.fr"},
+{id:"reworld",l:"Reworld Media",s:"media",ca:200,eff:"1 500",sg:"Paris",desc:"Groupe presse et médias digitaux.",url:"https://reworldmedia.com"},
+{id:"twitch_fr",l:"Twitch France",s:"media",ca:100,eff:"200",sg:"Paris",desc:"Plateforme streaming live, filiale Amazon.",url:"https://twitch.tv"},
+{id:"figaro_etud",l:"Figaro Étudiant",s:"media",ca:20,eff:"60",sg:"Paris",desc:"Médias pour étudiants et jeunes diplômés.",url:"https://etudiant.lefigaro.fr"},
+// CONSEIL
+{id:"accenture",l:"Accenture",s:"conseil",ca:60000,eff:"14 000",sg:"Paris",desc:"Conseil, intégration, outsourcing.",url:"https://accenture.com/fr-fr"},
+{id:"mckinsey",l:"McKinsey",s:"conseil",ca:15000,eff:"3 000",sg:"Paris",desc:"1er cabinet de conseil en stratégie mondial.",url:"https://mckinsey.com"},
+{id:"bcg",l:"BCG",s:"conseil",ca:12000,eff:"2 500",sg:"Paris",desc:"Boston Consulting Group.",url:"https://bcg.com"},
+{id:"pwc",l:"PwC France",s:"conseil",ca:2000,eff:"7 000",sg:"Paris",desc:"Audit, conseil, transactions.",url:"https://pwc.fr"},
+{id:"deloitte",l:"Deloitte",s:"conseil",ca:3000,eff:"8 000",sg:"Paris",desc:"Audit et conseil multidisciplinaire.",url:"https://deloitte.com/fr"},
+{id:"kpmg",l:"KPMG France",s:"conseil",ca:1800,eff:"9 000",sg:"Paris",desc:"Audit, fiscalité, conseil.",url:"https://home.kpmg/fr/fr"},
+{id:"sia",l:"Sia Partners",s:"conseil",ca:500,eff:"3 000",sg:"Paris",desc:"Cabinet conseil management et digital.",url:"https://sia-partners.com"},
+{id:"wavestone",l:"Wavestone",s:"conseil",ca:500,eff:"3 500",sg:"Paris",desc:"Conseil transformation et cybersécurité.",url:"https://wavestone.com"},
+{id:"bain",l:"Bain & Company",s:"conseil",ca:5000,eff:"1 500",sg:"Paris",desc:"Conseil stratégie et performance.",url:"https://bain.com"},
+{id:"roland",l:"Roland Berger",s:"conseil",ca:1000,eff:"1 000",sg:"Paris",desc:"Cabinet conseil stratégie européen.",url:"https://rolandberger.com"},
+{id:"olice",l:"Oliver Wyman",s:"conseil",ca:2000,eff:"800",sg:"Paris",desc:"Conseil stratégie, Marsh & McLennan.",url:"https://oliverwyman.com"},
+{id:"atkerney",l:"A.T. Kearney",s:"conseil",ca:1200,eff:"700",sg:"Paris",desc:"Conseil stratégie et opérations.",url:"https://kearney.com"},
+{id:"grant",l:"Grant Thornton",s:"conseil",ca:700,eff:"5 000",sg:"Paris",desc:"Audit et conseil PME/ETI.",url:"https://grantthornton.fr"},
+{id:"ernst",l:"EY France",s:"conseil",ca:2500,eff:"12 000",sg:"Paris",desc:"Audit, conseil, transactions.",url:"https://ey.com/fr_fr"},
+{id:"bearingpoint",l:"BearingPoint",s:"conseil",ca:400,eff:"2 000",sg:"Paris",desc:"Conseil management et technologies.",url:"https://bearingpoint.com"},
+{id:"ineum",l:"Ineum Consulting",s:"conseil",ca:80,eff:"500",sg:"Paris",desc:"Conseil management indépendant.",url:"https://ineum.fr"},
+{id:"magellan",l:"Magellan Consulting",s:"conseil",ca:60,eff:"350",sg:"Paris",desc:"Conseil SI et management.",url:"https://magellan-consulting.fr"},
+{id:"eurogroup",l:"Eurogroup Consulting",s:"conseil",ca:80,eff:"400",sg:"Paris",desc:"Conseil organisation et transformation.",url:"https://eurogroup-consulting.com"},
+{id:"vertuo",l:"Vertuo Conseil",s:"conseil",ca:30,eff:"150",sg:"Paris",desc:"Conseil SI pour secteur public.",url:"https://vertuo-conseil.com"},
+{id:"weave",l:"Weave",s:"conseil",ca:100,eff:"700",sg:"Paris",desc:"Conseil en transformation digitale.",url:"https://weave.eu"},
+{id:"extia",l:"Extia",s:"conseil",ca:100,eff:"2 000",sg:"Paris",desc:"Conseil technologique et management.",url:"https://extia.fr"},
+{id:"thinksmall",l:"ThinkSmall",s:"conseil",ca:10,eff:"50",sg:"Paris",desc:"Conseil en marketing stratégique.",url:"https://thinksmall.fr"},
+{id:"synpulse",l:"Synpulse France",s:"conseil",ca:30,eff:"100",sg:"Paris",desc:"Conseil spécialisé finance et assurance.",url:"https://synpulse.com"},
+{id:"onepoint",l:"Onepoint",s:"conseil",ca:400,eff:"3 000",sg:"Paris",desc:"Conseil et technologie indépendant.",url:"https://groupeonepoint.com"},
+{id:"altran",l:"Altran / Capgemini Engineering",s:"conseil",ca:3000,eff:"50 000",sg:"Paris",desc:"Ingénierie et R&D externalisée.",url:"https://capgemini.com/fr/capgemini-engineering"},
+{id:"alten",l:"Alten",s:"conseil",ca:4000,eff:"50 000",sg:"Boulogne-B.",desc:"Conseil en ingénierie et technologie.",url:"https://alten.fr"},
+{id:"assystem",l:"Assystem",s:"conseil",ca:400,eff:"6 000",sg:"Paris",desc:"Ingénierie nucléaire et énergie.",url:"https://assystem.com"},
+{id:"sofrecom",l:"Sofrecom",s:"conseil",ca:80,eff:"600",sg:"Paris",desc:"Conseil télécom, filiale Orange.",url:"https://sofrecom.com"},
+{id:"iqvia",l:"IQVIA France",s:"conseil",ca:300,eff:"2 000",sg:"Paris",desc:"Conseil et données pour industrie pharma.",url:"https://iqvia.com"},
+{id:"cognizant",l:"Cognizant France",s:"conseil",ca:500,eff:"2 000",sg:"Paris",desc:"Services IT et conseil.",url:"https://cognizant.com"},
+// RH
+{id:"adecco",l:"Adecco France",s:"rh",ca:8000,eff:"6 500",sg:"Paris",desc:"1er groupe mondial de travail temporaire.",url:"https://adecco.fr"},
+{id:"manpower",l:"Manpower",s:"rh",ca:6000,eff:"3 500",sg:"Paris",desc:"Intérim, recrutement CDI et formation.",url:"https://manpower.fr"},
+{id:"randstad",l:"Randstad",s:"rh",ca:7000,eff:"4 000",sg:"Paris",desc:"Leader mondial du travail flexible.",url:"https://randstad.fr"},
+{id:"linkedin",l:"LinkedIn France",s:"rh",ca:2000,eff:"1 000",sg:"Paris",desc:"Réseau social pro et recrutement.",url:"https://linkedin.com"},
+{id:"indeed",l:"Indeed",s:"rh",ca:1500,eff:"1 000",sg:"Paris",desc:"1ère plateforme d'offres d'emploi mondiale.",url:"https://indeed.fr"},
+{id:"hellowork",l:"HelloWork",s:"rh",ca:80,eff:"400",sg:"Paris",desc:"Portail emploi et alternance en France.",url:"https://hellowork.com"},
+{id:"jobteaser",l:"JobTeaser",s:"rh",ca:60,eff:"350",sg:"Paris",desc:"Plateforme emploi orientée étudiants.",url:"https://jobteaser.com"},
+{id:"michael_page",l:"Michael Page",s:"rh",ca:300,eff:"1 000",sg:"Paris",desc:"Recrutement cadres et spécialistes.",url:"https://michaelpage.fr"},
+{id:"hays",l:"Hays France",s:"rh",ca:400,eff:"1 000",sg:"Paris",desc:"Recrutement spécialisé toutes industries.",url:"https://hays.fr"},
+{id:"robert",l:"Robert Half France",s:"rh",ca:200,eff:"600",sg:"Paris",desc:"Recrutement finance, juridique, IT.",url:"https://roberthalf.fr"},
+{id:"expectra",l:"Expectra",s:"rh",ca:500,eff:"2 000",sg:"Paris",desc:"Intérim et recrutement cadres.",url:"https://expectra.fr"},
+{id:"crit",l:"Groupe CRIT",s:"rh",ca:1500,eff:"8 000",sg:"Paris",desc:"Intérim et recrutement multi-secteurs.",url:"https://groupe-crit.com"},
+{id:"synergie",l:"Synergie",s:"rh",ca:2000,eff:"7 500",sg:"Paris",desc:"Travail temporaire et recrutement.",url:"https://synergie.fr"},
+{id:"apec",l:"APEC",s:"rh",ca:200,eff:"1 000",sg:"Paris",desc:"Emploi des cadres, service public.",url:"https://apec.fr"},
+{id:"france_travail",l:"France Travail",s:"rh",ca:5000,eff:"55 000",sg:"Paris",desc:"Service public emploi (ex-Pôle Emploi).",url:"https://francetravail.fr"},
+{id:"welcome",l:"Welcome to the Jungle",s:"rh",ca:80,eff:"400",sg:"Paris",desc:"Plateforme recrutement marque employeur.",url:"https://welcometothejungle.com"},
+{id:"les_talents",l:"Talent.io",s:"rh",ca:30,eff:"150",sg:"Paris",desc:"Matching tech talents premium.",url:"https://talent.io"},
+{id:"easyrecrue",l:"Easyrecrue",s:"rh",ca:30,eff:"200",sg:"Paris",desc:"Logiciel recrutement vidéo différé.",url:"https://easyrecrue.com"},
+{id:"workelo",l:"Workelo",s:"rh",ca:15,eff:"80",sg:"Paris",desc:"Onboarding digital des nouvelles recrues.",url:"https://workelo.eu"},
+{id:"beeple",l:"Beetween",s:"rh",ca:10,eff:"50",sg:"Paris",desc:"ATS pour PME et ETI.",url:"https://beetween.com"},
+{id:"elevo",l:"Elevo",s:"rh",ca:10,eff:"50",sg:"Paris",desc:"Logiciel management de la performance.",url:"https://elevo.fr"},
+{id:"payfit2",l:"PayFit RH",s:"rh",ca:100,eff:"800",sg:"Paris",desc:"Paie et RH automatisées pour PME.",url:"https://payfit.com"},
+{id:"lucca",l:"Lucca",s:"rh",ca:60,eff:"350",sg:"Paris",desc:"Suite logiciels RH cloud.",url:"https://lucca.fr"},
+{id:"cegid_rh",l:"Cegid RH",s:"rh",ca:300,eff:"2 000",sg:"Lyon",desc:"SIRH et gestion de la paie.",url:"https://cegid.com"},
+{id:"cornerstone",l:"Cornerstone France",s:"rh",ca:100,eff:"200",sg:"Paris",desc:"Plateforme LMS et talent management.",url:"https://cornerstoneondemand.com"},
+{id:"crossknowledge",l:"CrossKnowledge",s:"rh",ca:80,eff:"300",sg:"Paris",desc:"E-learning et digital learning.",url:"https://crossknowledge.com"},
+{id:"360learning",l:"360Learning",s:"rh",ca:50,eff:"400",sg:"Paris",desc:"Collaborative learning platform.",url:"https://360learning.com"},
+{id:"babbel",l:"Babbel France",s:"rh",ca:30,eff:"100",sg:"Paris",desc:"Apprentissage langues B2B.",url:"https://babbel.com"},
+{id:"openclassrooms",l:"OpenClassrooms",s:"rh",ca:60,eff:"400",sg:"Paris",desc:"Formation en ligne diplômante.",url:"https://openclassrooms.com"},
+{id:"akto",l:"AKTO",s:"rh",ca:200,eff:"200",sg:"Paris",desc:"OPCO services à forte intensité de main-d'œuvre.",url:"https://akto.fr"},
+// LUXE
+{id:"lvmh_lux",l:"LVMH",s:"luxe",ca:86000,eff:"213 000",sg:"Paris",desc:"1er groupe de luxe mondial, 75 maisons.",url:"https://lvmh.fr"},
+{id:"kering",l:"Kering",s:"luxe",ca:18000,eff:"49 000",sg:"Paris",desc:"Gucci, YSL, Bottega Veneta...",url:"https://kering.com"},
+{id:"hermes",l:"Hermès",s:"luxe",ca:13400,eff:"23 000",sg:"Paris",desc:"Maison de luxe française, sellier-maroquinier.",url:"https://hermes.com"},
+{id:"chanel",l:"Chanel",s:"luxe",ca:18000,eff:"34 000",sg:"Paris",desc:"Maison de mode et parfums iconique.",url:"https://chanel.com"},
+{id:"lacoste",l:"Lacoste",s:"luxe",ca:2500,eff:"8 000",sg:"Paris",desc:"Marque mode sport iconique.",url:"https://lacoste.com"},
+{id:"vestiaire",l:"Vestiaire Collective",s:"luxe",ca:200,eff:"1 000",sg:"Paris",desc:"Plateforme revente mode de luxe.",url:"https://vestiairecollective.com"},
+{id:"rouje",l:"Rouje",s:"luxe",ca:30,eff:"100",sg:"Paris",desc:"Marque mode DTC fondée par Jeanne Damas.",url:"https://rouje.com"},
+{id:"sezane_l",l:"Sézane",s:"luxe",ca:150,eff:"500",sg:"Paris",desc:"Marque mode premium born digital.",url:"https://sezane.com"},
+{id:"maje",l:"Maje",s:"luxe",ca:400,eff:"1 500",sg:"Paris",desc:"Prêt-à-porter féminin haut de gamme.",url:"https://maje.com"},
+{id:"sandro",l:"Sandro",s:"luxe",ca:400,eff:"1 500",sg:"Paris",desc:"Mode contemporaine française premium.",url:"https://sandro-paris.com"},
+{id:"longchamp",l:"Longchamp",s:"luxe",ca:500,eff:"3 500",sg:"Paris",desc:"Maroquinerie et mode, marque familiale.",url:"https://longchamp.com"},
+{id:"amet",l:"A.P.C.",s:"luxe",ca:200,eff:"600",sg:"Paris",desc:"Mode française minimaliste premium.",url:"https://apc.fr"},
+{id:"agnessb",l:"agnès b.",s:"luxe",ca:150,eff:"1 000",sg:"Paris",desc:"Mode parisienne indépendante.",url:"https://agnesb.fr"},
+{id:"isabel",l:"Isabel Marant",s:"luxe",ca:300,eff:"800",sg:"Paris",desc:"Mode rock chic parisienne.",url:"https://isabelmarant.com"},
+{id:"jacquemus",l:"Jacquemus",s:"luxe",ca:200,eff:"400",sg:"Paris",desc:"Créateur mode provençal.",url:"https://jacquemus.com"},
+{id:"balenciaga",l:"Balenciaga",s:"luxe",ca:1500,eff:"5 000",sg:"Paris",desc:"Maison haute couture, filiale Kering.",url:"https://balenciaga.com"},
+{id:"bv",l:"Bottega Veneta",s:"luxe",ca:1700,eff:"5 000",sg:"Paris",desc:"Maroquinerie luxe, filiale Kering.",url:"https://bottegaveneta.com"},
+{id:"celine_m",l:"Céline",s:"luxe",ca:900,eff:"3 000",sg:"Paris",desc:"Maison luxe française, filiale LVMH.",url:"https://celine.com"},
+{id:"givenchy",l:"Givenchy",s:"luxe",ca:600,eff:"2 000",sg:"Paris",desc:"Haute couture et prêt-à-porter, LVMH.",url:"https://givenchy.com"},
+{id:"lanvin",l:"Lanvin",s:"luxe",ca:100,eff:"500",sg:"Paris",desc:"Plus ancienne maison couture française.",url:"https://lanvin.com"},
+{id:"leonard",l:"Léonard Paris",s:"luxe",ca:30,eff:"150",sg:"Paris",desc:"Maison mode florale.",url:"https://leonardparis.com"},
+{id:"ami",l:"Ami Paris",s:"luxe",ca:100,eff:"300",sg:"Paris",desc:"Streetwear parisien accessible.",url:"https://amiparis.com"},
+{id:"balmain",l:"Balmain",s:"luxe",ca:150,eff:"500",sg:"Paris",desc:"Maison couture française glamour.",url:"https://balmain.com"},
+{id:"berluti",l:"Berluti",s:"luxe",ca:200,eff:"800",sg:"Paris",desc:"Maroquinerie hommes LVMH.",url:"https://berluti.com"},
+{id:"roger_vivier",l:"Roger Vivier",s:"luxe",ca:150,eff:"400",sg:"Paris",desc:"Chaussures luxe icône française.",url:"https://rogervivier.com"},
+{id:"repetto",l:"Repetto",s:"luxe",ca:100,eff:"500",sg:"Paris",desc:"Chaussures et mode danse.",url:"https://repetto.fr"},
+{id:"sofitel",l:"Sofitel (AccorHotels Luxe)",s:"luxe",ca:1000,eff:"15 000",sg:"Paris",desc:"Hôtellerie luxe française mondiale.",url:"https://sofitel.com"},
+{id:"ritz",l:"Hôtel Ritz Paris",s:"luxe",ca:150,eff:"600",sg:"Paris",desc:"Palace parisien iconique.",url:"https://ritzparis.com"},
+{id:"dior_parfums",l:"LVMH Parfums & Cosmétiques",s:"luxe",ca:8000,eff:"25 000",sg:"Paris",desc:"Dior, Guerlain, Givenchy Beauty.",url:"https://lvmh.fr"},
+{id:"occitane",l:"L'Occitane",s:"luxe",ca:2000,eff:"9 000",sg:"Paris",desc:"Cosmétiques naturels et bien-être.",url:"https://loccitane.com"},
+// AGROALIMENTAIRE
+{id:"danone",l:"Danone",s:"agroali",ca:27700,eff:"97 000",sg:"Paris",desc:"Alimentation santé, produits laitiers.",url:"https://danone.com"},
+{id:"pernod",l:"Pernod Ricard",s:"agroali",ca:12000,eff:"20 000",sg:"Paris",desc:"Spiritueux, Absolut, Ballantine's.",url:"https://pernod-ricard.com"},
+{id:"bonduelle",l:"Bonduelle",s:"agroali",ca:2900,eff:"14 000",sg:"Villeneuve d'Ascq",desc:"Légumes en conserve et surgelés.",url:"https://bonduelle.fr"},
+{id:"ynsect",l:"YnSect",s:"agroali",ca:50,eff:"300",sg:"Paris",desc:"Protéines d'insectes pour alimentation.",url:"https://ynsect.com"},
+{id:"infarm",l:"Infarm",s:"agroali",ca:80,eff:"200",sg:"Paris",desc:"Fermes verticales urbaines.",url:"https://infarm.com"},
+{id:"leroux",l:"Leroux",s:"agroali",ca:200,eff:"500",sg:"Orchies",desc:"Chicorée et céréales premium.",url:"https://leroux.fr"},
+{id:"fleury",l:"Fleury Michon",s:"agroali",ca:900,eff:"5 000",sg:"Mouilleron-le-C.",desc:"Charcuterie, traiteur, substituts.",url:"https://fleurymichon.fr"},
+{id:"savencia",l:"Savencia Fromage",s:"agroali",ca:4000,eff:"18 000",sg:"Paris",desc:"Fromages Bresso, Caprice des Dieux.",url:"https://savencia.com"},
+{id:"bel",l:"Groupe Bel",s:"agroali",ca:3500,eff:"12 000",sg:"Paris",desc:"La vache qui rit, Babybel, Leerdammer.",url:"https://groupe-bel.com"},
+{id:"lactalis",l:"Lactalis",s:"agroali",ca:25000,eff:"85 000",sg:"Laval",desc:"1er groupe laitier mondial.",url:"https://lactalis.fr"},
+{id:"sodiaal",l:"Sodiaal",s:"agroali",ca:6000,eff:"10 000",sg:"Paris",desc:"Coopérative laitière, Candia, Yoplait.",url:"https://sodiaal.fr"},
+{id:"ldc",l:"LDC Groupe",s:"agroali",ca:5500,eff:"25 000",sg:"Sablé-sur-Sarthe",desc:"Volaille Loué, Le Gaulois.",url:"https://ldc.fr"},
+{id:"triskalia",l:"Triskalia",s:"agroali",ca:2000,eff:"5 000",sg:"Landerneau",desc:"Coopérative agricole bretonne.",url:"https://triskalia.fr"},
+{id:"invivo",l:"InVivo",s:"agroali",ca:8000,eff:"12 000",sg:"Paris",desc:"Union coopératives agricoles.",url:"https://invivo-group.com"},
+{id:"limagrain",l:"Limagrain",s:"agroali",ca:2500,eff:"12 000",sg:"Chappes",desc:"Coopérative semences et céréales.",url:"https://limagrain.com"},
+{id:"sodebo",l:"Sodebo",s:"agroali",ca:700,eff:"3 500",sg:"Saint-Georges-de-Montaigu",desc:"Pizzas et sandwichs frais.",url:"https://sodebo.com"},
+{id:"charles",l:"Charles & Alice",s:"agroali",ca:200,eff:"800",sg:"Valence",desc:"Fruits et légumes préparés.",url:"https://charlesetalice.com"},
+{id:"laiterie",l:"Laiterie de Montaigu",s:"agroali",ca:150,eff:"400",sg:"Montaigu",desc:"Fromage et lait bio.",url:"https://laiterie-montaigu.fr"},
+{id:"bjorg",l:"Bjorg-Bonneterre",s:"agroali",ca:300,eff:"400",sg:"Lyon",desc:"Alimentation biologique.",url:"https://bjorg.fr"},
+{id:"biofrais",l:"Biofresh",s:"agroali",ca:20,eff:"80",sg:"Paris",desc:"Snacking bio urban food.",url:"https://biofresh.fr"},
+{id:"happyvore",l:"HappyVore",s:"agroali",ca:30,eff:"100",sg:"Paris",desc:"Protéines végétales gourmandes.",url:"https://happyvore.com"},
+{id:"la_belle",l:"La Belle Vie",s:"agroali",ca:30,eff:"100",sg:"Paris",desc:"Épicerie en ligne produits locaux.",url:"https://labellievie.com"},
+{id:"les_mousquetaires",l:"Les Mousquetaires",s:"agroali",ca:48000,eff:"150 000",sg:"Bondoufle",desc:"Intermarché, Bricomarché, agroali.",url:"https://mousquetaires.com"},
+{id:"bga",l:"Bigard",s:"agroali",ca:3500,eff:"12 000",sg:"Quimper",desc:"Leader viandes fraîches France.",url:"https://bigard.fr"},
+{id:"senoble",l:"Senoble",s:"agroali",ca:600,eff:"2 000",sg:"Jouy-en-Josas",desc:"Produits laitiers et desserts MDD.",url:"https://senoble.fr"},
+{id:"roullier",l:"Groupe Roullier",s:"agroali",ca:2500,eff:"7 000",sg:"Saint-Malo",desc:"Agrofourniture et minéraux.",url:"https://roullier.com"},
+{id:"vivescia",l:"Vivescia",s:"agroali",ca:2000,eff:"4 000",sg:"Reims",desc:"Coopérative céréales et malterie.",url:"https://vivescia.com"},
+{id:"altho",l:"Altho",s:"agroali",ca:200,eff:"800",sg:"Vern-sur-Seiche",desc:"Chips Saint-Lô, fabricant snacking.",url:"https://altho.fr"},
+{id:"agrial",l:"Agrial",s:"agroali",ca:5000,eff:"22 000",sg:"Caen",desc:"Coopérative agro multi-filières.",url:"https://agrial.fr"},
+{id:"euralis",l:"Euralis",s:"agroali",ca:2500,eff:"8 000",sg:"Lescar",desc:"Coopérative foie gras, semences.",url:"https://euralis.fr"},
+];
+
+const LK=[
+// Telecom
+["orange","nokia"],["orange","ericsson"],["orange","circet"],["orange","webhelp"],["orange","intelcia"],["orange","sogetrel"],["orange","axione"],["orange","netcracker"],
+["sfr","capgemini"],["sfr","webhelp"],["sfr","circet"],["sfr","comverse"],["sfr","amdocs"],
+["bouygtel","nokia"],["bouygtel","ericsson"],["bouygtel","circet"],["bouygtel","sogetrel"],
+["free","ericsson"],["free","comverse"],["free","altitude"],["free","xp_fiber"],
+["nokia","ericsson"],["nokia","telindus"],["nokia","netcracker"],
+["circet","sogetrel"],["circet","axione"],
+["colt","telindus"],["colt","zayo"],
+["broadpeak","viaccess"],["netgem","orange"],["sewan","sfr"],
+// Tech
+["microsoft","capgemini"],["microsoft","atos"],["microsoft","accenture"],
+["salesforce","accenture"],["salesforce","capgemini"],["salesforce","hubspot"],
+["google","criteo"],["google","artefact"],["google","fiftyfive"],["google","semrush"],
+["meta","publicis"],["meta","jellyfish"],["meta","sprinklr"],
+["sap","capgemini"],["sap","accenture"],["sap","atos"],
+["dassault","capgemini"],["dassault","atos"],
+["hubspot","artefact"],["hubspot","jellyfish"],["hubspot","semrush"],
+["dataiku","capgemini"],["dataiku","artefact"],
+["scaleway","capgemini"],["outscale","dassault"],
+["payfit","lucca"],["payfit","pennylane"],
+["spendesk","qonto"],["treezor","qonto2"],
+["sinequa","capgemini"],["talend","capgemini"],
+// Marketing
+["publicis","artefact"],["publicis","fiftyfive"],["publicis","jellyfish"],["publicis","betc"],["publicis","performics"],
+["havas","converteo"],["havas","jellyfish"],["havas","betc"],
+["wpp","jellyfish"],["wpp","tbwa"],["wpp","grey"],
+["dentsu","fiftyfive"],["dentsu","iprospect"],["dentsu","jellyfish"],
+["tbwa","bbdo"],["tbwa","ddb"],
+["google","iprospect"],["meta","iprospect"],
+["talkwalker","sprinklr"],["sprinklr","hootsuite"],
+["semrush","fiftyfive"],["semrush","converteo"],
+["mcdermott","omni_wpp"],
+// Commerce
+["lvmh","publicis"],["lvmh","accenture"],["lvmh","veepee"],["lvmh","amazon_fr"],
+["carrefour","accenture"],["carrefour","capgemini"],["carrefour","infarm"],["carrefour","leboncoin"],
+["loreal","publicis"],["loreal","artefact"],["loreal","havas"],["loreal","nocibe"],
+["decathlon","capgemini"],["fnac","veepee"],["fnac","darty"],
+["veepee","showroom"],["veepee","bazchic"],
+["cdiscount","capgemini"],["amazon_fr","capgemini"],
+["vinted_fr","backmarket"],["backmarket","leboncoin"],
+["zalando_fr","publicis"],["kiabi","capgemini"],
+// Finance
+["bnp","accenture"],["bnp","capgemini"],["bnp","amundi"],["bnp","qonto"],["bnp","lydia"],["bnp","treezor"],
+["sg","capgemini"],["sg","natixis"],["sg","boursorama"],
+["axa","accenture"],["axa","capgemini"],["axa","shift"],["axa","luko"],
+["creditagr","amundi"],["creditagr","fortuneo"],
+["natixis","amundi"],["ledger","bnp"],
+["bpce","amundi"],["lapostebq","bnp"],
+["fortuneo","bridge"],["linxo","bridge"],
+["younited","october"],["defacto","treezor"],
+["harvest","efront"],["nalo","amundi"],
+// Énergie
+["edf","schneider"],["edf","capgemini"],["edf","deepki"],["edf","enedis"],
+["total","schneider"],["total","neoen"],["total","total_sp"],
+["engie","schneider"],["engie","voltalia"],["engie","solairedirect"],["engie","greenyellow"],
+["neoen","voltalia"],["akuo","voltalia"],
+["enedis","grdf"],["enedis","rte"],["grdf","grtgaz"],
+["schneider","deepki"],["schneider","lacroix"],
+["enercoop","ekwateur"],
+["hellio","deepki"],["verso","schneider"],
+["mylight","deepki"],["sunna","voltalia"],
+// Industrie
+["airbus","safran"],["airbus","thales"],["airbus","capgemini"],["airbus","lisi"],["airbus","lateo"],["airbus","stelia"],
+["safran","capgemini"],["safran","atos"],["safran","derichebourg"],
+["stellantis","michelin"],["stellantis","capgemini"],["stellantis","plastic"],["stellantis","faurecia"],["stellantis","valeo"],
+["renault","michelin"],["renault","valeo"],["renault","faurecia"],
+["thales","mbda"],["thales","naval"],
+["mbda","nexter"],
+["stmicro","soitec"],
+["nexans","legrand"],["nexans","schneider"],
+["hutchinson","airbus"],["hutchinson","safran"],
+["mecacorp","airbus"],["potez","airbus"],
+// Transport
+["sncf","geodis"],["sncf","capgemini"],["sncf","atos"],["sncf","keolis"],
+["ratp","capgemini"],["ratp","transdev"],
+["geodis","bolloretrans"],["geodis","shippeo"],
+["blablacar","karos"],["blablacar","viatransport"],
+["airfrance","safran_a"],
+["laposte","chronopost"],["laposte","capgemini"],
+["dhl_fr","shippeo"],["dhl_fr","wakeo"],
+["stuart","shipup"],["frete","shippeo"],
+["lime","voi"],["lime","tier"],
+["getaround","virtuo"],
+["navya","easymile"],["navya","viatransport"],
+["transdev","keolis"],
+// Santé
+["sanofi","capgemini"],["sanofi","accenture"],["sanofi","owkin"],["sanofi","iqvia"],
+["korian","doctolib"],["korian","clariane"],
+["biomerieux","doctolib"],["biomerieux","eurofins"],
+["withings","doctolib"],["withings","cardiologs"],
+["doctolib","lifen"],["doctolib","incepto"],
+["owkin","therapanacea"],
+["ipsen","iqvia"],["servier","iqvia"],
+["medtronic","philipsmed"],["bd_fr","medtronic"],
+["gleamer","incepto"],
+["clariane","elsan"],["generale","elsan"],
+// Immobilier
+["nexity","seloger"],["nexity","capgemini"],["nexity","pretto"],
+["bouygimmo","seloger"],["bouygimmo","nexity"],
+["seloger","bien_ici"],["seloger","meilleurs_agents"],["seloger","hosman"],
+["unibail","icade"],["covivio","icade"],["gecina","nexity"],
+["kaufman","nexity"],["vinci_immo","nexity"],
+["foncia","nexity"],["orpi","meilleurs_agents"],
+["meilleurtaux","pretto"],["meilleurtaux","madora"],
+["flatsy","logia"],["smovin","logia"],["zelok","smovin"],
+["masteos","beanstock"],
+// Médias
+["tf1","publicis"],["tf1","m6"],["tf1","aufeminin"],["tf1","allocine"],
+["vivendi","havas"],["vivendi","prisma"],["vivendi","dailymotion"],["vivendi","france24"],
+["m6","publicis"],
+["lagardere","hachette"],["lagardere","europe1"],
+["webedia","allocine"],
+["prisma","aufeminin"],["reworld","prisma"],
+["brut","konbini"],["melty","konbini"],
+["lefigaro","lesechos"],["lemonde","mediapart"],
+// Conseil
+["accenture","capgemini"],["accenture","atos"],
+["pwc","kpmg"],["pwc","deloitte"],["pwc","ernst"],
+["mckinsey","bcg"],["mckinsey","bain"],
+["sia","wavestone"],["weave","wavestone"],["onepoint","wavestone"],
+["bearingpoint","ineum"],["eurogroup","magellan"],
+["alten","altran"],["assystem","altran"],
+["extia","onepoint"],
+["sofrecom","capgemini"],["iqvia","capgemini"],
+// RH
+["adecco","linkedin"],["adecco","indeed"],["adecco","manpower"],["adecco","michael_page"],
+["randstad","linkedin"],["randstad","indeed"],["randstad","hays"],
+["linkedin","jobteaser"],["linkedin","welcome"],
+["indeed","hellowork"],["indeed","france_travail"],
+["easyrecrue","workelo"],["jobteaser","hellowork"],
+["lucca","payfit2"],["lucca","elevo"],
+["360learning","crossknowledge"],["openclassrooms","babbel"],
+["cegid_rh","cornernstone"],
+// Luxe
+["lvmh_lux","kering"],["lvmh_lux","hermes"],["lvmh_lux","chanel"],["lvmh_lux","givenchy"],["lvmh_lux","celine_m"],["lvmh_lux","berluti"],["lvmh_lux","dior_parfums"],
+["kering","vestiaire"],["kering","balenciaga"],["kering","bv"],
+["hermes","lvmh_lux"],
+["sezane_l","rouje"],["maje","sandro"],
+["jacquemus","ami"],["isabel","balmain"],
+["longchamp","lacoste"],
+["occitane","loreal"],
+["ritz","sofitel"],
+// Agro
+["danone","bonduelle"],["danone","bel"],["danone","sodiaal"],
+["pernod","danone"],["ynsect","danone"],
+["lactalis","savencia"],["lactalis","sodiaal"],["lactalis","bel"],
+["invivo","limagrain"],["invivo","vivescia"],["invivo","triskalia"],
+["les_mousquetaires","bga"],["les_mousquetaires","ldc"],
+["agrial","ldc"],["agrial","triskalia"],
+["euralis","limagrain"],
+["happyvore","bjorg"],["bjorg","danone"],
+["infarm","carrefour"],["infarm","les_mousquetaires"],
+];
+
+// Build maps
+const NM={};
+ND.forEach(n=>{NM[n.id]=n;});
+const ADJ={};
+LK.forEach(([a,b])=>{
+  if(!ADJ[a])ADJ[a]=[];
+  if(!ADJ[b])ADJ[b]=[];
+  if(NM[a])ADJ[a].push(b);
+  if(NM[b])ADJ[b].push(a);
+});
+
+const cv=document.getElementById("canvas");
+const ctx=cv.getContext("2d");
+let W=window.innerWidth-206,H=window.innerHeight-64;
+cv.style.left="206px";
+cv.width=W;cv.height=H;
+window.addEventListener("resize",()=>{W=window.innerWidth-206;H=window.innerHeight-64;cv.width=W;cv.height=H;});
+
+ND.forEach(n=>{
+  const si=SK.indexOf(n.s);
+  const ang=(si/SK.length)*Math.PI*2;
+  const br=Math.min(W,H)*0.35;
+  n.x=W/2+Math.cos(ang)*br+(Math.random()-.5)*140;
+  n.y=H/2+Math.sin(ang)*br+(Math.random()-.5)*140;
+  n.vx=0;n.vy=0;n.ax=0;n.ay=0;
+});
+
+let panX=0,panY=0,sc=0.65;
+let dragging=false,dragN=null,lastX=0,lastY=0,downX=0,downY=0;
+let activeS=new Set(),sq="",hovN=null,simOn=true;
+
+function tick(){
+  if(!simOn)return;
+  ND.forEach(n=>{n.ax=0;n.ay=0;});
+  ND.forEach(n=>{
+    if(!activeS.has(n.s))return;
+    const si=SK.indexOf(n.s);
+    const ang=(si/SK.length)*Math.PI*2;
+    const br=Math.min(W,H)*0.34;
+    const tx=W/2+Math.cos(ang)*br,ty=H/2+Math.sin(ang)*br;
+    n.ax+=(tx-n.x)*0.012;n.ay+=(ty-n.y)*0.012;
+  });
+  LK.forEach(([a,b])=>{
+    const na=NM[a],nb=NM[b];if(!na||!nb)return;
+    if(!activeS.has(na.s)||!activeS.has(nb.s))return;
+    const dx=nb.x-na.x,dy=nb.y-na.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+    const tgt=(nodeR(na.ca)+nodeR(nb.ca))*3+20;
+    const f=(d-tgt)/d*0.055;
+    na.ax+=dx*f;na.ay+=dy*f;nb.ax-=dx*f;nb.ay-=dy*f;
+  });
+  const active=ND.filter(n=>activeS.has(n.s));
+  for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++){
+    const a=active[i],b=active[j];
+    const dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy||1;
+    const md=(nodeR(a.ca)+nodeR(b.ca))*3.2+8;
+    if(d2<md*md){const d=Math.sqrt(d2),f=(md-d)/d*0.5;a.ax-=dx*f;a.ay-=dy*f;b.ax+=dx*f;b.ay+=dy*f;}
+  }
+  ND.forEach(n=>{
+    if(n===dragN)return;
+    n.vx=(n.vx+n.ax)*0.82;n.vy=(n.vy+n.ay)*0.82;
+    n.x+=n.vx;n.y+=n.vy;
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  if(activeS.size===0){
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillStyle="rgba(255,255,255,0.15)";
+    ctx.font="600 17px DM Sans,sans-serif";
+    ctx.fillText("← Sélectionne un ou plusieurs secteurs pour afficher les entreprises",W/2,H/2);
+    ctx.font="400 12px DM Sans,sans-serif";
+    ctx.fillStyle="rgba(255,255,255,0.07)";
+    ctx.fillText("450+ entreprises · cliquer sur un nœud pour accéder au site",W/2,H/2+28);
+    return;
+  }
+  ctx.save();ctx.translate(panX,panY);ctx.scale(sc,sc);
+  LK.forEach(([a,b])=>{
+    const na=NM[a],nb=NM[b];if(!na||!nb)return;
+    if(!activeS.has(na.s)||!activeS.has(nb.s))return;
+    if(!vis(na)||!vis(nb))return;
+    ctx.beginPath();ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);
+    ctx.strokeStyle="rgba(255,255,255,0.09)";ctx.lineWidth=1;ctx.stroke();
+  });
+  ND.forEach(n=>{
+    if(!activeS.has(n.s)||!vis(n))return;
+    const rad=nodeR(n.ca),col=SEC[n.s].c;
+    if(n.ca>=1000){
+      const g=ctx.createRadialGradient(n.x,n.y,rad*.5,n.x,n.y,rad+14);
+      g.addColorStop(0,col+"44");g.addColorStop(1,col+"00");
+      ctx.beginPath();ctx.arc(n.x,n.y,rad+14,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    }
+    if(n===hovN){
+      ctx.beginPath();ctx.arc(n.x,n.y,rad+4,0,Math.PI*2);
+      ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();
+    }
+    ctx.beginPath();ctx.arc(n.x,n.y,rad,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+    // Label
+    ctx.textAlign="center";
+    if(rad>=15){
+      const fs=Math.max(8,Math.min(12,rad*0.5));
+      ctx.font="600 "+fs+"px DM Sans,sans-serif";
+      ctx.textBaseline="middle";
+      ctx.fillStyle="rgba(255,255,255,0.95)";
+      const words=n.l.split(" "),maxW=rad*1.8;
+      if(ctx.measureText(n.l).width>maxW&&words.length>1){
+        const m=Math.ceil(words.length/2);
+        const l1=words.slice(0,m).join(" "),l2=words.slice(m).join(" ");
+        ctx.fillText(l1,n.x,n.y-fs*0.6);
+        ctx.fillText(l2,n.x,n.y+fs*0.6);
+      }else{ctx.fillText(n.l,n.x,n.y);}
+    }else if(rad>=7){
+      ctx.font="500 8px DM Sans,sans-serif";
+      ctx.textBaseline="top";
+      ctx.fillStyle="rgba(255,255,255,0.8)";
+      const lbl=n.l.length>14?n.l.slice(0,13)+"…":n.l;
+      ctx.fillText(lbl,n.x,n.y+rad+3);
+    }
+  });
+  ctx.restore();
+}
+function vis(n){return sq===""||n.l.toLowerCase().includes(sq)||n.desc.toLowerCase().includes(sq)||n.sg.toLowerCase().includes(sq);}
+function loop(){tick();draw();requestAnimationFrame(loop);}
+loop();
+setTimeout(()=>{simOn=false;},12000);
+
+function worldPt(cx,cy){return{x:(cx-panX)/sc,y:(cy-panY)/sc};}
+// cx/cy are already canvas-local (sidebar offset removed)
+function hit(cx,cy){
+  const p=worldPt(cx,cy);
+  for(let i=ND.length-1;i>=0;i--){
+    const n=ND[i];if(!activeS.has(n.s)||!vis(n))continue;
+    const dx=p.x-n.x,dy=p.y-n.y,rad=nodeR(n.ca)+2;
+    if(dx*dx+dy*dy<=rad*rad)return n;
+  }return null;
+}
+cv.addEventListener("mousedown",e=>{
+  const cx=e.clientX-206,cy=e.clientY-64;
+  dragN=hit(cx,cy);dragging=true;
+  lastX=cx;lastY=cy;downX=cx;downY=cy;
+});
+cv.addEventListener("mousemove",e=>{
+  const cx=e.clientX-206,cy=e.clientY-64;
+  if(dragging){
+    if(dragN){dragN.x+=(cx-lastX)/sc;dragN.y+=(cy-lastY)/sc;}
+    else{panX+=cx-lastX;panY+=cy-lastY;}
+    lastX=cx;lastY=cy;
+  }else{
+    const n=hit(cx,cy);hovN=n;cv.style.cursor=n?"pointer":"grab";
+    if(n)showTip(n,e.clientX,e.clientY);else hideTip();
+  }
+});
+cv.addEventListener("mouseup",e=>{
+  const cx=e.clientX-206,cy=e.clientY-64;
+  const moved=Math.abs(cx-downX)>5||Math.abs(cy-downY)>5;
+  if(!moved&&dragN)showInfo(dragN);
+  dragging=false;dragN=null;
+});
+cv.addEventListener("wheel",e=>{
+  e.preventDefault();
+  const cx=e.clientX-206,cy=e.clientY-64,f=e.deltaY<0?1.12:0.88;
+  const wx=(cx-panX)/sc,wy=(cy-panY)/sc;
+  sc=Math.max(0.08,Math.min(5,sc*f));
+  panX=cx-wx*sc;panY=cy-wy*sc;
+},{passive:false});
+cv.addEventListener("mouseleave",()=>{dragging=false;dragN=null;hideTip();});
+
+const tip=document.getElementById("tip");
+function showTip(n,mx,my){
+  tip.className="tip show";
+  document.getElementById("tn").textContent=n.l;
+  document.getElementById("ts").textContent=SEC[n.s].e+" "+SEC[n.s].l;
+  document.getElementById("tc").textContent="CA : "+caStr(n.ca)+" · "+n.eff+" pers.";
+  const tx=mx+16,ty=my-55;
+  tip.style.left=tx+"px";tip.style.top=ty+"px";
+}
+function hideTip(){tip.className="tip";}
+
+function showInfo(n){
+  hideTip();
+  const sec=SEC[n.s];
+  const ib=document.getElementById("ib");
+  ib.textContent=sec.e+" "+sec.l;
+  ib.style.cssText="background:"+sec.c+"22;color:"+sec.c+";display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:8px;";
+  document.getElementById("in").textContent=n.l;
+  document.getElementById("is").textContent=n.sg;
+  document.getElementById("ica").textContent=caStr(n.ca);
+  document.getElementById("ief").textContent=n.eff;
+  document.getElementById("isi").textContent=n.sg;
+  document.getElementById("ide").textContent=n.desc;
+  document.getElementById("ilk").href=n.url;
+  const conns=(ADJ[n.id]||[]).slice(0,8).map(id=>NM[id]?NM[id].l:id).filter(Boolean);
+  document.getElementById("ico").innerHTML=conns.map(c=>"<span class=\"ctag\">"+c+"</span>").join("");
+  document.getElementById("ip").className="info show";
+}
+window.closeInfo=()=>{document.getElementById("ip").className="info";};
+
+const sbd=document.getElementById("sbtns");
+SK.forEach(k=>{
+  const cnt=ND.filter(n=>n.s===k).length;
+  const b=document.createElement("button");
+  b.className="sbtn";
+  b.innerHTML="<span class=\"sdot\" style=\"background:"+SEC[k].c+"\"></span>"+SEC[k].e+" "+SEC[k].l+"<span class=\"scnt\">"+cnt+"</span>";
+  b.onclick=()=>{
+    if(activeS.has(k)){activeS.delete(k);b.classList.remove("on");}
+    else{activeS.add(k);b.classList.add("on");simOn=true;setTimeout(()=>{simOn=false;},5000);}
+    updateStats();
+  };
+  sbd.appendChild(b);
+});
+
+function updateStats(){
+  const vis=ND.filter(n=>activeS.has(n.s)).length;
+  const vlinks=LK.filter(([a,b])=>NM[a]&&NM[b]&&activeS.has(NM[a].s)&&activeS.has(NM[b].s)).length;
+  document.getElementById("stN").textContent=vis;
+  document.getElementById("stL").textContent=vlinks;
+}
+
+window.onSearch=()=>{sq=document.getElementById("search").value.toLowerCase();};
+window.zoomBy=f=>{
+  const cx=W/2,cy=H/2,wx=(cx-panX)/sc,wy=(cy-panY)/sc;
+  sc=Math.max(0.08,Math.min(5,sc*f));
+  panX=cx-wx*sc;panY=cy-wy*sc;
+};
+window.resetView=()=>{sc=0.65;panX=0;panY=0;simOn=true;setTimeout(()=>{simOn=false;},5000);};
+</script>
+</body>
+</html>

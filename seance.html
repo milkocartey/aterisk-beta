@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Séance en cours</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:#1A2E7A; --blue-mid:#2A45B0; --blue-light:#E8EEF9; --blue-pale:#F3F6FD;
+    --ink:#0D1526; --muted:#6B7280; --border:#DDE3F0;
+    --green:#16A34A; --green-bg:#DCFCE7;
+    --amber:#B45309; --amber-bg:#FEF3C7;
+    --red:#DC2626; --red-bg:#FEF2F2;
+    --radius:12px; --shadow:0 4px 24px rgba(26,46,122,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; color:var(--ink); background:#0D1117; min-height:100vh; display:flex; flex-direction:column; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    height: 64px; background:#111827; border-bottom:1px solid rgba(255,255,255,0.08);
+    display:flex; align-items:center; padding:0 24px; gap:20px; flex-shrink:0; z-index:10;
+  }
+  .tb-logo { font-family:'DM Serif Display',serif; font-size:20px; color:white; letter-spacing:1px; text-decoration:none; }
+  .tb-sep { width:1px; height:18px; background:rgba(255,255,255,0.12); }
+  .tb-session { font-size:13px; color:rgba(255,255,255,0.55); flex:1; }
+  .tb-session strong { color:white; }
+  .tb-timer { font-size:14px; font-weight:700; color:white; font-variant-numeric:tabular-nums; background:rgba(255,255,255,0.08); padding:5px 14px; border-radius:20px; min-width:74px; text-align:center; }
+  .tb-timer.warning { background:rgba(180,83,9,0.3); color:#FCD34D; }
+  .tb-timer.urgent { background:rgba(220,38,38,0.3); color:#FCA5A5; animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .tb-end { padding:8px 16px; background:var(--red); color:white; border:none; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s; }
+  .tb-end:hover { background:#B91C1C; }
+
+  /* ── LAYOUT ── */
+  .layout {
+    flex:1; display:flex; overflow:hidden;
+  }
+
+  /* ── SIDE PANEL ── */
+  .side {
+    width: 300px; flex-shrink:0;
+    background:#111827; border-right:1px solid rgba(255,255,255,0.08);
+    display:flex; flex-direction:column; overflow-y:auto;
+  }
+  .side-block { padding:18px 20px; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .side-label { font-size:10px; font-weight:700; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px; }
+
+  /* Participants */
+  .participants { display:flex; flex-direction:column; gap:8px; }
+  .participant { display:flex; align-items:center; gap:10px; }
+  .p-avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+  .p-avatar.student { background:rgba(42,69,176,0.3); }
+  .p-avatar.mentor  { background:rgba(22,163,74,0.2); }
+  .p-info { flex:1; }
+  .p-name { font-size:13px; font-weight:600; color:white; }
+  .p-role { font-size:11px; color:rgba(255,255,255,0.4); }
+  .p-status { width:8px; height:8px; border-radius:50%; background:#6B7280; flex-shrink:0; }
+  .p-status.online { background:var(--green); box-shadow:0 0 0 2px rgba(22,163,74,0.25); }
+
+  /* Session info */
+  .session-topic { font-size:14px; font-weight:600; color:white; margin-bottom:6px; line-height:1.4; }
+  .session-meta { font-size:12px; color:rgba(255,255,255,0.4); line-height:1.7; }
+  .session-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(42,69,176,0.25); color:#93C5FD; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; margin-top:8px; }
+
+  /* Pre-call checklist */
+  .checklist { display:flex; flex-direction:column; gap:8px; }
+  .check-item { display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .check-box { width:18px; height:18px; border-radius:4px; border:1.5px solid rgba(255,255,255,0.2); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; transition:all 0.15s; }
+  .check-item.done .check-box { background:var(--green); border-color:var(--green); color:white; }
+  .check-text { font-size:12px; color:rgba(255,255,255,0.5); transition:color 0.15s; }
+  .check-item.done .check-text { color:rgba(255,255,255,0.3); text-decoration:line-through; }
+
+  /* Notes */
+  .notes-area {
+    width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px; padding:10px 12px; font-family:'DM Sans',sans-serif;
+    font-size:12px; color:white; resize:none; min-height:90px; outline:none;
+    transition:border-color 0.2s; line-height:1.6;
+  }
+  .notes-area::placeholder { color:rgba(255,255,255,0.25); }
+  .notes-area:focus { border-color:rgba(42,69,176,0.6); }
+  .notes-hint { font-size:10px; color:rgba(255,255,255,0.2); margin-top:5px; }
+
+  /* Post-session actions (hidden during call) */
+  .post-actions { display:none; flex-direction:column; gap:8px; }
+  .post-actions.visible { display:flex; }
+  .btn-post { width:100%; padding:11px 16px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all 0.15s; display:flex; align-items:center; gap:8px; justify-content:center; }
+  .btn-post.primary { background:var(--blue-mid); color:white; }
+  .btn-post.primary:hover { background:var(--blue); }
+  .btn-post.ghost { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.12); }
+  .btn-post.ghost:hover { background:rgba(255,255,255,0.1); }
+
+  /* ── VIDEO AREA ── */
+  .video-wrap {
+    flex:1; display:flex; flex-direction:column; position:relative; background:#0D1117;
+  }
+
+  /* Pre-call screen */
+  .precall {
+    position:absolute; inset:0; background:#0D1117;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    z-index:5; padding:40px;
+  }
+  .precall.hidden { display:none; }
+  .precall-inner { max-width:460px; text-align:center; }
+  .precall-icon { font-size:52px; margin-bottom:20px; }
+  .precall-title { font-size:24px; font-weight:700; color:white; margin-bottom:8px; }
+  .precall-sub { font-size:14px; color:rgba(255,255,255,0.45); margin-bottom:28px; line-height:1.6; }
+
+  /* Camera/mic preview row */
+  .device-row { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+  .device-btn { display:flex; align-items:center; gap:7px; padding:9px 18px; border-radius:8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.7); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; }
+  .device-btn:hover { background:rgba(255,255,255,0.12); }
+  .device-btn.off { background:rgba(220,38,38,0.15); border-color:rgba(220,38,38,0.3); color:rgba(255,255,255,0.4); text-decoration:line-through; }
+  .device-dot { width:8px; height:8px; border-radius:50%; background:var(--green); }
+  .device-btn.off .device-dot { background:var(--red); }
+
+  .btn-join {
+    padding:16px 40px; background:var(--green); color:white; border:none;
+    border-radius:12px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700;
+    cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:10px;
+  }
+  .btn-join:hover { background:#15803D; transform:translateY(-2px); box-shadow:0 8px 24px rgba(22,163,74,0.3); }
+  .precall-note { font-size:12px; color:rgba(255,255,255,0.25); margin-top:16px; }
+
+  /* Jitsi iframe */
+  #jitsi-container { width:100%; height:100%; border:none; }
+  #jitsi-container iframe { width:100%; height:100%; border:none; }
+
+  /* ── END SCREEN ── */
+  .endscreen {
+    display:none; position:fixed; inset:0; background:rgba(13,17,23,0.97);
+    z-index:100; align-items:center; justify-content:center; flex-direction:column; padding:40px;
+  }
+  .endscreen.visible { display:flex; }
+  .endscreen-inner { max-width:480px; text-align:center; }
+  .endscreen-icon { font-size:56px; margin-bottom:20px; }
+  .endscreen-title { font-size:26px; font-weight:700; color:white; margin-bottom:10px; }
+  .endscreen-sub { font-size:14px; color:rgba(255,255,255,0.5); margin-bottom:32px; line-height:1.7; }
+  .endscreen-actions { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; margin:0 auto; }
+  .ea-btn { padding:14px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; }
+  .ea-btn.primary { background:var(--blue-mid); color:white; }
+  .ea-btn.primary:hover { background:var(--blue); }
+  .ea-btn.ghost { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.12); }
+  .ea-btn.ghost:hover { background:rgba(255,255,255,0.12); }
+
+  /* Rating */
+  .stars { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
+  .star { font-size:32px; cursor:pointer; filter:grayscale(1); transition:all 0.15s; }
+  .star:hover, .star.active { filter:grayscale(0); transform:scale(1.15); }
+
+  @media (max-width:768px) {
+    .side { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="dashboard.html" class="tb-logo">ATERISK</a>
+  <div class="tb-sep"></div>
+  <div class="tb-session" id="tb-session">Séance avec <strong id="tb-partner">—</strong></div>
+  <div class="tb-timer" id="tb-timer">30:00</div>
+  <button class="tb-end" onclick="endSession()">Terminer la séance</button>
+</div>
+
+<div class="layout">
+
+  <!-- SIDE PANEL -->
+  <aside class="side">
+
+    <!-- Participants -->
+    <div class="side-block">
+      <div class="side-label">Participants</div>
+      <div class="participants">
+        <div class="participant">
+          <div class="p-avatar student">👩‍🎓</div>
+          <div class="p-info">
+            <div class="p-name" id="participant-student">Étudiant</div>
+            <div class="p-role">Étudiant</div>
+          </div>
+          <div class="p-status online" id="status-student"></div>
+        </div>
+        <div class="participant">
+          <div class="p-avatar mentor">🎓</div>
+          <div class="p-info">
+            <div class="p-name" id="participant-mentor">Mentor</div>
+            <div class="p-role">Mentor</div>
+          </div>
+          <div class="p-status" id="status-mentor"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session info -->
+    <div class="side-block">
+      <div class="side-label">Cette séance</div>
+      <div class="session-topic" id="session-topic">Stratégie de candidature</div>
+      <div class="session-meta" id="session-meta">30 minutes · 1 token</div>
+      <div class="session-tag" id="session-tag">💡 Séance</div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="side-block" id="checklist-block">
+      <div class="side-label">Avant de commencer</div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">J'ai relu le profil du participant</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">Mon micro fonctionne</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">Endroit calme, connexion stable</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text">Objectif de séance défini</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="side-block" style="flex:1">
+      <div class="side-label">Notes de séance</div>
+      <textarea class="notes-area" id="session-notes" placeholder="Prends des notes pendant la séance…&#10;&#10;Elles seront disponibles dans ton rapport."></textarea>
+      <div class="notes-hint">Sauvegardées automatiquement</div>
+    </div>
+
+    <!-- Post-session actions (shown after call ends) -->
+    <div class="side-block" id="post-block">
+      <div class="side-label" id="post-label" style="display:none">Après la séance</div>
+      <div class="post-actions" id="post-actions">
+        <a class="btn-post primary" id="btn-rapport" href="aterisk_rapport_mentor.html">📋 Rédiger le rapport</a>
+        <button class="btn-post ghost" onclick="goToDashboard()">← Retour au dashboard</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- VIDEO AREA -->
+  <div class="video-wrap">
+
+    <!-- PRE-CALL SCREEN -->
+    <div class="precall" id="precall">
+      <div class="precall-inner">
+        <div class="precall-icon">🎥</div>
+        <h2 class="precall-title" id="precall-title">Prêt pour ta séance ?</h2>
+        <p class="precall-sub" id="precall-sub">Vérifie ta caméra et ton micro avant de rejoindre.<br>L'autre participant sera notifié de ton arrivée.</p>
+
+        <div class="device-row">
+          <button class="device-btn" id="btn-cam" onclick="toggleDevice('cam')">
+            <span class="device-dot"></span> Caméra activée
+          </button>
+          <button class="device-btn" id="btn-mic" onclick="toggleDevice('mic')">
+            <span class="device-dot"></span> Micro activé
+          </button>
+        </div>
+
+        <button class="btn-join" onclick="joinCall()">
+          📹 Rejoindre la séance
+        </button>
+        <div class="precall-note">La séance est chiffrée · aucune donnée n'est enregistrée</div>
+      </div>
+    </div>
+
+    <!-- JITSI CONTAINER -->
+    <div id="jitsi-container"></div>
+
+  </div>
+</div>
+
+<!-- END SCREEN -->
+<div class="endscreen" id="endscreen">
+  <div class="endscreen-inner">
+    <div class="endscreen-icon">✅</div>
+    <h2 class="endscreen-title">Séance terminée !</h2>
+    <p class="endscreen-sub" id="endscreen-sub">Super séance. Pense à rédiger le rapport pour garder une trace et aider l'étudiant à progresser.</p>
+
+    <div class="stars" id="star-rating">
+      <span class="star" onclick="rateStar(1)">⭐</span>
+      <span class="star" onclick="rateStar(2)">⭐</span>
+      <span class="star" onclick="rateStar(3)">⭐</span>
+      <span class="star" onclick="rateStar(4)">⭐</span>
+      <span class="star" onclick="rateStar(5)">⭐</span>
+    </div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:24px">Note cette séance (optionnel)</p>
+
+    <div class="endscreen-actions">
+      <a class="ea-btn primary" id="btn-end-rapport" href="aterisk_rapport_mentor.html">📋 Rédiger le rapport de séance</a>
+      <button class="ea-btn ghost" onclick="goToDashboard()">← Retour à mon espace</button>
+    </div>
+  </div>
+</div>
+
+<!-- Jitsi API -->
+<script src="https://meet.jit.si/external_api.js"></script>
+<script>
+// ── URL PARAMS ───────────────────────────────────────────────────────────────
+// seance.html?room=aterisk-sarah-lola-20260323&mentor=Sarah+L.&student=Lola+M.&topic=Stratégie+CV&role=etudiant
+const params   = new URLSearchParams(location.search);
+const roomName = params.get('room')     || 'aterisk-demo-' + Date.now().toString(36);
+const mentor   = params.get('mentor')   || 'Mentor';
+const student  = params.get('student')  || 'Étudiant';
+const topic    = params.get('topic')    || 'Stratégie de candidature';
+const role     = params.get('role')     || 'etudiant'; // 'etudiant' | 'mentor'
+const tokens   = params.get('tokens')   || '1';
+
+// ── POPULATE UI ──────────────────────────────────────────────────────────────
+const partner = role === 'mentor' ? student : mentor;
+document.getElementById('tb-partner').textContent       = partner;
+document.getElementById('participant-student').textContent = student;
+document.getElementById('participant-mentor').textContent  = mentor;
+document.getElementById('session-topic').textContent    = topic;
+document.getElementById('session-meta').textContent     = '30 minutes · ' + tokens + ' token' + (tokens > 1 ? 's' : '');
+document.getElementById('session-tag').textContent      = role === 'mentor' ? '🎓 Tu es mentor' : '👩‍🎓 Tu es étudiant(e)';
+document.getElementById('precall-title').textContent    = role === 'mentor' ? 'Prêt pour ta séance ?' : 'Prête pour ta séance ?';
+document.getElementById('precall-sub').textContent      = 'Vérifie ton micro et ta caméra avant de rejoindre.\n' + partner + ' te rejoindra dans la salle.';
+document.title = 'ATERISK — Séance avec ' + partner;
+
+// Post-session: redirect to right dashboard
+const dashboardUrl = role === 'mentor' ? 'dashboard-mentor.html' : 'dashboard.html';
+document.getElementById('btn-end-rapport').href = 'aterisk_rapport_mentor.html?room=' + roomName;
+
+// Adapt end screen text based on role
+if(role === 'etudiant'){
+  document.getElementById('endscreen-sub').textContent = 'Séance avec ' + mentor + ' terminée. Ton rapport arrivera sous 12h dans ton espace.';
+  document.getElementById('btn-end-rapport').textContent = '← Retour à mon espace';
+  document.getElementById('btn-end-rapport').href = 'dashboard.html';
+  document.getElementById('btn-end-rapport').className = 'ea-btn primary';
+  document.querySelector('.endscreen-actions .ea-btn.ghost').style.display = 'none';
+} else {
+  document.getElementById('post-label').style.display = '';
+}
+
+// ── TIMER ────────────────────────────────────────────────────────────────────
+let totalSeconds = 30 * 60;
+let timerInterval = null;
+let callStarted = false;
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    totalSeconds--;
+    const m = Math.floor(totalSeconds / 60).toString().padStart(2,'0');
+    const s = (totalSeconds % 60).toString().padStart(2,'0');
+    const el = document.getElementById('tb-timer');
+    el.textContent = m + ':' + s;
+    if(totalSeconds <= 120) el.className = 'tb-timer urgent';
+    else if(totalSeconds <= 300) el.className = 'tb-timer warning';
+    if(totalSeconds <= 0) { clearInterval(timerInterval); endSession(); }
+  }, 1000);
+}
+
+// ── DEVICE TOGGLES ───────────────────────────────────────────────────────────
+let camOn = true, micOn = true;
+function toggleDevice(type) {
+  if(type === 'cam') {
+    camOn = !camOn;
+    const btn = document.getElementById('btn-cam');
+    btn.className = 'device-btn' + (camOn ? '' : ' off');
+    btn.innerHTML = `<span class="device-dot"></span> Caméra ${camOn ? 'activée' : 'désactivée'}`;
+    if(window._jitsi) window._jitsi.executeCommand('toggleVideo');
+  } else {
+    micOn = !micOn;
+    const btn = document.getElementById('btn-mic');
+    btn.className = 'device-btn' + (micOn ? '' : ' off');
+    btn.innerHTML = `<span class="device-dot"></span> Micro ${micOn ? 'activé' : 'coupé'}`;
+    if(window._jitsi) window._jitsi.executeCommand('toggleAudio');
+  }
+}
+
+// ── JOIN CALL ────────────────────────────────────────────────────────────────
+function joinCall() {
+  document.getElementById('precall').classList.add('hidden');
+  callStarted = true;
+  startTimer();
+
+  // Mark mentor as online
+  document.getElementById('status-mentor').className = 'p-status online';
+
+  // Save notes autosave
+  const notesKey = 'notes_' + roomName;
+  const saved = localStorage.getItem(notesKey);
+  if(saved) document.getElementById('session-notes').value = saved;
+  document.getElementById('session-notes').addEventListener('input', () => {
+    localStorage.setItem(notesKey, document.getElementById('session-notes').value);
+  });
+
+  // ── JITSI EMBED ─────────────────────────────────────────────────────────
+  const displayName = role === 'mentor' ? mentor : student;
+
+  try {
+    const domain = 'meet.jit.si';
+    const options = {
+      roomName: roomName,
+      width: '100%',
+      height: '100%',
+      parentNode: document.getElementById('jitsi-container'),
+      userInfo: {
+        displayName: displayName,
+      },
+      configOverwrite: {
+        startWithAudioMuted: !micOn,
+        startWithVideoMuted: !camOn,
+        disableModeratorIndicator: true,
+        enableWelcomePage: false,
+        prejoinPageEnabled: false,
+        disableInviteFunctions: true,
+        toolbarButtons: [
+          'microphone', 'camera', 'desktop', 'chat',
+          'raisehand', 'tileview', 'hangup'
+        ],
+        disableDeepLinking: true,
+        defaultLanguage: 'fr',
+      },
+      interfaceConfigOverwrite: {
+        SHOW_JITSI_WATERMARK: false,
+        SHOW_WATERMARK_FOR_GUESTS: false,
+        SHOW_BRAND_WATERMARK: false,
+        SHOW_POWERED_BY: false,
+        TOOLBAR_ALWAYS_VISIBLE: true,
+        DISABLE_JOIN_LEAVE_NOTIFICATIONS: false,
+        DEFAULT_REMOTE_DISPLAY_NAME: partner,
+        APP_NAME: 'ATERISK',
+        NATIVE_APP_NAME: 'ATERISK',
+        PROVIDER_NAME: 'ATERISK',
+      },
+    };
+
+    window._jitsi = new JitsiMeetExternalAPI(domain, options);
+
+    // Events
+    window._jitsi.addEventListener('videoConferenceJoined', () => {
+      document.getElementById('status-mentor').className = 'p-status online';
+    });
+    window._jitsi.addEventListener('participantJoined', () => {
+      document.getElementById('status-mentor').className = 'p-status online';
+      document.getElementById('status-student').className = 'p-status online';
+    });
+    window._jitsi.addEventListener('readyToClose', () => { endSession(); });
+    window._jitsi.addEventListener('videoConferenceLeft', () => { endSession(); });
+
+  } catch(e) {
+    // Jitsi not available (offline/blocked) — show fallback
+    document.getElementById('jitsi-container').innerHTML = `
+      <div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:rgba(255,255,255,0.5);text-align:center;padding:40px">
+        <div style="font-size:48px">📡</div>
+        <h3 style="font-size:18px;font-weight:700;color:white">Connexion à la salle…</h3>
+        <p style="font-size:14px;line-height:1.7">La salle de visio <strong style="color:#93C5FD">${roomName}</strong> est prête.<br>
+        Si la vidéo ne s'affiche pas, ouvre directement :<br>
+        <a href="https://meet.jit.si/${roomName}" target="_blank" style="color:#60A5FA;font-weight:600">meet.jit.si/${roomName} →</a></p>
+        <p style="font-size:12px;opacity:0.5">Partage ce lien avec ${partner} pour la rejoindre ensemble.</p>
+      </div>`;
+    console.warn('Jitsi API error:', e);
+  }
+}
+
+// ── END SESSION ───────────────────────────────────────────────────────────────
+function endSession() {
+  clearInterval(timerInterval);
+  if(window._jitsi) {
+    try { window._jitsi.dispose(); } catch(e) {}
+    window._jitsi = null;
+  }
+  // Show post actions in sidebar
+  document.getElementById('post-label').style.display = '';
+  document.getElementById('post-actions').classList.add('visible');
+  // Show end screen
+  document.getElementById('endscreen').classList.add('visible');
+
+  // Save session to localStorage
+  const session = {
+    room: roomName, mentor, student, topic, role,
+    notes: document.getElementById('session-notes').value,
+    endedAt: new Date().toISOString(),
+    duration: Math.round((30 * 60 - totalSeconds) / 60) + ' min',
+  };
+  const sessions = JSON.parse(localStorage.getItem('aterisk_sessions') || '[]');
+  sessions.push(session);
+  localStorage.setItem('aterisk_sessions', JSON.stringify(sessions));
+}
+
+function goToDashboard() { window.location.href = dashboardUrl; }
+
+// ── CHECKLIST ────────────────────────────────────────────────────────────────
+function toggleCheck(el) { el.classList.toggle('done'); }
+
+// ── STAR RATING ───────────────────────────────────────────────────────────────
+function rateStar(n) {
+  document.querySelectorAll('.star').forEach((s,i) => s.classList.toggle('active', i < n));
+}
+</script>
+</body>
+</html>

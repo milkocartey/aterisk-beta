@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#1A2E7A;--blue-mid:#2A45B0;--blue-light:#E8EEF9;--blue-pale:#F3F6FD;--ink:#0D1526;--muted:#6B7280;--border:#E5E7EB;--white:#FFFFFF;--green:#16A34A;--green-bg:#F0FDF4;--red:#DC2626;--red-bg:#FEF2F2;--amber:#B45309;--amber-bg:#FFFBEB;--purple:#7C3AED;--purple-bg:#F5F3FF;--sidebar:220px;--topbar:56px;--shadow:0 1px 8px rgba(0,0,0,0.06);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;color:var(--ink);background:#F1F5F9;display:flex;min-height:100vh;}
+.sb{width:var(--sidebar);background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sb-logo a{font-family:'DM Serif Display',serif;font-size:20px;color:white;text-decoration:none;letter-spacing:1px;}
+.sb-logo p{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;text-transform:uppercase;letter-spacing:1px;}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto;}
+.sb-section{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:12px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;transition:all 0.15s;margin-bottom:1px;border:none;background:transparent;width:100%;text-align:left;}
+.sb-item:hover{background:rgba(255,255,255,0.08);}
+.sb-item.active{background:rgba(255,255,255,0.14);}
+.sb-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.sb-label{font-size:12px;font-weight:500;color:rgba(255,255,255,0.75);}
+.sb-item.active .sb-label{color:white;}
+.sb-badge{margin-left:auto;background:var(--red);color:white;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.sb-badge.green{background:var(--green);}
+.sb-badge.amber{background:var(--amber);}
+.sb-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,0.08);}
+.sb-footer a{font-size:11px;color:rgba(255,255,255,0.35);text-decoration:none;display:block;padding:3px 0;transition:color 0.15s;}
+.sb-footer a:hover{color:rgba(255,255,255,0.7);}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;}
+.topbar{background:white;height:var(--topbar);padding:0 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:40;box-shadow:var(--shadow);}
+.tb-title{font-size:15px;font-weight:600;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;}
+.tb-btn.primary{background:var(--blue);color:white;}
+.tb-btn.primary:hover{background:var(--blue-mid);}
+.tb-btn.ghost{background:white;color:var(--muted);border:1px solid var(--border);}
+.tb-btn.ghost:hover{border-color:var(--blue-mid);color:var(--blue);}
+.tb-avatar{width:32px;height:32px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative;cursor:pointer;}
+.notif-dot{width:7px;height:7px;background:var(--red);border-radius:50%;position:absolute;top:6px;right:5px;border:1.5px solid white;}
+.content{padding:24px 28px 60px;}
+.section{display:none;}
+.section.active{display:block;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.kpi{background:white;border:1px solid var(--border);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow);}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:5px;}
+.kpi-val{font-size:26px;font-weight:700;line-height:1;}
+.kpi-sub{font-size:11px;margin-top:5px;}
+.kpi-icon{float:right;font-size:22px;opacity:0.18;margin-top:-4px;}
+.up{color:var(--green);}.dn{color:var(--red);}.neu{color:var(--muted);}
+.card{background:white;border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-head h3{font-size:14px;font-weight:600;}
+.card-head-right{display:flex;align-items:center;gap:8px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:10px 18px;text-align:left;background:#FAFAFA;border-bottom:1px solid var(--border);}
+td{font-size:13px;padding:11px 18px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#FAFAFA;}
+.td-av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;margin-right:7px;vertical-align:middle;}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.badge.green{background:var(--green-bg);color:var(--green);}
+.badge.red{background:var(--red-bg);color:var(--red);}
+.badge.blue{background:var(--blue-light);color:var(--blue-mid);}
+.badge.amber{background:var(--amber-bg);color:var(--amber);}
+.badge.purple{background:var(--purple-bg);color:var(--purple);}
+.badge.gray{background:#F3F4F6;color:var(--muted);}
+.abtn{font-size:11px;padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.abtn:hover{border-color:var(--blue-mid);color:var(--blue);}
+.abtn.danger:hover{border-color:var(--red);color:var(--red);}
+.abtn.ok:hover{border-color:var(--green);color:var(--green);}
+.search-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);}
+.si{flex:1;padding:8px 13px;border:1px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.si:focus{border-color:var(--blue-mid);}
+.sel{padding:8px 13px;border:1px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;background:white;cursor:pointer;}
+.rev-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.rev-row:last-child{border-bottom:none;}
+.rev-lbl{font-size:12px;min-width:220px;}
+.rev-bar-w{flex:1;background:#F1F5F9;border-radius:4px;height:6px;}
+.rev-bar{height:6px;border-radius:4px;background:var(--blue-mid);}
+.rev-val{font-size:13px;font-weight:700;min-width:80px;text-align:right;}
+.tl{padding:16px 18px;}
+.tl-item{display:flex;gap:12px;padding:7px 0;}
+.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.tl-text{font-size:12px;line-height:1.5;}
+.tl-time{font-size:11px;color:var(--muted);margin-top:1px;}
+.prog-row{margin-bottom:12px;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+.prog-w{background:#F1F5F9;border-radius:4px;height:7px;}
+.prog-b{height:7px;border-radius:4px;}
+.school-card{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;}
+.school-card:last-child{border-bottom:none;}
+.school-logo{width:40px;height:40px;background:var(--blue-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.school-info{flex:1;}
+.school-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.school-meta{font-size:11px;color:var(--muted);}
+.school-stats{display:flex;gap:16px;}
+.school-stat{font-size:11px;color:var(--muted);text-align:center;}
+.school-stat b{display:block;font-size:14px;font-weight:700;color:var(--ink);}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:100px;padding:0 4px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{width:100%;border-radius:4px 4px 0 0;}
+.bar-lbl{font-size:9px;color:var(--muted);}
+.bar-val{font-size:9px;font-weight:600;color:var(--ink);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info{font-size:13px;}
+.toggle-info small{display:block;font-size:11px;color:var(--muted);margin-top:1px;}
+.toggle{width:38px;height:21px;background:#D1D5DB;border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;top:2.5px;left:2.5px;width:16px;height:16px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.toggle.on::after{transform:translateX(17px);}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;animation:fadeIn 0.2s ease;}
+.modal{background:white;border-radius:14px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-head h3{font-size:15px;font-weight:600;}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);padding:4px 6px;border-radius:6px;}
+.modal-close:hover{background:var(--border);}
+.modal-body{padding:20px 22px;}
+.ff{margin-bottom:15px;}
+.ff label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+.ff input,.ff select,.ff textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blue-mid);}
+.ff textarea{resize:none;min-height:75px;}
+.ff-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-foot{padding:13px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+.btn-m{padding:9px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;}
+.btn-m.p{background:var(--blue);color:white;}
+.btn-m.p:hover{background:var(--blue-mid);}
+.btn-m.g{background:white;color:var(--muted);border:1px solid var(--border);}
+.btn-m.g:hover{border-color:var(--blue-mid);color:var(--blue);}
+/* CMS */
+.cms-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;}
+.cms-tab{padding:10px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;}
+.cms-tab:hover{color:var(--ink);}
+.cms-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.cms-panel{display:none;}
+.cms-panel.active{display:block;}
+.cms-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.cms-search{flex:1;padding:9px 13px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.cms-search:focus{border-color:var(--blue-mid);}
+.cms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.cms-card{background:white;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;position:relative;transition:all 0.15s;}
+.cms-card:hover{border-color:var(--blue-mid);box-shadow:var(--shadow);}
+.cms-card-photo{height:110px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;}
+.cms-card-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.3));}
+.cms-card-body{padding:12px 14px;}
+.cms-card-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.cms-card-sub{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.cms-card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.cms-card-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--blue-light);color:var(--blue-mid);}
+.cms-card-actions{display:flex;gap:6px;}
+.cms-card-btn{flex:1;padding:7px;font-size:11px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:white;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.15s;text-align:center;}
+.cms-card-btn:hover{border-color:var(--blue-mid);color:var(--blue);}
+.cms-card-btn.del:hover{border-color:var(--red);color:var(--red);}
+.cms-card-badge{position:absolute;top:8px;left:8px;z-index:2;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.cms-empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.cms-empty .ce-icon{font-size:40px;margin-bottom:12px;}
+.cms-empty p{font-size:14px;}
+.res-list{display:flex;flex-direction:column;gap:10px;}
+.res-item{background:white;border:1.5px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;transition:all 0.15s;}
+.res-item:hover{border-color:var(--blue-mid);}
+.res-icon{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.res-info{flex:1;}
+.res-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+.res-meta{font-size:11px;color:var(--muted);}
+.res-actions{display:flex;gap:6px;}
+
+  /* ── CANDIDATURES ─────────────────────────────────────────────────────── */
+  .cand-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+  .cand-filter{display:flex;gap:6px;}
+  .cand-chip{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:white;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+  .cand-chip:hover{border-color:var(--blue-mid);color:var(--blue);}
+  .cand-chip.active{background:var(--blue);border-color:var(--blue);color:white;}
+  .cand-chip.amber.active{background:var(--amber);border-color:var(--amber);color:white;}
+  .cand-chip.green.active{background:var(--green);border-color:var(--green);color:white;}
+  .cand-chip.red.active{background:var(--red);border-color:var(--red);color:white;}
+  .cand-list{display:flex;flex-direction:column;gap:14px;}
+  .cand-card{background:white;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.15s;}
+  .cand-card:hover{box-shadow:var(--shadow);}
+  .cand-card.pending{border-left:4px solid var(--amber);}
+  .cand-card.approved{border-left:4px solid var(--green);}
+  .cand-card.rejected{border-left:4px solid var(--red);opacity:0.65;}
+  .cand-head{padding:16px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;}
+  .cand-avatar{width:42px;height:42px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .cand-info{flex:1;}
+  .cand-name{font-size:15px;font-weight:700;margin-bottom:2px;}
+  .cand-meta{font-size:12px;color:var(--muted);}
+  .cand-status{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .status-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
+  .status-pill.pending{background:#FEF3C7;color:#B45309;}
+  .status-pill.approved{background:#DCFCE7;color:#166534;}
+  .status-pill.rejected{background:#FEE2E2;color:#991B1B;}
+  .cand-expand{font-size:13px;color:var(--muted);transition:transform 0.2s;}
+  .cand-card.open .cand-expand{transform:rotate(180deg);}
+  .cand-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border);}
+  .cand-card.open .cand-body{display:block;}
+  .cand-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;}
+  .cand-field{font-size:13px;}
+  .cand-field-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+  .cand-field-val{color:var(--ink);line-height:1.5;}
+  .cand-bio{background:var(--blue-pale);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--ink);line-height:1.6;margin:0 0 16px;}
+  .cand-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+  .cand-tag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--blue-light);color:var(--blue-mid);}
+  .cand-actions{display:flex;gap:10px;align-items:center;padding-top:12px;border-top:1px solid var(--border);}
+  .btn-approve{padding:9px 20px;background:var(--green);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+  .btn-approve:hover{background:#15803D;}
+  .btn-reject{padding:9px 20px;background:white;color:var(--red);border:1.5px solid var(--red);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+  .btn-reject:hover{background:#FEF2F2;}
+  .btn-msg{padding:9px 16px;background:white;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-left:auto;}
+  .btn-msg:hover{border-color:var(--blue-mid);color:var(--blue);}
+  .cand-empty{text-align:center;padding:60px 20px;color:var(--muted);}
+  .cand-empty .ce-icon{font-size:40px;margin-bottom:12px;}
+  .cand-empty p{font-size:14px;}
+  .cand-date{font-size:11px;color:var(--muted);margin-top:2px;}
+</style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sb-logo">
+    <a href="admin.html">ATERISK</a>
+    <p>Espace Admin</p>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Principal</div>
+    <button class="sb-item active" onclick="show('overview',this)"><span class="sb-icon">📊</span><span class="sb-label">Vue d'ensemble</span></button>
+    <button class="sb-item" onclick="show('students',this)"><span class="sb-icon">👩‍🎓</span><span class="sb-label">Étudiants</span><span class="sb-badge green">142</span></button>
+    <button class="sb-item" onclick="show('mentors',this)"><span class="sb-icon">🎓</span><span class="sb-label">Mentors</span><span class="sb-badge amber">6</span></button>
+    <button class="sb-item" onclick="show('candidatures',this)" id="sb-candidatures"><span class="sb-icon">📥</span><span class="sb-label">Candidatures</span><span class="sb-badge red" id="badge-candidatures" style="display:none">0</span></button>
+    <button class="sb-item" onclick="show('seances',this)"><span class="sb-icon">📅</span><span class="sb-label">Séances</span></button>
+    <div class="sb-section">Finance</div>
+    <button class="sb-item" onclick="show('tokens',this)"><span class="sb-icon">🪙</span><span class="sb-label">Tokens & Revenus</span></button>
+    <button class="sb-item" onclick="show('schools',this)"><span class="sb-icon">🏫</span><span class="sb-label">Écoles partenaires</span><span class="sb-badge green">7</span></button>
+    <div class="sb-section">Contenu</div>
+    <button class="sb-item" onclick="show('content',this)"><span class="sb-icon">✏️</span><span class="sb-label">Mentors & Ressources</span></button>
+    <div class="sb-section">Outils</div>
+    <button class="sb-item" onclick="show('reports',this)"><span class="sb-icon">📋</span><span class="sb-label">Rapports & Exports</span></button>
+    <button class="sb-item" onclick="show('settings',this)"><span class="sb-icon">⚙️</span><span class="sb-label">Paramètres</span></button>
+  </nav>
+  <div class="sb-footer">
+    <a href="dashboard.html">← Espace étudiant</a>
+    <a href="index.html">Site public</a>
+    <a href="mentor-inscription.html">Candidatures mentor</a>
+    <a href="index.html" onclick="return confirm('Se déconnecter ?')">Se déconnecter</a>
+  </div>
+</aside>
+
+<div class="main">
+<div class="topbar">
+  <div class="tb-title" id="tb-title">Vue d'ensemble</div>
+  <div class="tb-right">
+    <button class="tb-btn ghost" onclick="show('reports',document.querySelectorAll('.sb-item')[7])">📤 Exporter</button>
+    <button class="tb-btn primary" id="tb-action" onclick="openModal('add-student')">+ Ajouter</button>
+    <div class="tb-avatar">👤<span class="notif-dot"></span></div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- OVERVIEW -->
+<div class="section active" id="sec-overview">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-icon">👩‍🎓</div><div class="kpi-label">Étudiants actifs</div><div class="kpi-val">142</div><div class="kpi-sub up">↑ +12 ce mois</div></div>
+    <div class="kpi"><div class="kpi-icon">🎓</div><div class="kpi-label">Mentors actifs</div><div class="kpi-val">38</div><div class="kpi-sub up">↑ +4 ce mois</div></div>
+    <div class="kpi"><div class="kpi-icon">📅</div><div class="kpi-label">Séances ce mois</div><div class="kpi-val">217</div><div class="kpi-sub up">↑ +31 vs mois dernier</div></div>
+    <div class="kpi"><div class="kpi-icon">💶</div><div class="kpi-label">Revenu net mars</div><div class="kpi-val">4 820 €</div><div class="kpi-sub up">↑ +18%</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>Séances / semaine — Mars 2026</h3><span class="badge blue">En cours</span></div>
+      <div style="padding:18px 18px 12px">
+        <div class="bar-chart">
+          <div class="bar-col"><div class="bar-val">38</div><div class="bar" style="height:58px;background:#3B82F6"></div><div class="bar-lbl">S1</div></div>
+          <div class="bar-col"><div class="bar-val">45</div><div class="bar" style="height:70px;background:#3B82F6"></div><div class="bar-lbl">S2</div></div>
+          <div class="bar-col"><div class="bar-val">61</div><div class="bar" style="height:94px;background:#1A2E7A"></div><div class="bar-lbl">S3</div></div>
+          <div class="bar-col"><div class="bar-val">73</div><div class="bar" style="height:100px;background:var(--blue-light)"></div><div class="bar-lbl">S4↗</div></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:20px;font-size:12px;color:var(--muted)">
+          <span><b style="color:var(--green)">68%</b> assiduité</span>
+          <span><b style="color:var(--amber)">5</b> annulations</span>
+          <span><b style="color:var(--blue)">★ 4.87</b> note moyenne</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Revenus mars — 4 820 € net</h3></div>
+      <div style="padding:14px 18px">
+        <div class="rev-row"><div class="rev-lbl">Abonnements directs</div><div class="rev-bar-w"><div class="rev-bar" style="width:52%"></div></div><div class="rev-val" style="color:var(--green)">2 508 €</div></div>
+        <div class="rev-row"><div class="rev-lbl">Tokens (30% ATERISK)</div><div class="rev-bar-w"><div class="rev-bar" style="width:24%"></div></div><div class="rev-val" style="color:var(--green)">1 162 €</div></div>
+        <div class="rev-row"><div class="rev-lbl">Forfait écoles</div><div class="rev-bar-w"><div class="rev-bar" style="width:27%"></div></div><div class="rev-val" style="color:var(--green)">1 300 €</div></div>
+        <div class="rev-row"><div class="rev-lbl" style="color:var(--red)">− Reversement mentors</div><div class="rev-bar-w"><div class="rev-bar" style="width:32%;background:var(--red)"></div></div><div class="rev-val" style="color:var(--red)">−1 519 €</div></div>
+        <div class="rev-row"><div class="rev-lbl" style="color:var(--red)">− Charges fixes</div><div class="rev-bar-w"><div class="rev-bar" style="width:9%;background:var(--red)"></div></div><div class="rev-val" style="color:var(--red)">−420 €</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>Dernières inscriptions</h3><a style="font-size:12px;color:var(--blue-mid);cursor:pointer;text-decoration:none" onclick="show('students',document.querySelectorAll('.sb-item')[1])">Voir tout →</a></div>
+      <table><tr><th>Étudiant</th><th>Secteur</th><th>Date</th><th>Statut</th></tr>
+        <tr><td><span class="td-av" style="background:#EEF2FF">👩</span>Lola Martin</td><td>Marketing</td><td>20 mars</td><td><span class="badge green">Actif</span></td></tr>
+        <tr><td><span class="td-av" style="background:#F0FDF4">👨</span>Nabil Oussama</td><td>Commerce</td><td>19 mars</td><td><span class="badge green">Actif</span></td></tr>
+        <tr><td><span class="td-av" style="background:#FFF7ED">👩</span>Camille Dupont</td><td>Tech</td><td>18 mars</td><td><span class="badge amber">En attente</span></td></tr>
+        <tr><td><span class="td-av" style="background:#FDF4FF">👨</span>Adam Benali</td><td>RH</td><td>17 mars</td><td><span class="badge green">Actif</span></td></tr>
+        <tr><td><span class="td-av" style="background:#F0FDF4">👩</span>Sara Leblanc</td><td>Finance</td><td>16 mars</td><td><span class="badge blue">École</span></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Activité récente</h3></div>
+      <div class="tl">
+        <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div><div class="tl-text">Sarah L. — 4 nouveaux créneaux ouverts</div><div class="tl-time">Il y a 12 min</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:var(--blue-mid)"></div><div><div class="tl-text">Nouvelle candidature mentor — Julien R. (Commerce)</div><div class="tl-time">Il y a 1h</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:var(--amber)"></div><div><div class="tl-text">ICD Paris — achat pack 50 tokens (450 €)</div><div class="tl-time">Il y a 3h</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:var(--red)"></div><div><div class="tl-text">Séance annulée — Thomas R. / Camille D.</div><div class="tl-time">Il y a 5h</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div><div class="tl-text">Lola M. placée ✓ — badge alumni envoyé</div><div class="tl-time">Hier 18h22</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:var(--purple)"></div><div><div class="tl-text">Rapport trimestriel généré — ESCP</div><div class="tl-time">Hier 14h00</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Taux de placement déclaré par secteur</h3><span class="badge gray">Déclarations volontaires</span></div>
+    <div style="padding:16px 18px">
+      <div class="three-col" style="margin-bottom:0">
+        <div><div class="prog-row"><div class="prog-lbl"><span>📣 Marketing & Com'</span><b>78%</b></div><div class="prog-w"><div class="prog-b" style="width:78%;background:#EC4899"></div></div></div></div>
+        <div><div class="prog-row"><div class="prog-lbl"><span>💼 Commerce</span><b>72%</b></div><div class="prog-w"><div class="prog-b" style="width:72%;background:#F59E0B"></div></div></div></div>
+        <div><div class="prog-row"><div class="prog-lbl"><span>💻 Tech</span><b>81%</b></div><div class="prog-w"><div class="prog-b" style="width:81%;background:#8B5CF6"></div></div></div></div>
+        <div><div class="prog-row"><div class="prog-lbl"><span>🤝 RH</span><b>65%</b></div><div class="prog-w"><div class="prog-b" style="width:65%;background:#60A5FA"></div></div></div></div>
+        <div><div class="prog-row"><div class="prog-lbl"><span>💳 Finance</span><b>58%</b></div><div class="prog-w"><div class="prog-b" style="width:58%;background:#10B981"></div></div></div></div>
+        <div><div class="prog-row"><div class="prog-lbl"><span>🏥 Santé</span><b>44%</b></div><div class="prog-w"><div class="prog-b" style="width:44%;background:#EF4444"></div></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENTS -->
+<div class="section" id="sec-students">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-icon">👩‍🎓</div><div class="kpi-label">Total inscrits</div><div class="kpi-val">142</div><div class="kpi-sub up">↑ +12</div></div>
+    <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-label">Actifs</div><div class="kpi-val">118</div><div class="kpi-sub neu">83%</div></div>
+    <div class="kpi"><div class="kpi-icon">🏫</div><div class="kpi-label">Via école</div><div class="kpi-val">54</div><div class="kpi-sub" style="color:var(--blue-mid)">38%</div></div>
+    <div class="kpi"><div class="kpi-icon">🏆</div><div class="kpi-label">Alumni placés</div><div class="kpi-val">67</div><div class="kpi-sub up">47% déclarés</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Tous les étudiants</h3><button class="tb-btn ghost" onclick="openModal('add-student')">+ Ajouter</button></div>
+    <div class="search-bar">
+      <input class="si" placeholder="Rechercher..." oninput="ft(this,'st')">
+      <select class="sel" onchange="ft(this,'st')"><option value="">Tous secteurs</option><option>Marketing</option><option>Commerce</option><option>Tech</option><option>RH</option><option>Finance</option></select>
+      <select class="sel" onchange="ft(this,'st')"><option value="">Tous statuts</option><option>Actif</option><option>En attente</option><option>Placé</option></select>
+    </div>
+    <table id="st">
+      <tr><th>Étudiant</th><th>Formation</th><th>Secteur</th><th>Tokens</th><th>Séances</th><th>Statut</th><th>Actions</th></tr>
+      <tr><td><span class="td-av" style="background:#EEF2FF">👩</span><b>Lola Martin</b></td><td>BTS Commerce · Paris</td><td>📣 Marketing</td><td>3</td><td>2</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#F0FDF4">👨</span><b>Nabil Oussama</b></td><td>Licence Pro · Lyon</td><td>💼 Commerce</td><td>5</td><td>3</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FFF7ED">👩</span><b>Camille Dupont</b></td><td>BUT Info · Bordeaux</td><td>💻 Tech</td><td>1</td><td>0</td><td><span class="badge amber">En attente</span></td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗ Refuser</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FDF4FF">👨</span><b>Adam Benali</b></td><td>Bachelor RH · Lille</td><td>🤝 RH</td><td>2</td><td>1</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#F0FDF4">👩</span><b>Sara Leblanc</b></td><td>BTS Banque · Paris</td><td>💳 Finance</td><td>4</td><td>2</td><td><span class="badge blue">École</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#F0FDF4">👩</span><b>Inès Marchand</b></td><td>M1 Marketing · Toulouse</td><td>📣 Marketing</td><td>0</td><td>5</td><td><span class="badge purple">Placé ✓</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FFF1F2">👨</span><b>Yanis Ferhat</b></td><td>BTS Commerce · Nice</td><td>💼 Commerce</td><td>2</td><td>1</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#EDE9FE">👩</span><b>Léa Fontaine</b></td><td>Mastère Data · Paris</td><td>💻 Tech</td><td>6</td><td>4</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- MENTORS -->
+<div class="section" id="sec-mentors">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-icon">🎓</div><div class="kpi-label">Total mentors</div><div class="kpi-val">38</div><div class="kpi-sub up">↑ +4</div></div>
+    <div class="kpi"><div class="kpi-icon">🌱</div><div class="kpi-label">Juniors</div><div class="kpi-val">24</div><div class="kpi-sub neu">63%</div></div>
+    <div class="kpi"><div class="kpi-icon">⭐</div><div class="kpi-label">Seniors</div><div class="kpi-val">14</div><div class="kpi-sub neu">37%</div></div>
+    <div class="kpi"><div class="kpi-icon">⏳</div><div class="kpi-label">Candidatures en attente</div><div class="kpi-val">6</div><div class="kpi-sub" style="color:var(--amber)">À traiter</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>Candidatures à valider</h3><span class="badge amber">6 en attente</span></div>
+      <table><tr><th>Candidat</th><th>Niveau</th><th>Secteur</th><th>Date</th><th>Actions</th></tr>
+        <tr><td><b>Julien Renard</b><br><small style="color:var(--muted)">Manager Commerce · Lyon</small></td><td><span class="badge amber">Senior</span></td><td>Commerce</td><td>21 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗</button></td></tr>
+        <tr><td><b>Amina Bellouki</b><br><small style="color:var(--muted)">Alternante Mktg · Paris</small></td><td><span class="badge blue">Junior</span></td><td>Marketing</td><td>20 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗</button></td></tr>
+        <tr><td><b>Pierre Collet</b><br><small style="color:var(--muted)">Dev Frontend · Nantes</small></td><td><span class="badge blue">Junior</span></td><td>Tech</td><td>19 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗</button></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Top mentors ce mois</h3></div>
+      <table><tr><th>Mentor</th><th>Niveau</th><th>Séances</th><th>Note</th><th>Gains</th></tr>
+        <tr><td><span class="td-av" style="background:#DCFCE7">👨</span><b>Thomas R.</b></td><td><span class="badge amber">Senior</span></td><td>18</td><td>★ 4.9</td><td style="color:var(--green);font-weight:600">189 €</td></tr>
+        <tr><td><span class="td-av" style="background:#EEF2FF">👩</span><b>Sarah L.</b></td><td><span class="badge blue">Junior</span></td><td>14</td><td>★ 4.9</td><td style="color:var(--green);font-weight:600">98 €</td></tr>
+        <tr><td><span class="td-av" style="background:#FEF3C7">👩</span><b>Camille D.</b></td><td><span class="badge amber">Senior</span></td><td>12</td><td>★ 4.8</td><td style="color:var(--green);font-weight:600">126 €</td></tr>
+        <tr><td><span class="td-av" style="background:#EDE9FE">👩</span><b>Julie F.</b></td><td><span class="badge amber">Senior</span></td><td>11</td><td>★ 4.9</td><td style="color:var(--green);font-weight:600">115 €</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Tous les mentors actifs</h3><button class="tb-btn ghost">+ Inviter un mentor</button></div>
+    <div class="search-bar"><input class="si" placeholder="Rechercher un mentor..."><select class="sel"><option>Tous niveaux</option><option>Junior</option><option>Senior</option></select></div>
+    <table><tr><th>Mentor</th><th>Poste</th><th>Secteur</th><th>Niveau</th><th>Séances tot.</th><th>Note</th><th>Statut</th><th></th></tr>
+      <tr><td><span class="td-av" style="background:#DCFCE7">👨</span><b>Thomas R.</b></td><td>Manager Commercial</td><td>Commerce</td><td><span class="badge amber">Senior</span></td><td>47</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#EEF2FF">👩</span><b>Sarah L.</b></td><td>Alternante Mktg</td><td>Marketing</td><td><span class="badge blue">Junior</span></td><td>31</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FEF3C7">👩</span><b>Camille D.</b></td><td>Resp. Marketing</td><td>Marketing</td><td><span class="badge amber">Senior</span></td><td>28</td><td>★ 4.8</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#EDE9FE">👩</span><b>Julie F.</b></td><td>Product Manager</td><td>Tech</td><td><span class="badge amber">Senior</span></td><td>22</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FFF1F2">👩</span><b>Sophie M.</b></td><td>RRH</td><td>RH</td><td><span class="badge amber">Senior</span></td><td>19</td><td>★ 4.8</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SEANCES -->
+<div class="section" id="sec-seances">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-icon">📅</div><div class="kpi-label">Séances ce mois</div><div class="kpi-val">217</div><div class="kpi-sub up">↑ +31</div></div>
+    <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-label">Complétées</div><div class="kpi-val">196</div><div class="kpi-sub neu">90%</div></div>
+    <div class="kpi"><div class="kpi-icon">❌</div><div class="kpi-label">Annulées</div><div class="kpi-val">16</div><div class="kpi-sub dn">7%</div></div>
+    <div class="kpi"><div class="kpi-icon">⏳</div><div class="kpi-label">À venir</div><div class="kpi-val">5</div><div class="kpi-sub neu">Cette semaine</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Séances à venir</h3><span class="badge amber">5 planifiées</span></div>
+    <table><tr><th>Date & Heure</th><th>Étudiant</th><th>Mentor</th><th>Type</th><th>Tokens</th><th>Statut</th><th></th></tr>
+      <tr><td><b>Lun 23/03</b> 10h00</td><td>Lola Martin</td><td>Sarah L.</td><td>LinkedIn & CV</td><td>1</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
+      <tr><td><b>Lun 23/03</b> 14h00</td><td>Adam Benali</td><td>Sophie M.</td><td>Entretien</td><td>1,5</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
+      <tr><td><b>Mar 24/03</b> 11h00</td><td>Léa Fontaine</td><td>Julie F.</td><td>Product</td><td>1,5</td><td><span class="badge amber">En attente</span></td><td><button class="abtn">Détails</button></td></tr>
+      <tr><td><b>Mer 25/03</b> 09h00</td><td>Yanis Ferhat</td><td>Thomas R.</td><td>Réseau caché</td><td>1,5</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
+      <tr><td><b>Jeu 26/03</b> 16h00</td><td>Sara Leblanc</td><td>Thomas R.</td><td>Candidature</td><td>1</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Historique</h3><div class="card-head-right"><select class="sel"><option>Ce mois</option><option>Mois dernier</option><option>Tout</option></select></div></div>
+    <table><tr><th>Date</th><th>Étudiant</th><th>Mentor</th><th>Durée</th><th>Tokens</th><th>Note</th><th>Rapport</th></tr>
+      <tr><td>20/03</td><td>Lola Martin</td><td>Sarah L.</td><td>30 min</td><td>1</td><td>★ 5.0</td><td><span class="badge green">Envoyé</span></td></tr>
+      <tr><td>19/03</td><td>Nabil Oussama</td><td>Thomas R.</td><td>30 min</td><td>1,5</td><td>★ 4.8</td><td><span class="badge green">Envoyé</span></td></tr>
+      <tr><td>18/03</td><td>Adam Benali</td><td>Sophie M.</td><td>30 min</td><td>1</td><td>★ 5.0</td><td><span class="badge green">Envoyé</span></td></tr>
+      <tr><td>15/03</td><td>Lola Martin</td><td>Thomas R.</td><td>30 min</td><td>1,5</td><td>★ 4.9</td><td><span class="badge green">Envoyé</span></td></tr>
+      <tr><td>12/03</td><td>Sara Leblanc</td><td>Julie F.</td><td>30 min</td><td>1,5</td><td>—</td><td><span class="badge amber">Non noté</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- TOKENS -->
+<div class="section" id="sec-tokens">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-icon">💶</div><div class="kpi-label">Revenu brut mars</div><div class="kpi-val">7 640 €</div><div class="kpi-sub up">↑ +18%</div></div>
+    <div class="kpi"><div class="kpi-icon">🪙</div><div class="kpi-label">Tokens vendus</div><div class="kpi-val">482</div><div class="kpi-sub up">↑ +64</div></div>
+    <div class="kpi"><div class="kpi-icon">💸</div><div class="kpi-label">Reversé mentors</div><div class="kpi-val">1 519 €</div><div class="kpi-sub neu">70% des tokens</div></div>
+    <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-label">Revenu net</div><div class="kpi-val">4 820 €</div><div class="kpi-sub up">+18%</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>Flux revenus — mars 2026</h3></div>
+      <div style="padding:14px 18px">
+        <div class="rev-row"><div class="rev-lbl">Abonnements directs (132×19€)</div><div class="rev-bar-w"><div class="rev-bar" style="width:55%"></div></div><div class="rev-val" style="color:var(--green)">2 508 €</div></div>
+        <div class="rev-row"><div class="rev-lbl">Tokens directs (30%)</div><div class="rev-bar-w"><div class="rev-bar" style="width:22%"></div></div><div class="rev-val" style="color:var(--green)">762 €</div></div>
+        <div class="rev-row"><div class="rev-lbl">Tokens école (30%)</div><div class="rev-bar-w"><div class="rev-bar" style="width:18%"></div></div><div class="rev-val" style="color:var(--green)">400 €</div></div>
+        <div class="rev-row"><div class="rev-lbl">Forfait écoles (2×650€)</div><div class="rev-bar-w"><div class="rev-bar" style="width:27%"></div></div><div class="rev-val" style="color:var(--green)">1 300 €</div></div>
+        <div class="rev-row"><div class="rev-lbl" style="color:var(--red)">− Reversement mentors</div><div class="rev-bar-w"><div class="rev-bar" style="width:30%;background:var(--red)"></div></div><div class="rev-val" style="color:var(--red)">−1 519 €</div></div>
+        <div class="rev-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px"><div class="rev-lbl" style="font-weight:700;font-size:14px">RÉSULTAT NET</div><div class="rev-bar-w"></div><div class="rev-val" style="color:var(--green);font-size:17px">4 820 €</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Dernières transactions</h3></div>
+      <table><tr><th>Date</th><th>Description</th><th>Montant</th><th>Statut</th></tr>
+        <tr><td>21/03</td><td>Pack 50 tokens — ICD Paris</td><td style="color:var(--green);font-weight:600">+450 €</td><td><span class="badge green">OK</span></td></tr>
+        <tr><td>20/03</td><td>Abonnement — Lola M.</td><td style="color:var(--green);font-weight:600">+19 €</td><td><span class="badge green">OK</span></td></tr>
+        <tr><td>19/03</td><td>Tokens ×3 — Nabil O.</td><td style="color:var(--green);font-weight:600">+30 €</td><td><span class="badge green">OK</span></td></tr>
+        <tr><td>18/03</td><td>Reversement Sarah L.</td><td style="color:var(--red);font-weight:600">−49 €</td><td><span class="badge green">Versé</span></td></tr>
+        <tr><td>17/03</td><td>Forfait — ESCP Business School</td><td style="color:var(--green);font-weight:600">+650 €</td><td><span class="badge green">OK</span></td></tr>
+        <tr><td>15/03</td><td>Reversement Thomas R.</td><td style="color:var(--red);font-weight:600">−189 €</td><td><span class="badge green">Versé</span></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SCHOOLS -->
+<div class="section" id="sec-schools">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-icon">🏫</div><div class="kpi-label">Écoles partenaires</div><div class="kpi-val">7</div><div class="kpi-sub up">↑ +2</div></div>
+    <div class="kpi"><div class="kpi-icon">👩‍🎓</div><div class="kpi-label">Étudiants école</div><div class="kpi-val">54</div><div class="kpi-sub up">↑ +18</div></div>
+    <div class="kpi"><div class="kpi-icon">🪙</div><div class="kpi-label">Tokens école actifs</div><div class="kpi-val">186</div><div class="kpi-sub neu">Dans les portefeuilles</div></div>
+    <div class="kpi"><div class="kpi-icon">💶</div><div class="kpi-label">Revenu écoles/mois</div><div class="kpi-val">2 924 €</div><div class="kpi-sub up">↑ +624 €</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Écoles partenaires actives</h3><button class="tb-btn ghost" onclick="openModal('add-school')">+ Ajouter une école</button></div>
+    <div>
+      <div class="school-card"><div class="school-logo">🎓</div><div class="school-info"><div class="school-name">ESCP Business School</div><div class="school-meta">Paris · 45 étudiants · Forfait + Pack Standard</div></div><div class="school-stats"><div class="school-stat"><b>45</b>étudiants</div><div class="school-stat"><b>50</b>tokens</div><div class="school-stat"><b style="color:var(--green)">1 625 €</b>/mois</div></div><button class="abtn" style="margin-left:16px">Gérer</button></div>
+      <div class="school-card"><div class="school-logo">📚</div><div class="school-info"><div class="school-name">ICD Paris</div><div class="school-meta">Paris · 28 étudiants · Forfait + Pack Standard</div></div><div class="school-stats"><div class="school-stat"><b>28</b>étudiants</div><div class="school-stat"><b>50</b>tokens</div><div class="school-stat"><b style="color:var(--green)">1 168 €</b>/mois</div></div><button class="abtn" style="margin-left:16px">Gérer</button></div>
+      <div class="school-card"><div class="school-logo">🏛️</div><div class="school-info"><div class="school-name">IFAG Lyon</div><div class="school-meta">Lyon · 18 étudiants · Accès ressources seul</div></div><div class="school-stats"><div class="school-stat"><b>18</b>étudiants</div><div class="school-stat"><b>—</b>tokens</div><div class="school-stat"><b style="color:var(--muted)">108 €</b>/mois</div></div><button class="abtn" style="margin-left:16px">Gérer</button></div>
+      <div class="school-card"><div class="school-logo">🎯</div><div class="school-info"><div class="school-name">Pigier Bordeaux</div><div class="school-meta">Bordeaux · En cours de signature</div></div><div class="school-stats"><div class="school-stat"><b>12</b>étudiants est.</div><div class="school-stat"><b>20</b>tokens prévu</div><div class="school-stat"><b style="color:var(--amber)">En cours</b></div></div><button class="abtn ok" style="margin-left:16px">Finaliser</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Rapports trimestriels disponibles</h3></div>
+    <table><tr><th>École</th><th>Période</th><th>Placement déclaré</th><th>Séances</th><th>Satisfaction</th><th>Action</th></tr>
+      <tr><td><b>ESCP Business School</b></td><td>T1 2026</td><td>68%</td><td>87</td><td>★ 4.8</td><td><button class="abtn">📄 Télécharger</button></td></tr>
+      <tr><td><b>ICD Paris</b></td><td>T1 2026</td><td>52%</td><td>43</td><td>★ 4.7</td><td><button class="abtn">📄 Télécharger</button></td></tr>
+      <tr><td><b>IFAG Lyon</b></td><td>T1 2026</td><td>—</td><td>12</td><td>★ 4.6</td><td><button class="abtn">📄 Télécharger</button></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- CANDIDATURES MENTORS -->
+<div class="section" id="sec-candidatures">
+  <div class="kpi-row" id="cand-kpis">
+    <div class="kpi"><div class="kpi-icon">📥</div><div class="kpi-label">En attente</div><div class="kpi-val" id="kpi-pending">0</div><div class="kpi-sub neu">À examiner</div></div>
+    <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-label">Validées</div><div class="kpi-val" id="kpi-approved">0</div><div class="kpi-sub up">Mis en ligne</div></div>
+    <div class="kpi"><div class="kpi-icon">❌</div><div class="kpi-label">Refusées</div><div class="kpi-val" id="kpi-rejected">0</div><div class="kpi-sub neu">Cette période</div></div>
+    <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-label">Taux validation</div><div class="kpi-val" id="kpi-rate">—</div><div class="kpi-sub neu">Sur toutes les cand.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <h3>Candidatures mentors</h3>
+      <button class="tb-btn ghost" onclick="injectDemoCandidatures()">🧪 Simuler des candidatures</button>
+    </div>
+    <div style="padding:0 20px 20px">
+      <div class="cand-toolbar">
+        <div class="cand-filter">
+          <button class="cand-chip amber active" onclick="setCandFilter('pending',this)">⏳ En attente</button>
+          <button class="cand-chip green" onclick="setCandFilter('approved',this)">✅ Validées</button>
+          <button class="cand-chip red" onclick="setCandFilter('rejected',this)">❌ Refusées</button>
+          <button class="cand-chip" onclick="setCandFilter('all',this)">Toutes</button>
+        </div>
+      </div>
+      <div class="cand-list" id="cand-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT CMS -->
+<div class="section" id="sec-content">
+  <div class="cms-tabs">
+    <button class="cms-tab active" onclick="cmsTab('mentors',this)">🎓 Mentors</button>
+    <button class="cms-tab" onclick="cmsTab('ressources',this)">📚 Ressources</button>
+  </div>
+
+  <!-- MENTORS PANEL -->
+  <div class="cms-panel active" id="cms-mentors">
+    <div class="cms-toolbar">
+      <input class="cms-search" placeholder="Rechercher un mentor…" oninput="cmsFilter('mentors',this.value)">
+      <select id="cms-mentor-sector" onchange="cmsFilter('mentors')" style="padding:9px 13px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
+        <option value="">Tous les secteurs</option>
+        <option>Marketing</option><option>Commerce</option><option>Tech</option><option>RH</option><option>Finance</option><option>Juridique</option>
+      </select>
+      <button class="tb-btn primary" onclick="openCmsModal('mentor',null)">+ Ajouter un mentor</button>
+    </div>
+    <div class="cms-grid" id="cms-mentor-grid"></div>
+  </div>
+
+  <!-- RESSOURCES PANEL -->
+  <div class="cms-panel" id="cms-ressources">
+    <div class="cms-toolbar">
+      <input class="cms-search" placeholder="Rechercher une ressource…" oninput="cmsFilter('ressources',this.value)">
+      <select id="cms-res-type" onchange="cmsFilter('ressources')" style="padding:9px 13px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
+        <option value="">Tous les types</option>
+        <option>Guide PDF</option><option>Modèle</option><option>Webinaire</option><option>Checklist</option><option>Autre</option>
+      </select>
+      <button class="tb-btn primary" onclick="openCmsModal('ressource',null)">+ Ajouter une ressource</button>
+    </div>
+    <div class="res-list" id="cms-res-list"></div>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div class="section" id="sec-reports">
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>📊 Générer un rapport</h3></div>
+      <div style="padding:20px">
+        <div class="ff"><label>Type</label><select><option>Vue globale mensuelle</option><option>Rapport école partenaire</option><option>Rapport mentors & reversements</option><option>Rapport placements déclarés</option><option>Export étudiants (CSV)</option></select></div>
+        <div class="ff-row"><div class="ff"><label>Du</label><input type="month" value="2026-01"></div><div class="ff"><label>Au</label><input type="month" value="2026-03"></div></div>
+        <div class="ff"><label>École (optionnel)</label><select><option value="">Toutes</option><option>ESCP Business School</option><option>ICD Paris</option><option>IFAG Lyon</option></select></div>
+        <button class="tb-btn primary" style="width:100%;justify-content:center;padding:12px;font-size:14px" onclick="genReport(this)">Générer le rapport</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>📁 Rapports récents</h3></div>
+      <table><tr><th>Rapport</th><th>Date</th><th>Format</th><th></th></tr>
+        <tr><td><b>Vue globale Mars 2026</b></td><td>20/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
+        <tr><td><b>ESCP T1 2026</b></td><td>01/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
+        <tr><td><b>Export étudiants</b></td><td>28/02</td><td>CSV</td><td><button class="abtn">↓</button></td></tr>
+        <tr><td><b>Reversements Fév</b></td><td>01/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
+        <tr><td><b>Vue globale Fév 2026</b></td><td>01/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="section" id="sec-settings">
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>⚙️ Configuration plateforme</h3></div>
+      <div style="padding:20px">
+        <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;font-size:11px">Tarification</div>
+        <div class="ff-row">
+          <div class="ff"><label>Prix 1 token (€)</label><input type="number" value="10"></div>
+          <div class="ff"><label>Abonnement/mois (€)</label><input type="number" value="19"></div>
+        </div>
+        <div class="ff-row">
+          <div class="ff"><label>% reversé mentor</label><input type="number" value="70"></div>
+          <div class="ff"><label>Accès école (€/étudiant)</label><input type="number" value="6"></div>
+        </div>
+        <div class="ff"><label>Forfait école mensuel (€)</label><input type="number" value="650"></div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin:16px 0 10px;text-transform:uppercase;letter-spacing:0.5px">Fonctionnalités</div>
+        <div class="toggle-row"><div class="toggle-info">Rapport IA après séance<small>Généré et envoyé automatiquement</small></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div class="toggle-info">Token offert à l'inscription<small>1 token crédité automatiquement</small></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div class="toggle-info">Badge alumni au placement<small>Envoyé à la déclaration volontaire</small></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div class="toggle-info">Mode maintenance<small>Désactive l'accès public</small></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <button class="tb-btn primary" style="margin-top:16px;width:100%;justify-content:center;padding:11px" onclick="saveSettings(this)">Enregistrer</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>👤 Compte admin</h3></div>
+      <div style="padding:20px">
+        <div class="ff"><label>Nom complet</label><input type="text" value="Admin ATERISK"></div>
+        <div class="ff"><label>Email</label><input type="email" value="admin@aterisk.fr"></div>
+        <div class="ff"><label>Nouveau mot de passe</label><input type="password" placeholder="Laisser vide pour ne pas modifier"></div>
+        <button class="tb-btn primary" style="margin-top:4px;padding:11px 20px" onclick="saveSettings(this)">Mettre à jour</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+
+<!-- MODAL ADD/EDIT MENTOR -->
+<div class="modal-ov" id="modal-add-mentor">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-head">
+      <h3 id="mentor-modal-title">Ajouter un mentor</h3>
+      <button class="modal-close" onclick="closeModal('add-mentor')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mentor-edit-id">
+      <div class="ff-row">
+        <div class="ff"><label>Prénom & initiale</label><input id="m-name" placeholder="Sarah L."></div>
+        <div class="ff"><label>Emoji / Photo</label><input id="m-emoji" placeholder="👩‍💼" value="👨‍💼"></div>
+      </div>
+      <div class="ff"><label>Poste & entreprise</label><input id="m-role" placeholder="Alternante — Marketing Digital"></div>
+      <div class="ff-row">
+        <div class="ff"><label>Ville</label><input id="m-ville" placeholder="Paris"></div>
+        <div class="ff"><label>Secteur</label>
+          <select id="m-secteur">
+            <option value="marketing">📣 Marketing & Com'</option>
+            <option value="commerce">💼 Commerce</option>
+            <option value="tech">💻 Tech</option>
+            <option value="rh">🤝 RH</option>
+            <option value="finance">💳 Finance</option>
+            <option value="sante">🏥 Santé</option>
+          </select>
+        </div>
+      </div>
+      <div class="ff-row">
+        <div class="ff"><label>Niveau</label>
+          <select id="m-level">
+            <option value="junior">Junior (1 token)</option>
+            <option value="senior">Senior (1,5 token)</option>
+          </select>
+        </div>
+        <div class="ff"><label>Disponibilité</label>
+          <select id="m-dispo">
+            <option value="today">Disponible aujourd'hui</option>
+            <option value="tomorrow">Disponible dès demain</option>
+            <option value="week">Disponible cette semaine</option>
+            <option value="none">Indisponible</option>
+          </select>
+        </div>
+      </div>
+      <div class="ff-row">
+        <div class="ff"><label>Note (ex: 4.9)</label><input id="m-note" placeholder="4.9" type="number" step="0.1" min="1" max="5"></div>
+        <div class="ff"><label>Alternants placés</label><input id="m-places" placeholder="12" type="number" min="0"></div>
+      </div>
+      <div class="ff"><label>Tags (séparés par des virgules)</label><input id="m-tags" placeholder="LinkedIn, CV, Candidature"></div>
+      <div class="ff"><label>Couleur de fond (dégradé CSS)</label><input id="m-gradient" placeholder="linear-gradient(135deg,#4F46E5,#7C3AED)"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#4F46E5,#7C3AED)')">Violet</button>
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#B45309,#D97706)')">Amber</button>
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#166534,#16A34A)')">Vert</button>
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#DC2626,#F87171)')">Rouge</button>
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#0369A1,#38BDF8)')">Bleu</button>
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#1A2E7A,#2A45B0)')">Marine</button>
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#86198F,#E879F9)')">Rose</button>
+        <button class="abtn" onclick="setGrad('linear-gradient(135deg,#9F1239,#FB7185)')">Framboise</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-m g" onclick="closeModal('add-mentor')">Annuler</button>
+      <button class="btn-m p" onclick="saveMentor()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD/EDIT RESSOURCE -->
+<div class="modal-ov" id="modal-add-ressource">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head">
+      <h3 id="res-modal-title">Ajouter une ressource</h3>
+      <button class="modal-close" onclick="closeModal('add-ressource')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="res-edit-id">
+      <div class="ff-row">
+        <div class="ff"><label>Titre</label><input id="r-title" placeholder="Template CV ATS optimisé"></div>
+        <div class="ff"><label>Emoji</label><input id="r-emoji" placeholder="📄" value="📄"></div>
+      </div>
+      <div class="ff-row">
+        <div class="ff"><label>Catégorie</label>
+          <select id="r-cat">
+            <option value="cv">CV</option>
+            <option value="lm">LM</option>
+            <option value="reseau">Réseau</option>
+            <option value="entretien">Entretien</option>
+            <option value="secteurs">Secteurs</option>
+            <option value="webinaires">Webinaires</option>
+          </select>
+        </div>
+        <div class="ff"><label>Type de fichier</label>
+          <select id="r-type">
+            <option value="template">Template (Word/PDF)</option>
+            <option value="guide">Guide PDF</option>
+            <option value="checklist">Checklist</option>
+            <option value="script">Script</option>
+            <option value="video">Vidéo / Webinaire</option>
+          </select>
+        </div>
+      </div>
+      <div class="ff"><label>Description courte</label>
+        <textarea id="r-desc" placeholder="Format ATS optimisé, compatible avec les logiciels de recrutement..."></textarea>
+      </div>
+      <div class="ff"><label>Contenu aperçu (affiché dans la modale)</label>
+        <textarea id="r-preview" placeholder="Section 1 — Accroche&#10;Section 2 — Expériences&#10;..."></textarea>
+      </div>
+      <div class="ff-row">
+        <div class="ff"><label>Badge</label>
+          <select id="r-badge">
+            <option value="">Aucun</option>
+            <option value="new">Nouveau</option>
+            <option value="pop">Populaire</option>
+            <option value="excl">Exclusif</option>
+          </select>
+        </div>
+        <div class="ff"><label>Couleur de fond</label>
+          <select id="r-color">
+            <option value="#EEF2FF">Bleu pâle</option>
+            <option value="#F0FDF4">Vert pâle</option>
+            <option value="#FFF7ED">Orange pâle</option>
+            <option value="#FDF4FF">Violet pâle</option>
+            <option value="#FEF3C7">Amber pâle</option>
+            <option value="#F0FDFA">Teal pâle</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-m g" onclick="closeModal('add-ressource')">Annuler</button>
+      <button class="btn-m p" onclick="saveRessource()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRM DELETE -->
+<div class="modal-ov" id="modal-confirm-delete">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head"><h3>Confirmer la suppression</h3><button class="modal-close" onclick="closeModal('confirm-delete')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--muted);line-height:1.6">Cette action est irréversible. L'élément sera supprimé de la plateforme immédiatement.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-m g" onclick="closeModal('confirm-delete')">Annuler</button>
+      <button class="btn-m" style="background:var(--red);color:white" id="confirm-delete-btn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD STUDENT -->
+<div class="modal-ov" id="modal-add-student">
+  <div class="modal">
+    <div class="modal-head"><h3>Ajouter un étudiant</h3><button class="modal-close" onclick="closeModal('add-student')">✕</button></div>
+    <div class="modal-body">
+      <div class="ff-row"><div class="ff"><label>Prénom</label><input placeholder="Lola"></div><div class="ff"><label>Nom</label><input placeholder="Martin"></div></div>
+      <div class="ff"><label>Email</label><input type="email" placeholder="lola@email.com"></div>
+      <div class="ff-row"><div class="ff"><label>Formation</label><input placeholder="BTS Commerce"></div><div class="ff"><label>Ville</label><input placeholder="Paris"></div></div>
+      <div class="ff"><label>Secteur cible</label><select><option>Marketing</option><option>Commerce</option><option>Tech</option><option>RH</option><option>Finance</option></select></div>
+      <div class="ff-row"><div class="ff"><label>Type</label><select><option>Direct</option><option>École partenaire</option></select></div><div class="ff"><label>Tokens offerts</label><input type="number" value="1"></div></div>
+    </div>
+    <div class="modal-foot"><button class="btn-m g" onclick="closeModal('add-student')">Annuler</button><button class="btn-m p" onclick="addItem('add-student','Étudiant ajouté')">Créer le profil</button></div>
+  </div>
+</div>
+
+<!-- MODAL VIEW STUDENT -->
+<div class="modal-ov" id="modal-view-student">
+  <div class="modal">
+    <div class="modal-head"><h3>Profil étudiant</h3><button class="modal-close" onclick="closeModal('view-student')">✕</button></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;padding:14px;background:var(--blue-pale);border-radius:8px">
+        <div style="width:46px;height:46px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px">👩</div>
+        <div><div style="font-size:15px;font-weight:700">Lola Martin</div><div style="font-size:12px;color:var(--muted)">BTS Commerce · Paris · Inscrite le 20/03/2026</div></div>
+        <span class="badge green" style="margin-left:auto">Actif</span>
+      </div>
+      <div class="ff-row" style="margin-bottom:14px">
+        <div style="background:#F9FAFB;border-radius:8px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:3px">TOKENS</div><div style="font-size:22px;font-weight:700">3</div></div>
+        <div style="background:#F9FAFB;border-radius:8px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:3px">SÉANCES</div><div style="font-size:22px;font-weight:700">2</div></div>
+      </div>
+      <div class="ff"><label>Secteur cible</label><div style="padding:8px 0"><span class="badge blue">📣 Marketing & Com'</span></div></div>
+      <div class="ff"><label>Mentors assignés</label><div style="font-size:13px;padding:8px 0">Sarah L. (Junior) · Thomas R. (Senior)</div></div>
+      <div class="ff"><label>Note interne</label><textarea placeholder="Ajouter une note admin..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-m g" onclick="closeModal('view-student')">Fermer</button>
+      <button class="btn-m" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)">+ Tokens</button>
+      <button class="btn-m p">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD SCHOOL -->
+<div class="modal-ov" id="modal-add-school">
+  <div class="modal">
+    <div class="modal-head"><h3>Nouvelle école partenaire</h3><button class="modal-close" onclick="closeModal('add-school')">✕</button></div>
+    <div class="modal-body">
+      <div class="ff"><label>Nom de l'école</label><input placeholder="ESCP Business School"></div>
+      <div class="ff-row"><div class="ff"><label>Ville</label><input placeholder="Paris"></div><div class="ff"><label>Nb étudiants estimés</label><input type="number" placeholder="50"></div></div>
+      <div class="ff"><label>Contact référent</label><input placeholder="Marie Dupont"></div>
+      <div class="ff"><label>Email référent</label><input type="email" placeholder="m.dupont@escp.eu"></div>
+      <div class="ff-row"><div class="ff"><label>Forfait mensuel</label><select><option>650 €/mois</option><option>Sur devis</option><option>Accès seul</option></select></div><div class="ff"><label>Pack tokens initial</label><select><option>Aucun</option><option>Essentiel (20)</option><option>Standard (50)</option><option>Premium (100)</option></select></div></div>
+    </div>
+    <div class="modal-foot"><button class="btn-m g" onclick="closeModal('add-school')">Annuler</button><button class="btn-m p" onclick="addItem('add-school','École partenaire ajoutée')">Créer le partenariat</button></div>
+  </div>
+</div>
+
+<script>
+const titles={overview:"Vue d'ensemble",students:"Gestion étudiants",mentors:"Gestion mentors",seances:"Séances",tokens:"Tokens & Revenus",schools:"Écoles partenaires",reports:"Rapports & Exports",settings:"Paramètres",content:"Contenu — Mentors & Ressources"};
+const tbActions={overview:"+ Étudiant",students:"+ Étudiant",mentors:"+ Inviter",seances:"+ Séance",tokens:"📤 Export",schools:"+ École",reports:"Générer",settings:"Enregistrer",content:"+ Ajouter"};
+const tbModals={overview:"add-student",students:"add-student",mentors:null,seances:null,tokens:null,schools:"add-school",reports:null,settings:null,content:null};
+
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('tb-title').textContent=titles[id]||id;
+  const tb=document.getElementById('tb-action');
+  tb.textContent=tbActions[id]||'+ Ajouter';
+  const m=tbModals[id];
+  tb.onclick=m?()=>openModal(m):null;
+  tb.style.opacity=m?'1':'0.35';
+  tb.style.cursor=m?'pointer':'default';
+  if(id==='content'){renderMentors();renderRessources();}
+}
+function openModal(id){document.getElementById('modal-'+id).classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('open');document.body.style.overflow='';}
+document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){o.classList.remove('open');document.body.style.overflow='';}}));
+
+function ft(el,tid){
+  const q=el.value.toLowerCase();
+  document.querySelectorAll('#'+tid+' tr:not(:first-child)').forEach(tr=>{
+    tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+function valider(btn){
+  btn.textContent='✓ Validé';btn.style.cssText='background:var(--green-bg);color:var(--green);border:1px solid var(--green);font-size:11px;padding:4px 10px;border-radius:5px;cursor:default;font-family:inherit';btn.disabled=true;
+  const bd=btn.closest('tr').querySelector('.badge');if(bd){bd.className='badge green';bd.textContent='Actif';}
+  const db=btn.nextElementSibling;if(db)db.style.display='none';
+}
+function addItem(modalId,msg){closeModal(modalId);toast('✓ '+msg+' avec succès');}
+function saveSettings(btn){const o=btn.textContent;btn.textContent='✓ Enregistré !';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=o;btn.style.background='';},2000);}
+function genReport(btn){const o=btn.textContent;btn.textContent='⏳ Génération…';btn.disabled=true;setTimeout(()=>{btn.textContent='✓ Rapport prêt !';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=o;btn.disabled=false;btn.style.background='';},2000);},1500);}
+function toast(msg){const t=document.createElement('div');t.style.cssText='position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+
+/* ─── CMS ─── */
+
+// Default data (loaded if localStorage empty)
+const DEFAULT_MENTORS=[
+  {id:'sarah',name:'Sarah L.',role:'Alternante — Marketing Digital',ville:'Paris',secteur:'marketing',level:'junior',dispo:'tomorrow',note:'4.9',places:'12',tags:'LinkedIn,CV,Candidature',gradient:'linear-gradient(135deg,#4F46E5,#7C3AED)',emoji:'👩‍💼'},
+  {id:'camille',name:'Camille D.',role:'Responsable Marketing',ville:'Lyon',secteur:'marketing',level:'senior',dispo:'week',note:'4.8',places:'19',tags:'Stratégie,Contenu,Brand',gradient:'linear-gradient(135deg,#B45309,#D97706)',emoji:'👩‍💻'},
+  {id:'ines',name:'Inès M.',role:'Alternante — Communication',ville:'Bordeaux',secteur:'marketing',level:'junior',dispo:'today',note:'4.7',places:'8',tags:'LM,Portfolio,Com événementielle',gradient:'linear-gradient(135deg,#6D28D9,#A78BFA)',emoji:'👩‍🎨'},
+  {id:'thomas',name:'Thomas R.',role:'Manager Commercial',ville:'Lyon',secteur:'commerce',level:'senior',dispo:'today',note:'4.8',places:'28',tags:'Réseau,Entretien,B2B,Stratégie',gradient:'linear-gradient(135deg,#166534,#16A34A)',emoji:'👨‍💼'},
+  {id:'noah',name:'Noah B.',role:'Alternant — Commerce Retail',ville:'Paris',secteur:'commerce',level:'junior',dispo:'today',note:'4.6',places:'6',tags:'Retail,Négociation,CV',gradient:'linear-gradient(135deg,#DC2626,#F87171)',emoji:'👨‍🎓'},
+  {id:'marie',name:'Marie K.',role:'Key Account Manager',ville:'Marseille',secteur:'commerce',level:'senior',dispo:'week',note:'4.9',places:'22',tags:'Grand comptes,Pitch,CRM',gradient:'linear-gradient(135deg,#0369A1,#38BDF8)',emoji:'👩‍💼'},
+  {id:'alex',name:'Alex T.',role:'Alternant — Dev Web',ville:'Paris',secteur:'tech',level:'junior',dispo:'today',note:'4.8',places:'9',tags:'React,Portfolio,GitHub',gradient:'linear-gradient(135deg,#166534,#4ADE80)',emoji:'👨‍💻'},
+  {id:'julie',name:'Julie F.',role:'Product Manager',ville:'Nantes',secteur:'tech',level:'senior',dispo:'today',note:'4.9',places:'15',tags:'Product,UX,Agile',gradient:'linear-gradient(135deg,#4C1D95,#8B5CF6)',emoji:'👩‍💻'},
+  {id:'rayan',name:'Rayan A.',role:'Alternant — Data',ville:'Bordeaux',secteur:'tech',level:'junior',dispo:'week',note:'4.7',places:'5',tags:'Python,SQL,Data viz',gradient:'linear-gradient(135deg,#C2410C,#FB923C)',emoji:'👨‍🔬'},
+  {id:'sophie',name:'Sophie M.',role:'RRH',ville:'Paris',secteur:'rh',level:'senior',dispo:'today',note:'4.8',places:'14',tags:'Recrutement,Droit social,Paie',gradient:'linear-gradient(135deg,#86198F,#E879F9)',emoji:'👩‍💼'},
+  {id:'lena',name:'Léna P.',role:'Alternante — RH',ville:'Lille',secteur:'rh',level:'junior',dispo:'today',note:'4.6',places:'7',tags:'Talents,Marque employeur',gradient:'linear-gradient(135deg,#9F1239,#FB7185)',emoji:'👩‍🎓'},
+];
+
+const DEFAULT_RESSOURCES=[
+  {id:'r1',title:'Template CV ATS optimisé',emoji:'📄',cat:'cv',type:'template',desc:'Format ATS compatible, testé sur 200+ candidatures.',preview:'Section 1 — Accroche\nSection 2 — Compétences clés\nSection 3 — Expériences\nSection 4 — Formation\nSection 5 — Projets & portfolio',badge:'pop',color:'#EEF2FF'},
+  {id:'r2',title:'Guide — Marché caché',emoji:'🗺️',cat:'reseau',type:'guide',desc:'Comment trouver 80% des offres non publiées.',preview:'Étape 1 — Cartographier les entreprises cibles\nÉtape 2 — Identifier le bon interlocuteur\nÉtape 3 — Écrire le message parfait',badge:'excl',color:'#FDF4FF'},
+  {id:'r3',title:'10 scripts LinkedIn',emoji:'🔗',cat:'reseau',type:'script',desc:'Les messages qui obtiennent des réponses.',preview:'Script 1 — Premier contact\nScript 2 — Relance\nScript 3 — Après une rencontre réseau',badge:'new',color:'#FFF7ED'},
+  {id:'r4',title:'LM — Structure en 4 §',emoji:'✉️',cat:'lm',type:'guide',desc:'La lettre que les recruteurs lisent vraiment.',preview:'§1 — Accroche\n§2 — Ce que tu apportes\n§3 — Ce que tu veux apprendre\n§4 — Appel à l\'action',badge:'',color:'#F0FDF4'},
+  {id:'r5',title:'Préparer un entretien alternance',emoji:'🎙️',cat:'entretien',type:'checklist',desc:'Les 30 questions types et comment y répondre.',preview:'Bloc 1 — Questions sur toi\nBloc 2 — Questions sur l\'entreprise\nBloc 3 — Mises en situation',badge:'pop',color:'#FEF3C7'},
+];
+
+function getMentors(){try{const d=localStorage.getItem('aterisk_mentors');return d?JSON.parse(d):[...DEFAULT_MENTORS];}catch{return[...DEFAULT_MENTORS];}}
+function setMentors(arr){localStorage.setItem('aterisk_mentors',JSON.stringify(arr));}
+function getRessources(){try{const d=localStorage.getItem('aterisk_ressources');return d?JSON.parse(d):[...DEFAULT_RESSOURCES];}catch{return[...DEFAULT_RESSOURCES];}}
+function setRessources(arr){localStorage.setItem('aterisk_ressources',JSON.stringify(arr));}
+
+// Init localStorage with defaults if empty
+if(!localStorage.getItem('aterisk_mentors'))setMentors([...DEFAULT_MENTORS]);
+if(!localStorage.getItem('aterisk_ressources'))setRessources([...DEFAULT_RESSOURCES]);
+
+function dispoLabel(d){
+  return d==='today'?'Disponible aujourd\'hui':d==='tomorrow'?'Disponible dès demain':d==='week'?'Disponible cette semaine':'Indisponible';
+}
+function dispoColor(d){return d==='none'?'var(--muted)':'var(--green)';}
+
+function renderMentors(filter=''){
+  const mentors=getMentors();
+  const secFilter=document.getElementById('filter-secteur')?.value||'';
+  const grid=document.getElementById('cms-mentor-grid');
+  const filtered=mentors.filter(m=>{
+    const q=filter.toLowerCase();
+    const matchQ=!q||(m.name+m.role+m.ville+m.tags).toLowerCase().includes(q);
+    const matchS=!secFilter||m.secteur===secFilter;
+    return matchQ&&matchS;
+  });
+  if(!filtered.length){
+    grid.innerHTML='<div class="cms-empty" style="grid-column:1/-1"><div class="ce-icon">🔍</div><p>Aucun mentor trouvé</p></div>';
+    return;
+  }
+  grid.innerHTML=filtered.map(m=>`
+    <div class="cms-card" data-id="${m.id}">
+      <div class="cms-card-photo" style="background:${m.gradient}">${m.emoji}</div>
+      <div class="cms-card-badge badge ${m.level==='senior'?'amber':'blue'}">${m.level}</div>
+      <div class="cms-card-body">
+        <div class="cms-card-name">${m.name}</div>
+        <div class="cms-card-sub">${m.role} · ${m.ville}</div>
+        <div class="cms-card-tags">${m.tags.split(',').map(t=>`<span class="cms-card-tag">${t.trim()}</span>`).join('')}</div>
+        <div style="font-size:11px;color:${dispoColor(m.dispo)};margin-bottom:10px;font-weight:500">${dispoLabel(m.dispo)}</div>
+        <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:10px">
+          <span>★ ${m.note}</span><span>${m.places} placés</span><span>${m.level==='senior'?'1,5':'1'} token</span>
+        </div>
+        <div class="cms-card-actions">
+          <button class="cms-card-btn" onclick="editMentor('${m.id}')">✏️ Modifier</button>
+          <button class="cms-card-btn del" onclick="deleteMentor('${m.id}')">🗑️ Supprimer</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderRessources(filter=''){
+  const ressources=getRessources();
+  const catFilter=document.getElementById('filter-cat')?.value||'';
+  const list=document.getElementById('cms-res-list');
+  const filtered=ressources.filter(r=>{
+    const q=filter.toLowerCase();
+    const matchQ=!q||(r.title+r.desc+r.cat).toLowerCase().includes(q);
+    const matchC=!catFilter||r.cat===catFilter;
+    return matchQ&&matchC;
+  });
+  if(!filtered.length){
+    list.innerHTML='<div class="cms-empty"><div class="ce-icon">📭</div><p>Aucune ressource trouvée</p></div>';
+    return;
+  }
+  const catLabels={cv:'CV',lm:'LM',reseau:'Réseau',entretien:'Entretien',secteurs:'Secteurs',webinaires:'Webinaires'};
+  const typeLabels={template:'Template',guide:'Guide PDF',checklist:'Checklist',script:'Scripts',video:'Vidéo'};
+  const badgeMap={new:'Nouveau',pop:'Populaire',excl:'Exclusif'};
+  list.innerHTML=filtered.map(r=>`
+    <div class="res-item">
+      <div class="res-icon" style="background:${r.color}">${r.emoji}</div>
+      <div class="res-info">
+        <div class="res-name">${r.title} ${r.badge?`<span class="badge ${r.badge==='new'?'green':r.badge==='pop'?'amber':'blue'}" style="font-size:10px;margin-left:4px">${badgeMap[r.badge]}</span>`:''}</div>
+        <div class="res-meta">${catLabels[r.cat]||r.cat} · ${typeLabels[r.type]||r.type} · ${r.desc}</div>
+      </div>
+      <div class="res-actions">
+        <button class="abtn" onclick="editRessource('${r.id}')">✏️ Modifier</button>
+        <button class="abtn danger" onclick="deleteRessource('${r.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterCMS(el,gridId){renderMentors(el.value);}
+function filterResList(el){renderRessources(el.value);}
+
+function setGrad(g){document.getElementById('m-gradient').value=g;}
+
+// MENTOR CRUD
+function editMentor(id){
+  const m=getMentors().find(x=>x.id===id);if(!m)return;
+  document.getElementById('mentor-modal-title').textContent='Modifier le mentor';
+  document.getElementById('mentor-edit-id').value=id;
+  document.getElementById('m-name').value=m.name;
+  document.getElementById('m-emoji').value=m.emoji;
+  document.getElementById('m-role').value=m.role;
+  document.getElementById('m-ville').value=m.ville;
+  document.getElementById('m-secteur').value=m.secteur;
+  document.getElementById('m-level').value=m.level;
+  document.getElementById('m-dispo').value=m.dispo;
+  document.getElementById('m-note').value=m.note;
+  document.getElementById('m-places').value=m.places;
+  document.getElementById('m-tags').value=m.tags;
+  document.getElementById('m-gradient').value=m.gradient;
+  openModal('add-mentor');
+}
+
+function saveMentor(){
+  const editId=document.getElementById('mentor-edit-id').value;
+  const mentor={
+    id:editId||'m_'+Date.now(),
+    name:document.getElementById('m-name').value.trim(),
+    emoji:document.getElementById('m-emoji').value.trim()||'👨‍💼',
+    role:document.getElementById('m-role').value.trim(),
+    ville:document.getElementById('m-ville').value.trim(),
+    secteur:document.getElementById('m-secteur').value,
+    level:document.getElementById('m-level').value,
+    dispo:document.getElementById('m-dispo').value,
+    note:document.getElementById('m-note').value,
+    places:document.getElementById('m-places').value,
+    tags:document.getElementById('m-tags').value,
+    gradient:document.getElementById('m-gradient').value||'linear-gradient(135deg,#1A2E7A,#2A45B0)',
+  };
+  if(!mentor.name){toast('⚠️ Le nom est obligatoire');return;}
+  let mentors=getMentors();
+  if(editId){mentors=mentors.map(m=>m.id===editId?mentor:m);}
+  else{mentors.push(mentor);}
+  setMentors(mentors);
+  closeModal('add-mentor');
+  document.getElementById('mentor-edit-id').value='';
+  document.getElementById('mentor-modal-title').textContent='Ajouter un mentor';
+  document.getElementById('m-name').value='';
+  renderMentors();
+  toast(editId?'✓ Mentor mis à jour':'✓ Mentor ajouté');
+}
+
+function deleteMentor(id){
+  document.getElementById('confirm-delete-btn').onclick=()=>{
+    setMentors(getMentors().filter(m=>m.id!==id));
+    closeModal('confirm-delete');
+    renderMentors();
+    toast('🗑️ Mentor supprimé');
+  };
+  openModal('confirm-delete');
+}
+
+// RESSOURCE CRUD
+function editRessource(id){
+  const r=getRessources().find(x=>x.id===id);if(!r)return;
+  document.getElementById('res-modal-title').textContent='Modifier la ressource';
+  document.getElementById('res-edit-id').value=id;
+  document.getElementById('r-title').value=r.title;
+  document.getElementById('r-emoji').value=r.emoji;
+  document.getElementById('r-cat').value=r.cat;
+  document.getElementById('r-type').value=r.type;
+  document.getElementById('r-desc').value=r.desc;
+  document.getElementById('r-preview').value=r.preview||'';
+  document.getElementById('r-badge').value=r.badge||'';
+  document.getElementById('r-color').value=r.color;
+  openModal('add-ressource');
+}
+
+function saveRessource(){
+  const editId=document.getElementById('res-edit-id').value;
+  const res={
+    id:editId||'r_'+Date.now(),
+    title:document.getElementById('r-title').value.trim(),
+    emoji:document.getElementById('r-emoji').value.trim()||'📄',
+    cat:document.getElementById('r-cat').value,
+    type:document.getElementById('r-type').value,
+    desc:document.getElementById('r-desc').value.trim(),
+    preview:document.getElementById('r-preview').value.trim(),
+    badge:document.getElementById('r-badge').value,
+    color:document.getElementById('r-color').value,
+  };
+  if(!res.title){toast('⚠️ Le titre est obligatoire');return;}
+  let ressources=getRessources();
+  if(editId){ressources=ressources.map(r=>r.id===editId?res:r);}
+  else{ressources.push(res);}
+  setRessources(ressources);
+  closeModal('add-ressource');
+  document.getElementById('res-edit-id').value='';
+  document.getElementById('res-modal-title').textContent='Ajouter une ressource';
+  renderRessources();
+  toast(editId?'✓ Ressource mise à jour':'✓ Ressource ajoutée');
+}
+
+function deleteRessource(id){
+  document.getElementById('confirm-delete-btn').onclick=()=>{
+    setRessources(getRessources().filter(r=>r.id!==id));
+    closeModal('confirm-delete');
+    renderRessources();
+    toast('🗑️ Ressource supprimée');
+  };
+  openModal('confirm-delete');
+}
+
+function switchTab(tab,btn){
+  document.querySelectorAll('.cms-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.cms-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cms-'+tab).classList.add('active');
+}
+
+// ─── CANDIDATURES ────────────────────────────────────────────────────────────
+let candFilter = 'pending';
+
+function getCandidatures(){ try{ return JSON.parse(localStorage.getItem('aterisk_candidatures')||'[]'); }catch{return [];} }
+function saveCandidatures(arr){ localStorage.setItem('aterisk_candidatures', JSON.stringify(arr)); }
+
+function setCandFilter(f, btn){
+  candFilter = f;
+  document.querySelectorAll('.cand-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderCandidatures();
+}
+
+function formatDate(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) + ' à ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }catch{ return iso||''; }
+}
+
+function renderCandidatures(){
+  const list = document.getElementById('cand-list');
+  if(!list) return;
+  let all = getCandidatures();
+
+  // KPIs
+  const pending  = all.filter(c=>c.status==='pending').length;
+  const approved = all.filter(c=>c.status==='approved').length;
+  const rejected = all.filter(c=>c.status==='rejected').length;
+  const total    = approved + rejected;
+  document.getElementById('kpi-pending').textContent  = pending;
+  document.getElementById('kpi-approved').textContent = approved;
+  document.getElementById('kpi-rejected').textContent = rejected;
+  document.getElementById('kpi-rate').textContent     = total ? Math.round(approved/total*100)+'%' : '—';
+
+  // Badge on sidebar
+  const badge = document.getElementById('badge-candidatures');
+  if(badge){ badge.textContent=pending; badge.style.display=pending?'':'none'; }
+
+  // Filter
+  const shown = candFilter==='all' ? all : all.filter(c=>c.status===candFilter);
+  shown.sort((a,b)=>b.submittedAt?.localeCompare(a.submittedAt||'')||0);
+
+  if(!shown.length){
+    const labels = {pending:'aucune candidature en attente 🎉',approved:'aucune candidature validée',rejected:'aucune candidature refusée',all:'aucune candidature reçue'};
+    list.innerHTML = `<div class="cand-empty"><div class="ce-icon">📭</div><p>Il n'y a ${labels[candFilter]}.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = shown.map(cand => {
+    const emoji = cand.niveau==='senior' ? '⭐' : '🌱';
+    const tags = (cand.secteurs||[]).concat(cand.competences||[]).slice(0,6);
+    const tagsHtml = tags.map(t=>`<span class="cand-tag">${t}</span>`).join('');
+    const dispos = (cand.dispos||[]).join(' · ');
+    return `<div class="cand-card ${cand.status}" id="cand-${cand.id}">
+      <div class="cand-head" onclick="toggleCand('${cand.id}')">
+        <div class="cand-avatar">${emoji}</div>
+        <div class="cand-info">
+          <div class="cand-name">${cand.prenom||''} ${cand.nom||''}</div>
+          <div class="cand-meta">${cand.poste||'—'} · ${cand.ville||'—'} · ${cand.niveau==='senior'?'Senior':'Junior'}</div>
+          <div class="cand-date">Candidature reçue le ${formatDate(cand.submittedAt)}</div>
+        </div>
+        <div class="cand-status">
+          <span class="status-pill ${cand.status}">${{pending:'En attente',approved:'Validé',rejected:'Refusé'}[cand.status]}</span>
+          <span class="cand-expand">▾</span>
+        </div>
+      </div>
+      <div class="cand-body">
+        ${cand.bio?`<div class="cand-bio">"${cand.bio}"</div>`:''}
+        <div class="cand-grid">
+          <div class="cand-field"><div class="cand-field-label">Email</div><div class="cand-field-val">${cand.email||'—'}</div></div>
+          <div class="cand-field"><div class="cand-field-label">LinkedIn</div><div class="cand-field-val">${cand.linkedin?`<a href="${cand.linkedin}" target="_blank" style="color:var(--blue-mid)">Voir le profil →</a>`:'—'}</div></div>
+          <div class="cand-field"><div class="cand-field-label">Disponibilités</div><div class="cand-field-val">${dispos||'—'}</div></div>
+          <div class="cand-field"><div class="cand-field-label">Niveau</div><div class="cand-field-val">${cand.niveau==='senior'?'⭐ Mentor Senior':'🌱 Mentor Junior'}</div></div>
+        </div>
+        <div class="cand-tags">${tagsHtml}</div>
+        <div class="cand-actions">
+          ${cand.status==='pending'?`
+            <button class="btn-approve" onclick="approveCand('${cand.id}')">✅ Valider & publier</button>
+            <button class="btn-reject" onclick="rejectCand('${cand.id}')">❌ Refuser</button>
+          `:''}
+          ${cand.status==='approved'?`<span style="font-size:13px;color:var(--green);font-weight:600">✅ Mentor publié sur secteurs.html</span>`:''}
+          ${cand.status==='rejected'?`<span style="font-size:13px;color:var(--red);font-weight:600">❌ Candidature refusée</span><button class="btn-approve" style="margin-left:8px;padding:7px 14px;font-size:12px" onclick="approveCand('${cand.id}')">Reconsidérer</button>`:''}
+          <button class="btn-msg" onclick="mailCand('${cand.email||''}','${cand.prenom||''}')">✉️ Contacter</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCand(id){
+  const card = document.getElementById('cand-'+id);
+  if(card) card.classList.toggle('open');
+}
+
+function approveCand(id){
+  const all = getCandidatures();
+  const cand = all.find(c=>c.id===id);
+  if(!cand) return;
+  cand.status = 'approved';
+  saveCandidatures(all);
+
+  // Auto-create mentor in aterisk_mentors
+  const sectorMap = {
+    '📣 Marketing & Com'':'marketing','💼 Commerce & Vente':'commerce',
+    '💻 Tech & Digital':'tech','🤝 Ressources Humaines':'rh',
+    '📊 Finance & Gestion':'finance','⚖️ Juridique':'juridique','🎨 Création & Design':'creation'
+  };
+  const secteurKey = sectorMap[(cand.secteurs||[])[0]] || 'marketing';
+  const gradients = {
+    marketing:'linear-gradient(135deg,#4F46E5,#7C3AED)',
+    commerce:'linear-gradient(135deg,#166534,#16A34A)',
+    tech:'linear-gradient(135deg,#0369A1,#38BDF8)',
+    rh:'linear-gradient(135deg,#86198F,#E879F9)',
+    finance:'linear-gradient(135deg,#B45309,#D97706)',
+    juridique:'linear-gradient(135deg,#1A2E7A,#2A45B0)',
+    creation:'linear-gradient(135deg,#6D28D9,#A78BFA)',
+  };
+  const compLabels = (cand.competences||[]).map(c=>c.replace(/^[^\w]+/,'').trim().split(' ').slice(0,2).join(' '));
+
+  const mentor = {
+    id: cand.id,
+    name: (cand.prenom||'') + ' ' + (cand.nom||'').charAt(0) + '.',
+    emoji: cand.niveau==='senior' ? '👨‍💼' : '👨‍🎓',
+    role: cand.poste || 'Mentor',
+    ville: cand.ville || '',
+    secteur: secteurKey,
+    level: cand.niveau || 'junior',
+    dispo: 'week',
+    note: '—',
+    places: '0',
+    tags: compLabels.slice(0,4).join(',') || 'Accompagnement',
+    gradient: gradients[secteurKey] || gradients.marketing,
+  };
+
+  const mentors = getMentors();
+  const exists = mentors.findIndex(m=>m.id===mentor.id);
+  if(exists>=0) mentors[exists]=mentor; else mentors.push(mentor);
+  saveMentorsData(mentors);
+
+  renderCandidatures();
+  toast('✅ ' + mentor.name + ' validé — profil publié sur le site');
+}
+
+function rejectCand(id){
+  const all = getCandidatures();
+  const cand = all.find(c=>c.id===id);
+  if(!cand) return;
+  cand.status = 'rejected';
+  saveCandidatures(all);
+  // Remove from mentors if was previously approved
+  saveMentorsData(getMentors().filter(m=>m.id!==id));
+  renderCandidatures();
+  toast('❌ Candidature refusée');
+}
+
+function mailCand(email, prenom){
+  if(!email){ toast('Email non renseigné'); return; }
+  window.open('mailto:'+email+'?subject=Votre candidature ATERISK&body=Bonjour '+prenom+',');
+}
+
+// Demo candidatures for testing
+function injectDemoCandidatures(){
+  const demos = [
+    {id:'demo1',submittedAt:new Date(Date.now()-3600000).toISOString(),status:'pending',prenom:'Lucas',nom:'Bernard',email:'lucas.bernard@email.com',ville:'Paris',poste:'Alternant — Business Development',linkedin:'https://linkedin.com/in/lucas-bernard',bio:'J'ai trouvé mon alternance chez Qonto après 3 mois de galère. Je peux aider sur la prospection directe et la stratégie LinkedIn.',niveau:'junior',secteurs:['💼 Commerce & Vente'],competences:['🔗 Stratégie LinkedIn & réseau','🗺️ Accès au marché caché','🗣️ Préparation aux entretiens'],dispos:['Lun','Mer','Soir']},
+    {id:'demo2',submittedAt:new Date(Date.now()-86400000).toISOString(),status:'pending',prenom:'Amina',nom:'Kourouma',email:'amina.k@email.com',ville:'Lyon',poste:'Chargée de Recrutement · AXA',linkedin:'',bio:'3 ans en recrutement, j'ai reçu et trié plus de 2000 CV. Je sais exactement ce qui fait la différence et je veux le partager.',niveau:'senior',secteurs:['🤝 Ressources Humaines','📣 Marketing & Com''],competences:['📄 Optimisation CV','🗣️ Préparation aux entretiens','🎯 Définition du projet professionnel'],dispos:['Mar','Jeu','Matin']},
+    {id:'demo3',submittedAt:new Date(Date.now()-172800000).toISOString(),status:'pending',prenom:'Théo',nom:'Marchand',email:'theo.marchand@gmail.com',ville:'Bordeaux',poste:'Développeur Full-Stack · Freelance',linkedin:'https://linkedin.com/in/theo-m',bio:'Passé par l'alternance chez Doctolib. Je peux accompagner sur le portfolio, GitHub, et les entretiens tech.',niveau:'junior',secteurs:['💻 Tech & Digital'],competences:['📄 Optimisation CV','🔗 Stratégie LinkedIn & réseau'],dispos:['Ven','Sam','Soir']},
+  ];
+  const existing = getCandidatures();
+  // Only add if not already present
+  demos.forEach(d=>{ if(!existing.find(e=>e.id===d.id)) existing.push(d); });
+  saveCandidatures(existing);
+  renderCandidatures();
+  toast('🧪 3 candidatures de démo ajoutées');
+}
+
+// Update show() to trigger renderCandidatures when switching to candidatures tab
+const _origShow = show;
+// Patch show to call renderCandidatures on candidatures tab
+const _showOrig = window.show;
+
+
+// Patch show() to render candidatures when tab is activated
+const _origShow2 = show;
+window.show = function(id, btn){
+  _origShow2(id, btn);
+  if(id==='candidatures') renderCandidatures();
+};
+
+// Init badge count
+(function(){
+  const pending = getCandidatures().filter(c=>c.status==='pending').length;
+  const badge = document.getElementById('badge-candidatures');
+  if(badge && pending){ badge.textContent=pending; badge.style.display=''; }
+})();
+</script>
+</body>
+</html>

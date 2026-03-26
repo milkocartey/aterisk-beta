@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Espace Mentor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:#1A2E7A; --blue-mid:#2A45B0; --blue-light:#E8EEF9; --blue-pale:#F3F6FD;
+    --ink:#0D1526; --muted:#6B7280; --border:#DDE3F0; --white:#FFFFFF;
+    --green:#16A34A; --green-bg:#DCFCE7; --amber:#92400E; --amber-bg:#FEF3C7;
+    --red:#DC2626; --red-bg:#FEF2F2; --purple:#4C1D95; --purple-bg:#F5F3FF;
+    --radius:12px; --shadow:0 4px 24px rgba(26,46,122,0.08);
+    --sidebar:240px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--blue-pale);display:flex;min-height:100vh;}
+
+  /* SIDEBAR */
+  .sidebar{width:var(--sidebar);background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;overflow-y:auto;}
+  .sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:flex-start;justify-content:space-between;}
+  .sb-logo a{font-family:'DM Serif Display',serif;font-size:20px;color:white;text-decoration:none;letter-spacing:1px;}
+  .sb-logo p{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;}
+  .sidebar-close{display:none;background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;padding:4px 8px;margin-left:auto;transition:color 0.2s;}
+  .sidebar-close:hover{color:white;}
+  .sb-mentor{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:10px;}
+  .sb-avatar{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:2px solid rgba(255,255,255,0.2);}
+  .sb-info h4{font-size:13px;font-weight:600;color:white;}
+  .sb-info p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:1px;}
+  .sb-badge-level{display:inline-flex;align-items:center;gap:4px;background:var(--amber-bg);color:var(--amber);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px;}
+
+  /* EARNINGS CARD */
+  .sb-earnings{margin:14px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:14px;}
+  .sb-earnings .el{font-size:10px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+  .sb-earnings .ev{font-family:'DM Serif Display',serif;font-size:26px;color:white;line-height:1;}
+  .sb-earnings .es{font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;}
+  .sb-earnings .eprog{margin-top:10px;background:rgba(255,255,255,0.12);border-radius:4px;height:5px;}
+  .sb-earnings .eprog-fill{height:5px;border-radius:4px;background:#86EFAC;width:62%;}
+  .sb-earnings .eprog-lbl{font-size:10px;color:rgba(255,255,255,0.35);margin-top:5px;}
+
+  /* NAV */
+  .sb-nav{padding:8px 12px;flex:1;}
+  .sb-section{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:12px 8px 5px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left;}
+  .nav-item:hover{background:rgba(255,255,255,0.08);}
+  .nav-item.active{background:rgba(255,255,255,0.15);}
+  .nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+  .nav-label{font-size:13px;font-weight:500;color:rgba(255,255,255,0.75);}
+  .nav-item.active .nav-label{color:white;}
+  .nav-badge{margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+  .nav-badge.green{background:var(--green);}
+  .nav-badge.amber{background:var(--amber);}
+
+  .sb-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,0.1);}
+  .sb-footer a{font-size:11px;color:rgba(255,255,255,0.35);text-decoration:none;display:block;padding:3px 0;transition:color 0.15s;}
+  .sb-footer a:hover{color:rgba(255,255,255,0.7);}
+
+  /* MAIN */
+  .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+  .topbar{background:white;border-bottom:1px solid var(--border);padding:0 36px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:0 1px 8px rgba(0,0,0,0.04);}
+  .topbar h1{font-size:16px;font-weight:600;}
+  .topbar-right{display:flex;align-items:center;gap:12px;}
+  .status-pill{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all 0.2s;border:none;font-family:'DM Sans',sans-serif;}
+  .status-pill.online{background:var(--green-bg);color:var(--green);}
+  .status-pill.offline{background:#F3F4F6;color:var(--muted);}
+  .status-dot{width:7px;height:7px;border-radius:50%;}
+  .status-pill.online .status-dot{background:var(--green);}
+  .status-pill.offline .status-dot{background:#D1D5DB;}
+  .btn-rapport{background:var(--blue);color:white;border:none;padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+  .btn-rapport:hover{background:var(--blue-mid);}
+
+  /* CONTENT */
+  .content{padding:28px 36px 60px;}
+
+  /* BANNER */
+  .welcome-banner{background:linear-gradient(135deg,var(--blue),var(--blue-mid));border-radius:16px;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;overflow:hidden;position:relative;}
+  .welcome-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%);border-radius:50%;}
+  .wb-text h2{font-family:'DM Serif Display',serif;font-size:20px;color:white;font-weight:400;margin-bottom:5px;}
+  .wb-text p{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.5;}
+  .wb-next{background:rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;text-align:right;flex-shrink:0;min-width:180px;}
+  .wb-next .wn-label{font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+  .wb-next .wn-val{font-size:14px;font-weight:600;color:white;}
+  .wb-next .wn-sub{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+  .stat-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+  .stat-card .sl{font-size:12px;color:var(--muted);margin-bottom:5px;}
+  .stat-card .sv{font-size:24px;font-weight:700;line-height:1;}
+  .stat-card .ss{font-size:12px;margin-top:4px;}
+  .up{color:var(--green);} .neu{color:var(--muted);}
+
+  /* TWO/THREE COL */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+  .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+
+  /* CARDS */
+  .card{background:white;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+  .card-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .card-head h3{font-size:14px;font-weight:600;}
+  .card-link{font-size:12px;color:var(--blue-mid);text-decoration:none;cursor:pointer;font-weight:500;}
+  .card-link:hover{text-decoration:underline;}
+
+  /* SÉANCES */
+  .seance-item{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px;}
+  .seance-item:last-child{border-bottom:none;}
+  .seance-date{width:48px;text-align:center;background:var(--blue-pale);border-radius:8px;padding:7px 4px;flex-shrink:0;}
+  .seance-date .sd{font-size:18px;font-weight:700;color:var(--blue);line-height:1;}
+  .seance-date .sm{font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+  .seance-info{flex:1;}
+  .seance-info h4{font-size:14px;font-weight:600;margin-bottom:3px;}
+  .seance-info p{font-size:12px;color:var(--muted);line-height:1.5;}
+  .seance-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;}
+  .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;}
+  .badge.green{background:var(--green-bg);color:var(--green);}
+  .badge.blue{background:var(--blue-light);color:var(--blue-mid);}
+  .badge.amber{background:var(--amber-bg);color:var(--amber);}
+  .badge.red{background:var(--red-bg);color:var(--red);}
+  .badge.purple{background:var(--purple-bg);color:var(--purple);}
+  .badge.gray{background:#F3F4F6;color:var(--muted);}
+  .abtn{font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+  .abtn:hover{border-color:var(--blue-mid);color:var(--blue);}
+  .abtn.primary{background:var(--blue);color:white;border-color:var(--blue);}
+  .abtn.primary:hover{background:var(--blue-mid);}
+
+  /* TIMELINE */
+  .timeline{padding:14px 20px;}
+  .tl-item{display:flex;gap:12px;padding:7px 0;}
+  .tl-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+  .tl-text{font-size:12px;color:var(--ink);line-height:1.5;}
+  .tl-time{font-size:11px;color:var(--muted);margin-top:1px;}
+
+  /* DISPONIBILITES */
+  .dispo-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:16px 20px;}
+  .dispo-day{text-align:center;border-radius:8px;padding:10px 4px;cursor:pointer;transition:all 0.15s;border:1.5px solid var(--border);background:white;}
+  .dispo-day:hover{border-color:var(--blue-mid);}
+  .dispo-day.on{background:var(--green-bg);border-color:var(--green);}
+  .dispo-day.booked{background:var(--blue-light);border-color:var(--blue-mid);}
+  .dispo-day.off{background:#F9FAFB;border-color:var(--border);opacity:0.5;}
+  .dispo-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+  .dispo-day.on .dispo-label{color:var(--green);}
+  .dispo-day.booked .dispo-label{color:var(--blue-mid);}
+  .dispo-slots{font-size:10px;color:var(--muted);margin-top:3px;}
+
+  /* STUDENTS LIST */
+  .student-item{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+  .student-item:last-child{border-bottom:none;}
+  .student-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .student-info{flex:1;}
+  .student-info h4{font-size:13px;font-weight:600;margin-bottom:2px;}
+  .student-info p{font-size:11px;color:var(--muted);}
+  .student-actions{display:flex;gap:8px;align-items:center;}
+
+  /* EARNINGS CHART */
+  .earn-chart{padding:16px 20px;}
+  .earn-bars{display:flex;align-items:flex-end;gap:10px;height:90px;margin-bottom:8px;}
+  .earn-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .earn-bar{width:100%;border-radius:4px 4px 0 0;}
+  .earn-lbl{font-size:9px;color:var(--muted);}
+  .earn-val{font-size:9px;font-weight:600;color:var(--ink);}
+  .earn-total{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);margin-top:4px;}
+  .earn-total-lbl{font-size:12px;color:var(--muted);}
+  .earn-total-val{font-size:18px;font-weight:700;color:var(--green);}
+
+  /* RATINGS */
+  .rating-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .rating-row:last-child{border-bottom:none;}
+  .rating-stars{font-size:14px;flex-shrink:0;width:80px;}
+  .rating-bar-wrap{flex:1;background:#F1F5F9;border-radius:4px;height:6px;}
+  .rating-bar{height:6px;border-radius:4px;background:#FCD34D;}
+  .rating-count{font-size:12px;color:var(--muted);width:24px;text-align:right;}
+
+  /* CHECKLIST */
+  .checklist{padding:14px 20px;}
+  .check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+  .check-item:last-child{border-bottom:none;}
+  .check-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:white;margin-top:1px;transition:all 0.15s;}
+  .check-item.done .check-box{background:var(--green);border-color:var(--green);}
+  .check-item.done .check-box::after{content:'✓';}
+  .check-text{font-size:13px;color:var(--ink);line-height:1.4;}
+  .check-item.done .check-text{text-decoration:line-through;color:var(--muted);}
+  .check-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,21,38,0.5);z-index:200;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;animation:fadeIn 0.2s ease;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{background:white;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:slideUp 0.25s ease;}
+  @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .modal-top{background:var(--blue);padding:24px 28px;border-radius:20px 20px 0 0;position:relative;}
+  .modal-close{position:absolute;top:14px;right:14px;width:28px;height:28px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;color:white;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .modal-close:hover{background:rgba(255,255,255,0.25);}
+  .modal-top h2{font-family:'DM Serif Display',serif;font-size:20px;color:white;font-weight:400;margin-bottom:3px;}
+  .modal-top p{font-size:13px;color:rgba(255,255,255,0.65);}
+  .modal-body{padding:22px 28px;}
+  .modal-section{margin-bottom:18px;}
+  .modal-section-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+  .modal-section p{font-size:14px;color:#374151;line-height:1.7;}
+  .action-check{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;background:var(--blue-pale);border-radius:8px;margin-bottom:7px;}
+  .action-num{width:22px;height:22px;background:var(--blue);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+  .action-text{font-size:13px;color:var(--ink);line-height:1.5;font-weight:500;}
+  .btn-modal{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:14px;}
+  .btn-modal:hover{background:var(--blue-mid);}
+  .btn-modal.green{background:var(--green);}
+  .btn-modal.green:hover{background:#15803D;}
+
+  /* DISPO MODAL */
+  .creneau-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .creneau{padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;text-align:center;}
+  .creneau:hover{border-color:var(--blue-mid);background:var(--blue-light);}
+  .creneau.on{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
+  .creneau .c-day{font-weight:600;font-size:12px;}
+  .creneau .c-time{font-size:11px;color:var(--muted);margin-top:1px;}
+  .creneau.on .c-time{color:var(--blue-mid);}
+
+  /* NOTIF BADGE */
+  .notif-btn{width:36px;height:36px;background:var(--blue-pale);border:none;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;position:relative;}
+  .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white;}
+
+  @media(max-width:1024px){.two-col{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+  .hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;padding:6px;color:var(--ink);}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:40;}
+  @media(max-width:768px){.hamburger{display:block;}.sidebar-close{display:block;}.sidebar{transform:translateX(-100%);transition:transform 0.3s ease;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.main{margin-left:0;}.content{padding:20px;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div>
+      <a href="dashboard-mentor.html">ATERISK</a>
+      <p>Espace mentor</p>
+    </div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+
+  <div class="sb-mentor">
+    <div class="sb-avatar">👨‍💼</div>
+    <div class="sb-info">
+      <h4>Thomas Roux</h4>
+      <p>Manager Commercial · Lyon</p>
+      <div class="sb-badge-level">⭐ Senior</div>
+    </div>
+  </div>
+
+  <div class="sb-earnings">
+    <div class="el">Gains ce mois</div>
+    <div class="ev">189 <span style="font-size:16px;opacity:0.5">€</span></div>
+    <div class="es">18 séances · objectif 250 €</div>
+    <div class="eprog"><div class="eprog-fill"></div></div>
+    <div class="eprog-lbl">62% de l'objectif</div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section">Principal</div>
+    <button class="nav-item active" onclick="showSection('overview',this)">
+      <span class="nav-icon">🏠</span><span class="nav-label">Tableau de bord</span>
+    </button>
+    <button class="nav-item" onclick="showSection('seances',this)">
+      <span class="nav-icon">📅</span><span class="nav-label">Mes séances</span>
+      <span class="nav-badge amber">5</span>
+    </button>
+    <button class="nav-item" onclick="showSection('etudiants',this)">
+      <span class="nav-icon">👩‍🎓</span><span class="nav-label">Mes étudiants</span>
+      <span class="nav-badge green">12</span>
+    </button>
+    <button class="nav-item" onclick="showSection('rapports',this)">
+      <span class="nav-icon">📋</span><span class="nav-label">Rapports à rédiger</span>
+      <span class="nav-badge">2</span>
+    </button>
+    <div class="sb-section">Finance</div>
+    <button class="nav-item" onclick="showSection('gains',this)">
+      <span class="nav-icon">💶</span><span class="nav-label">Mes gains</span>
+    </button>
+    <div class="sb-section">Paramètres</div>
+    <button class="nav-item" onclick="showSection('disponibilites',this)">
+      <span class="nav-icon">🗓️</span><span class="nav-label">Disponibilités</span>
+    </button>
+    <button class="nav-item" onclick="showSection('profil',this)">
+      <span class="nav-icon">⚙️</span><span class="nav-label">Mon profil</span>
+    </button>
+  </nav>
+
+  <div class="sb-footer">
+    <a href="aterisk_rapport_mentor.html">✦ Outil rapport IA</a>
+    <a href="index.html">← Retour à l'accueil</a>
+    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <h1 id="topbar-title">Bonjour Thomas 👋</h1>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+      <button class="status-pill online" id="statusPill" onclick="toggleStatus()">
+        <span class="status-dot"></span>Disponible
+      </button>
+      <a href="aterisk_rapport_mentor.html" class="btn-rapport">✦ Rédiger un rapport</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="section active" id="sec-overview">
+
+      <div class="welcome-banner">
+        <div class="wb-text">
+          <h2>Bonne semaine, Thomas !</h2>
+          <p>5 séances à venir · 2 rapports en attente · Note moyenne ★ 4.9</p>
+        </div>
+        <div class="wb-next">
+          <div class="wn-label">Prochaine séance</div>
+          <div class="wn-val">Lun 23 mars · 10h00</div>
+          <div class="wn-sub">Yanis Ferhat — Réseau caché</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="sl">Séances ce mois</div><div class="sv">18</div><div class="ss up">↑ +3 vs mois dernier</div></div>
+        <div class="stat-card"><div class="sl">Étudiants accompagnés</div><div class="sv">12</div><div class="ss up">↑ +2 nouveaux</div></div>
+        <div class="stat-card"><div class="sl">Note moyenne</div><div class="sv">★ 4.9</div><div class="ss up">Sur 47 avis</div></div>
+        <div class="stat-card"><div class="sl">Gains ce mois</div><div class="sv">189 €</div><div class="ss up">↑ +42 €</div></div>
+      </div>
+
+      <div class="two-col">
+
+        <!-- Séances à venir -->
+        <div class="card">
+          <div class="card-head"><h3>Séances à venir</h3><span class="card-link" onclick="showSection('seances',document.querySelectorAll('.nav-item')[1])">Tout voir →</span></div>
+
+          <div class="seance-item">
+            <div class="seance-date"><div class="sd">23</div><div class="sm">Mars</div></div>
+            <div class="seance-info">
+              <h4>Yanis Ferhat</h4>
+              <p>10h00 – 10h30 · Réseau caché & marché caché<br>BTS Commerce · Nice</p>
+            </div>
+            <div class="seance-actions">
+              <span class="badge blue">Demain</span>
+              <button class="abtn" onclick="openModal('prep-seance')">Préparer</button>
+              <a class="abtn primary" href="seance.html?room=aterisk-sarah-yanis-20260323-1000&mentor=Sarah+L.&student=Yanis+Ferhat&topic=Réseau+caché+%26+marché+caché&role=mentor&tokens=1"
+                 style="text-decoration:none;display:flex;align-items:center;gap:4px">📹 Rejoindre</a>
+            </div>
+          </div>
+
+          <div class="seance-item">
+            <div class="seance-date"><div class="sd">25</div><div class="sm">Mars</div></div>
+            <div class="seance-info">
+              <h4>Sara Leblanc</h4>
+              <p>14h00 – 14h30 · Candidature & lettre de motivation<br>BTS Banque · Paris · Via ESCP</p>
+            </div>
+            <div class="seance-actions">
+              <span class="badge blue">Confirmée</span>
+              <button class="abtn" onclick="openModal('prep-seance')">Préparer</button>
+              <a class="abtn primary" href="seance.html?room=aterisk-sarah-sara-20260325-1400&mentor=Sarah+L.&student=Sara+Leblanc&topic=Candidature+%26+LM&role=mentor&tokens=1"
+                 style="text-decoration:none;display:flex;align-items:center;gap:4px">📹 Rejoindre</a>
+            </div>
+          </div>
+
+          <div class="seance-item">
+            <div class="seance-date"><div class="sd">26</div><div class="sm">Mars</div></div>
+            <div class="seance-info">
+              <h4>Lola Martin</h4>
+              <p>16h00 – 16h30 · Stratégie de candidature<br>BTS Commerce · Paris</p>
+            </div>
+            <div class="seance-actions">
+              <span class="badge blue">Confirmée</span>
+              <button class="abtn" onclick="openModal('prep-seance')">Préparer</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Rapports en attente + activité -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <div class="card">
+            <div class="card-head"><h3>Rapports à envoyer</h3><span class="badge red">2 en attente</span></div>
+            <div class="seance-item">
+              <div class="seance-date" style="background:var(--red-bg)"><div class="sd" style="color:var(--red)">20</div><div class="sm">Mars</div></div>
+              <div class="seance-info">
+                <h4>Nabil Oussama</h4>
+                <p>Séance terminée · Rapport non envoyé</p>
+              </div>
+              <div class="seance-actions">
+                <a href="aterisk_rapport_mentor.html" class="abtn primary">Rédiger →</a>
+              </div>
+            </div>
+            <div class="seance-item">
+              <div class="seance-date" style="background:var(--amber-bg)"><div class="sd" style="color:var(--amber)">19</div><div class="sm">Mars</div></div>
+              <div class="seance-info">
+                <h4>Adam Benali</h4>
+                <p>Séance terminée · Rapport en brouillon</p>
+              </div>
+              <div class="seance-actions">
+                <a href="aterisk_rapport_mentor.html" class="abtn">Continuer →</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Activité récente</h3></div>
+            <div class="timeline">
+              <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div><div class="tl-text">Lola Martin a noté ta séance ★ 5.0 — "Exactement ce dont j'avais besoin"</div><div class="tl-time">Il y a 2h</div></div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:var(--blue-mid)"></div><div><div class="tl-text">Sara Leblanc a réservé une séance pour le 25 mars</div><div class="tl-time">Il y a 5h</div></div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div><div class="tl-text">Virement de 42 € reçu (4 séances semaine 11)</div><div class="tl-time">Hier</div></div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:var(--amber)"></div><div><div class="tl-text">Yanis Ferhat a confirmé sa séance du 23 mars</div><div class="tl-time">Hier</div></div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Checklist mentor -->
+      <div class="card">
+        <div class="card-head"><h3>Ma checklist de la semaine</h3><span class="badge green">3/5 complété</span></div>
+        <div class="checklist">
+          <div class="check-item done" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Confirmer les créneaux de la semaine</div><div class="check-sub">Lun 23, Mer 25, Jeu 26</div></div></div>
+          <div class="check-item done" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Lire le profil de Yanis Ferhat avant la séance</div><div class="check-sub">BTS Commerce · Secteur cible : Commerce B2B</div></div></div>
+          <div class="check-item done" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Envoyer le rapport de Lola Martin (séance du 15/03)</div><div class="check-sub">Fait ✓</div></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Rédiger le rapport de Nabil Oussama (séance du 20/03)</div><div class="check-sub">En retard · À faire avant demain 12h</div></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-text">Rédiger le rapport d'Adam Benali (séance du 19/03)</div><div class="check-sub">Brouillon sauvegardé</div></div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── SÉANCES ── -->
+    <div class="section" id="sec-seances">
+      <div class="stats-row">
+        <div class="stat-card"><div class="sl">Ce mois</div><div class="sv">18</div><div class="ss up">↑ +3</div></div>
+        <div class="stat-card"><div class="sl">À venir</div><div class="sv">5</div><div class="ss neu">Cette semaine</div></div>
+        <div class="stat-card"><div class="sl">Complétées</div><div class="sv">13</div><div class="ss up">96% assiduité</div></div>
+        <div class="stat-card"><div class="sl">Annulées</div><div class="sv">1</div><div class="ss neu">Ce mois</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-head"><h3>Séances à venir</h3><button class="abtn" onclick="openModal('add-dispo')">+ Ajouter des créneaux</button></div>
+
+        <div class="seance-item">
+          <div class="seance-date"><div class="sd">23</div><div class="sm">Mars</div></div>
+          <div class="seance-info"><h4>Yanis Ferhat</h4><p>10h00 – 10h30 · Réseau caché & marché caché · BTS Commerce, Nice</p></div>
+          <div class="seance-actions"><span class="badge blue">Demain</span><button class="abtn primary" onclick="openModal('prep-seance')">Préparer</button><button class="abtn">Annuler</button></div>
+        </div>
+        <div class="seance-item">
+          <div class="seance-date"><div class="sd">25</div><div class="sm">Mars</div></div>
+          <div class="seance-info"><h4>Sara Leblanc</h4><p>14h00 – 14h30 · LM & candidature · Via ESCP Paris</p></div>
+          <div class="seance-actions"><span class="badge blue">Confirmée</span><button class="abtn" onclick="openModal('prep-seance')">Préparer</button><button class="abtn">Annuler</button></div>
+        </div>
+        <div class="seance-item">
+          <div class="seance-date"><div class="sd">26</div><div class="sm">Mars</div></div>
+          <div class="seance-info"><h4>Lola Martin</h4><p>16h00 – 16h30 · Stratégie candidature · BTS Commerce, Paris</p></div>
+          <div class="seance-actions"><span class="badge blue">Confirmée</span><button class="abtn" onclick="openModal('prep-seance')">Préparer</button><button class="abtn">Annuler</button></div>
+        </div>
+        <div class="seance-item">
+          <div class="seance-date"><div class="sd">27</div><div class="sm">Mars</div></div>
+          <div class="seance-info"><h4>Nabil Oussama</h4><p>09h30 – 10h00 · Entretien & pitch · Licence Pro, Lyon</p></div>
+          <div class="seance-actions"><span class="badge amber">À confirmer</span><button class="abtn primary">Confirmer</button><button class="abtn">Refuser</button></div>
+        </div>
+        <div class="seance-item">
+          <div class="seance-date"><div class="sd">28</div><div class="sm">Mars</div></div>
+          <div class="seance-info"><h4>Adam Benali</h4><p>11h00 – 11h30 · Bilan & actions · Bachelor RH, Lille</p></div>
+          <div class="seance-actions"><span class="badge blue">Confirmée</span><button class="abtn" onclick="openModal('prep-seance')">Préparer</button><button class="abtn">Annuler</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Historique</h3><select style="font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;outline:none;font-family:'DM Sans',sans-serif"><option>Mars 2026</option><option>Fév 2026</option><option>Jan 2026</option></select></div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr style="background:#FAFAFA;border-bottom:1px solid var(--border)">
+            <th style="padding:10px 20px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Date</th>
+            <th style="padding:10px 20px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Étudiant</th>
+            <th style="padding:10px 20px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Sujet</th>
+            <th style="padding:10px 20px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Note</th>
+            <th style="padding:10px 20px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Gains</th>
+            <th style="padding:10px 20px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Rapport</th>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 20px;font-size:13px">20/03</td><td style="padding:11px 20px;font-size:13px"><strong>Nabil Oussama</strong></td><td style="padding:11px 20px;font-size:13px;color:var(--muted)">Réseau & candidature</td><td style="padding:11px 20px;font-size:13px">★ 4.8</td><td style="padding:11px 20px;font-size:13px;color:var(--green);font-weight:600">+10,50 €</td><td style="padding:11px 20px"><span class="badge red">À envoyer</span></td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 20px;font-size:13px">19/03</td><td style="padding:11px 20px;font-size:13px"><strong>Adam Benali</strong></td><td style="padding:11px 20px;font-size:13px;color:var(--muted)">Entretien RH</td><td style="padding:11px 20px;font-size:13px">★ 5.0</td><td style="padding:11px 20px;font-size:13px;color:var(--green);font-weight:600">+10,50 €</td><td style="padding:11px 20px"><span class="badge amber">Brouillon</span></td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 20px;font-size:13px">15/03</td><td style="padding:11px 20px;font-size:13px"><strong>Lola Martin</strong></td><td style="padding:11px 20px;font-size:13px;color:var(--muted)">Stratégie candidature</td><td style="padding:11px 20px;font-size:13px">★ 4.9</td><td style="padding:11px 20px;font-size:13px;color:var(--green);font-weight:600">+10,50 €</td><td style="padding:11px 20px"><span class="badge green">Envoyé</span></td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 20px;font-size:13px">12/03</td><td style="padding:11px 20px;font-size:13px"><strong>Sara Leblanc</strong></td><td style="padding:11px 20px;font-size:13px;color:var(--muted)">LM & candidature</td><td style="padding:11px 20px;font-size:13px">★ 4.7</td><td style="padding:11px 20px;font-size:13px;color:var(--green);font-weight:600">+10,50 €</td><td style="padding:11px 20px"><span class="badge green">Envoyé</span></td></tr>
+          <tr><td style="padding:11px 20px;font-size:13px">08/03</td><td style="padding:11px 20px;font-size:13px"><strong>Yanis Ferhat</strong></td><td style="padding:11px 20px;font-size:13px;color:var(--muted)">Réseau caché</td><td style="padding:11px 20px;font-size:13px">★ 5.0</td><td style="padding:11px 20px;font-size:13px;color:var(--green);font-weight:600">+10,50 €</td><td style="padding:11px 20px"><span class="badge green">Envoyé</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ÉTUDIANTS ── -->
+    <div class="section" id="sec-etudiants">
+      <div class="stats-row">
+        <div class="stat-card"><div class="sl">Total accompagnés</div><div class="sv">12</div><div class="ss up">+2 ce mois</div></div>
+        <div class="stat-card"><div class="sl">Actifs</div><div class="sv">8</div><div class="ss neu">En recherche</div></div>
+        <div class="stat-card"><div class="sl">Placés</div><div class="sv">4</div><div class="ss up">↑ taux 47%</div></div>
+        <div class="stat-card"><div class="sl">Satisfaction moyenne</div><div class="sv">★ 4.9</div><div class="ss up">47 avis</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Mes étudiants actifs</h3></div>
+
+        <div class="student-item">
+          <div class="student-av" style="background:#EEF2FF">👩</div>
+          <div class="student-info"><h4>Lola Martin</h4><p>BTS Commerce · Paris · 3 séances · Secteur Marketing</p></div>
+          <div class="student-actions"><span class="badge green">Actif</span><button class="abtn" onclick="openModal('view-student')">Voir profil</button></div>
+        </div>
+        <div class="student-item">
+          <div class="student-av" style="background:#F0FDF4">👨</div>
+          <div class="student-info"><h4>Nabil Oussama</h4><p>Licence Pro Vente · Lyon · 2 séances · Secteur Commerce</p></div>
+          <div class="student-actions"><span class="badge green">Actif</span><button class="abtn" onclick="openModal('view-student')">Voir profil</button></div>
+        </div>
+        <div class="student-item">
+          <div class="student-av" style="background:#FFF7ED">👨</div>
+          <div class="student-info"><h4>Yanis Ferhat</h4><p>BTS Commerce · Nice · 2 séances · Secteur Commerce</p></div>
+          <div class="student-actions"><span class="badge green">Actif</span><button class="abtn" onclick="openModal('view-student')">Voir profil</button></div>
+        </div>
+        <div class="student-item">
+          <div class="student-av" style="background:#F0FDF4">👩</div>
+          <div class="student-info"><h4>Sara Leblanc</h4><p>BTS Banque · Paris · 2 séances · Via ESCP · Finance</p></div>
+          <div class="student-actions"><span class="badge blue">École</span><button class="abtn" onclick="openModal('view-student')">Voir profil</button></div>
+        </div>
+        <div class="student-item">
+          <div class="student-av" style="background:#FDF4FF">👨</div>
+          <div class="student-info"><h4>Adam Benali</h4><p>Bachelor RH · Lille · 1 séance · Secteur RH</p></div>
+          <div class="student-actions"><span class="badge green">Actif</span><button class="abtn" onclick="openModal('view-student')">Voir profil</button></div>
+        </div>
+        <div class="student-item">
+          <div class="student-av" style="background:#F0FDF4">👩</div>
+          <div class="student-info"><h4>Inès Marchand</h4><p>M1 Marketing · Toulouse · 5 séances · Placée ✓</p></div>
+          <div class="student-actions"><span class="badge purple">Placée ✓</span><button class="abtn" onclick="openModal('view-student')">Voir profil</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RAPPORTS ── -->
+    <div class="section" id="sec-rapports">
+      <div class="two-col">
+        <div class="card" style="border:2px solid var(--red)">
+          <div class="card-head"><h3>🔴 Rapports en attente</h3><span class="badge red">2 urgents</span></div>
+          <div class="seance-item">
+            <div class="seance-date" style="background:var(--red-bg)"><div class="sd" style="color:var(--red)">20</div><div class="sm">Mars</div></div>
+            <div class="seance-info"><h4>Nabil Oussama</h4><p>Réseau & candidature · À envoyer avant demain</p></div>
+            <div class="seance-actions"><a href="aterisk_rapport_mentor.html" class="abtn primary">Rédiger →</a></div>
+          </div>
+          <div class="seance-item">
+            <div class="seance-date" style="background:var(--amber-bg)"><div class="sd" style="color:var(--amber)">19</div><div class="sm">Mars</div></div>
+            <div class="seance-info"><h4>Adam Benali</h4><p>Entretien RH · Brouillon sauvegardé</p></div>
+            <div class="seance-actions"><a href="aterisk_rapport_mentor.html" class="abtn">Continuer →</a></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>✅ Rapports envoyés</h3></div>
+          <div class="seance-item">
+            <div class="seance-date" style="background:var(--green-bg)"><div class="sd" style="color:var(--green)">15</div><div class="sm">Mars</div></div>
+            <div class="seance-info"><h4>Lola Martin</h4><p>Stratégie candidature · Envoyé le 15/03 à 20h12</p></div>
+            <div class="seance-actions"><span class="badge green">Envoyé</span></div>
+          </div>
+          <div class="seance-item">
+            <div class="seance-date" style="background:var(--green-bg)"><div class="sd" style="color:var(--green)">12</div><div class="sm">Mars</div></div>
+            <div class="seance-info"><h4>Sara Leblanc</h4><p>LM & candidature · Envoyé le 12/03 à 15h45</p></div>
+            <div class="seance-actions"><span class="badge green">Envoyé</span></div>
+          </div>
+          <div class="seance-item">
+            <div class="seance-date" style="background:var(--green-bg)"><div class="sd" style="color:var(--green)">08</div><div class="sm">Mars</div></div>
+            <div class="seance-info"><h4>Yanis Ferhat</h4><p>Réseau caché · Envoyé le 08/03 à 22h03</p></div>
+            <div class="seance-actions"><span class="badge green">Envoyé</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--blue-pale);border:1.5px solid var(--blue-light);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:14px;">
+        <span style="font-size:24px">✦</span>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;margin-bottom:3px">Utilise l'outil rapport IA ATERISK</div>
+          <div style="font-size:13px;color:var(--muted)">Prends tes notes librement pendant la séance — l'IA génère le rapport structuré en 10 secondes.</div>
+        </div>
+        <a href="aterisk_rapport_mentor.html" class="btn-rapport">Ouvrir l'outil →</a>
+      </div>
+    </div>
+
+    <!-- ── GAINS ── -->
+    <div class="section" id="sec-gains">
+      <div class="stats-row">
+        <div class="stat-card"><div class="sl">Gains mars</div><div class="sv">189 €</div><div class="ss up">↑ +42 €</div></div>
+        <div class="stat-card"><div class="sl">Total depuis début</div><div class="sv">847 €</div><div class="ss up">47 séances</div></div>
+        <div class="stat-card"><div class="sl">À virer ce mois</div><div class="sv">147 €</div><div class="ss neu">Fin de mois</div></div>
+        <div class="stat-card"><div class="sl">Objectif mensuel</div><div class="sv">250 €</div><div class="ss neu">62% atteint</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h3>Gains par mois</h3></div>
+          <div class="earn-chart">
+            <div class="earn-bars">
+              <div class="earn-col"><div class="earn-val">84€</div><div class="earn-bar" style="height:40px;background:#BFDBFE"></div><div class="earn-lbl">Oct</div></div>
+              <div class="earn-col"><div class="earn-val">98€</div><div class="earn-bar" style="height:47px;background:#93C5FD"></div><div class="earn-lbl">Nov</div></div>
+              <div class="earn-col"><div class="earn-val">120€</div><div class="earn-bar" style="height:57px;background:#60A5FA"></div><div class="earn-lbl">Déc</div></div>
+              <div class="earn-col"><div class="earn-val">105€</div><div class="earn-bar" style="height:50px;background:#3B82F6"></div><div class="earn-lbl">Jan</div></div>
+              <div class="earn-col"><div class="earn-val">147€</div><div class="earn-bar" style="height:70px;background:#2563EB"></div><div class="earn-lbl">Fév</div></div>
+              <div class="earn-col"><div class="earn-val">189€</div><div class="earn-bar" style="height:90px;background:#1D4ED8"></div><div class="earn-lbl">Mar</div></div>
+            </div>
+            <div class="earn-total">
+              <span class="earn-total-lbl">Total cumulé (6 mois)</span>
+              <span class="earn-total-val">847 €</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Détail mars 2026</h3></div>
+          <div style="padding:14px 20px;display:flex;flex-direction:column;gap:0">
+            <div class="rating-row" style="border-bottom:1px solid var(--border);padding:10px 0">
+              <span style="font-size:13px;flex:1">18 séances × 10,50 €</span>
+              <span style="font-size:14px;font-weight:700;color:var(--green)">189 €</span>
+            </div>
+            <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">Dont reversé ce mois</span><span style="color:var(--green);font-weight:600">+147 €</span></div>
+            <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">Taux ATERISK (30%)</span><span style="color:var(--muted)">42 €</span></div>
+            <div style="padding:10px 0;display:flex;justify-content:space-between;font-size:14px;font-weight:700"><span>Net perçu ce mois</span><span style="color:var(--green)">147 €</span></div>
+            <div style="margin-top:14px;background:var(--blue-pale);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--muted)">
+              💳 Versement en fin de mois sur ton IBAN · Dernier versement : <strong>147 € le 01/03</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DISPONIBILITÉS ── -->
+    <div class="section" id="sec-disponibilites">
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-head">
+          <h3>Mes créneaux — semaine du 23 mars</h3>
+          <div style="display:flex;gap:8px">
+            <button class="abtn">◀ Semaine préc.</button>
+            <button class="abtn">Semaine suiv. ▶</button>
+            <button class="abtn primary" onclick="openModal('add-dispo')">+ Ajouter des créneaux</button>
+          </div>
+        </div>
+        <div class="dispo-grid">
+          <div>
+            <div class="dispo-label">Lun 23</div>
+            <div class="dispo-day booked" onclick="this.classList.toggle('on');this.classList.remove('booked')"><div style="font-size:10px;font-weight:600;color:var(--blue-mid)">10h00</div><div class="dispo-slots">Yanis F.</div></div>
+          </div>
+          <div>
+            <div class="dispo-label">Mar 24</div>
+            <div class="dispo-day on" onclick="this.classList.toggle('on')"><div style="font-size:10px;font-weight:600;color:var(--green)">Libre</div><div class="dispo-slots">09h–11h</div></div>
+          </div>
+          <div>
+            <div class="dispo-label">Mer 25</div>
+            <div class="dispo-day booked"><div style="font-size:10px;font-weight:600;color:var(--blue-mid)">14h00</div><div class="dispo-slots">Sara L.</div></div>
+          </div>
+          <div>
+            <div class="dispo-label">Jeu 26</div>
+            <div class="dispo-day booked"><div style="font-size:10px;font-weight:600;color:var(--blue-mid)">16h00</div><div class="dispo-slots">Lola M.</div></div>
+          </div>
+          <div>
+            <div class="dispo-label">Ven 27</div>
+            <div class="dispo-day on" onclick="this.classList.toggle('on')"><div style="font-size:10px;font-weight:600;color:var(--green)">Libre</div><div class="dispo-slots">09h–12h</div></div>
+          </div>
+          <div>
+            <div class="dispo-label">Sam 28</div>
+            <div class="dispo-day off"><div style="font-size:10px">Fermé</div></div>
+          </div>
+          <div>
+            <div class="dispo-label">Dim 29</div>
+            <div class="dispo-day off"><div style="font-size:10px">Fermé</div></div>
+          </div>
+        </div>
+        <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:16px;font-size:12px">
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block"></span>Disponible</span>
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--blue-mid);display:inline-block"></span>Réservé</span>
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#D1D5DB;display:inline-block"></span>Indisponible</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Récurrence hebdomadaire</h3></div>
+        <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+          <div style="text-align:center"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">LUN</div><div style="background:var(--green-bg);border:1px solid var(--green);border-radius:8px;padding:10px 6px;font-size:12px;font-weight:600;color:var(--green);cursor:pointer" onclick="this.style.background='white';this.style.color='var(--muted)';this.style.borderColor='var(--border)'">09h–12h</div></div>
+          <div style="text-align:center"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">MAR</div><div style="background:var(--green-bg);border:1px solid var(--green);border-radius:8px;padding:10px 6px;font-size:12px;font-weight:600;color:var(--green);cursor:pointer">09h–11h</div></div>
+          <div style="text-align:center"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">MER</div><div style="background:var(--green-bg);border:1px solid var(--green);border-radius:8px;padding:10px 6px;font-size:12px;font-weight:600;color:var(--green);cursor:pointer">14h–17h</div></div>
+          <div style="text-align:center"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">JEU</div><div style="background:var(--green-bg);border:1px solid var(--green);border-radius:8px;padding:10px 6px;font-size:12px;font-weight:600;color:var(--green);cursor:pointer">16h–18h</div></div>
+          <div style="text-align:center"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">VEN</div><div style="background:var(--green-bg);border:1px solid var(--green);border-radius:8px;padding:10px 6px;font-size:12px;font-weight:600;color:var(--green);cursor:pointer">09h–12h</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFIL ── -->
+    <div class="section" id="sec-profil">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h3>Mon profil public</h3><button class="abtn primary" onclick="saveProfil(this)">Enregistrer</button></div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--blue-pale);border-radius:8px">
+              <div style="width:52px;height:52px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">👨‍💼</div>
+              <div><div style="font-size:16px;font-weight:700">Thomas Roux</div><div style="font-size:12px;color:var(--muted)">Manager Commercial · Lyon · Mentor Senior</div><span class="badge amber" style="margin-top:4px">⭐ Senior</span></div>
+            </div>
+            <div>
+              <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Bio publique</label>
+              <textarea style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:none;min-height:90px" id="bio-field">7 ans en commerce B2B dans des PME et scale-ups. J'ai recruté et encadré une dizaine d'alternants. Expert du marché caché — 80% de mes étudiants trouvent via ce canal.</textarea>
+            </div>
+            <div>
+              <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Secteurs</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span class="badge blue">💼 Commerce</span>
+                <span class="badge blue">📣 Marketing</span>
+                <span class="badge blue">🤝 RH</span>
+              </div>
+            </div>
+            <div>
+              <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Compétences transmises</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span class="badge gray">Réseau caché</span>
+                <span class="badge gray">Entretien</span>
+                <span class="badge gray">Pitch</span>
+                <span class="badge gray">Stratégie</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="card-head"><h3>Mes avis</h3><span style="font-size:18px;font-weight:700;color:var(--amber)">★ 4.9</span></div>
+            <div style="padding:14px 20px">
+              <div class="rating-row"><span class="rating-stars">★★★★★</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:85%"></div></div><span class="rating-count">40</span></div>
+              <div class="rating-row"><span class="rating-stars">★★★★☆</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:12%"></div></div><span class="rating-count">6</span></div>
+              <div class="rating-row"><span class="rating-stars">★★★☆☆</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:2%"></div></div><span class="rating-count">1</span></div>
+              <div class="rating-row"><span class="rating-stars">★★☆☆☆</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:0%"></div></div><span class="rating-count">0</span></div>
+              <div style="margin-top:14px;padding:12px;background:var(--blue-pale);border-radius:8px;font-size:13px;font-style:italic;color:#374151">"Thomas a tout de suite cerné mon problème. En 30 minutes j'avais une stratégie claire et 8 entreprises à contacter. Séance de folie."<br><span style="font-size:11px;color:var(--muted);margin-top:4px;display:block">— Yanis F. · il y a 2 semaines</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Mon badge ATERISK</h3></div>
+            <div style="padding:16px 20px;text-align:center">
+              <div style="background:linear-gradient(135deg,var(--blue),var(--blue-mid));border-radius:12px;padding:20px;color:white;margin-bottom:14px">
+                <div style="font-size:24px;margin-bottom:8px">🎓</div>
+                <div style="font-family:'DM Serif Display',serif;font-size:16px;margin-bottom:4px">Mentor certifié ATERISK</div>
+                <div style="font-size:12px;opacity:0.7">Thomas Roux · Senior · Commerce</div>
+                <div style="font-size:11px;opacity:0.5;margin-top:6px">47 séances · ★ 4.9</div>
+              </div>
+              <button class="abtn" style="width:100%;padding:9px" onclick="toast('Badge copié pour LinkedIn !')">📋 Copier pour LinkedIn</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL PREP SÉANCE -->
+<div class="modal-overlay" id="modal-prep-seance">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal('prep-seance')">✕</button>
+      <h2>Préparer la séance</h2>
+      <p>Yanis Ferhat · Lun 23 mars · 10h00</p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Profil étudiant</div>
+        <div style="background:var(--blue-pale);border-radius:8px;padding:12px 14px;font-size:13px;color:#374151;line-height:1.6">
+          <strong>Yanis Ferhat</strong> · BTS Commerce · Nice<br>
+          Secteur cible : Commerce B2B<br>
+          Nombre de séances : 2 (dont 1 avec toi)<br>
+          Dernière note : ★ 5.0<br>
+          Candidatures envoyées : 8 · Entretiens : 0
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Objectif de la séance</div>
+        <p>Réseau caché & marché caché. Yanis cherche des entreprises B2B à Nice sans passer par les offres publiées.</p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Fil conducteur — 6 étapes</div>
+        <div class="action-check"><div class="action-num">1</div><div class="action-text">Posture & mindset — qu'est-ce qui bloque ?</div></div>
+        <div class="action-check"><div class="action-num">2</div><div class="action-text">Identifier les entreprises B2B cibles à Nice</div></div>
+        <div class="action-check"><div class="action-num">3</div><div class="action-text">Construire le message de prospection directe</div></div>
+        <div class="action-check"><div class="action-num">4</div><div class="action-text">LinkedIn : trouver le bon interlocuteur (pas les RH)</div></div>
+        <div class="action-check"><div class="action-num">5</div><div class="action-text">Définir 3 actions concrètes pour cette semaine</div></div>
+        <div class="action-check"><div class="action-num">6</div><div class="action-text">Fixer un point de suivi dans 7 jours</div></div>
+      </div>
+      <button class="btn-modal" onclick="closeModal('prep-seance')">Prêt pour la séance ✓</button>
+      <a href="aterisk_rapport_mentor.html" style="display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--blue-mid);text-decoration:none;font-weight:500">Ouvrir l'outil rapport IA →</a>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD DISPO -->
+<div class="modal-overlay" id="modal-add-dispo">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal('add-dispo')">✕</button>
+      <h2>Ajouter des créneaux</h2>
+      <p>Semaine du 23 au 29 mars</p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Choisir les créneaux disponibles</div>
+        <div class="creneau-grid">
+          <div class="creneau on" onclick="this.classList.toggle('on')"><div class="c-day">Lun 23 · 09h00</div><div class="c-time">30 min</div></div>
+          <div class="creneau on" onclick="this.classList.toggle('on')"><div class="c-day">Lun 23 · 10h00</div><div class="c-time">30 min · réservé</div></div>
+          <div class="creneau on" onclick="this.classList.toggle('on')"><div class="c-day">Mar 24 · 09h00</div><div class="c-time">30 min</div></div>
+          <div class="creneau" onclick="this.classList.toggle('on')"><div class="c-day">Mar 24 · 14h00</div><div class="c-time">30 min</div></div>
+          <div class="creneau" onclick="this.classList.toggle('on')"><div class="c-day">Mer 25 · 09h00</div><div class="c-time">30 min</div></div>
+          <div class="creneau on" onclick="this.classList.toggle('on')"><div class="c-day">Mer 25 · 14h00</div><div class="c-time">30 min · réservé</div></div>
+          <div class="creneau" onclick="this.classList.toggle('on')"><div class="c-day">Jeu 26 · 09h00</div><div class="c-time">30 min</div></div>
+          <div class="creneau on" onclick="this.classList.toggle('on')"><div class="c-day">Jeu 26 · 16h00</div><div class="c-time">30 min · réservé</div></div>
+          <div class="creneau on" onclick="this.classList.toggle('on')"><div class="c-day">Ven 27 · 09h00</div><div class="c-time">30 min</div></div>
+          <div class="creneau" onclick="this.classList.toggle('on')"><div class="c-day">Ven 27 · 11h00</div><div class="c-time">30 min</div></div>
+        </div>
+      </div>
+      <button class="btn-modal green" onclick="closeModal('add-dispo');toast('✓ Créneaux mis à jour')">Enregistrer mes disponibilités</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VIEW STUDENT -->
+<div class="modal-overlay" id="modal-view-student">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal('view-student')">✕</button>
+      <h2>Profil étudiant</h2>
+      <p>Informations et historique</p>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;padding:14px;background:var(--blue-pale);border-radius:8px">
+        <div style="width:46px;height:46px;background:#EEF2FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px">👩</div>
+        <div>
+          <div style="font-size:15px;font-weight:700">Lola Martin</div>
+          <div style="font-size:12px;color:var(--muted)">BTS Commerce · Paris · 3 séances avec toi</div>
+        </div>
+        <span class="badge green" style="margin-left:auto">Actif</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:#F9FAFB;border-radius:8px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:3px">TOKENS RESTANTS</div><div style="font-size:20px;font-weight:700">3</div></div>
+        <div style="background:#F9FAFB;border-radius:8px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:3px">NOTE MOYENNE</div><div style="font-size:20px;font-weight:700">★ 4.9</div></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Secteur cible</div>
+        <span class="badge blue">📣 Marketing & Com'</span>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Historique avec toi</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>20/03 · Stratégie candidature</span><span class="badge green">★ 5.0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>08/03 · LinkedIn & réseau</span><span class="badge green">★ 4.8</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0"><span>28/02 · Séance découverte</span><span class="badge green">★ 5.0</span></div>
+        </div>
+      </div>
+      <button class="btn-modal" onclick="closeModal('view-student');openModal('prep-seance')">Préparer la prochaine séance →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Sections
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
+  const titles = {
+    overview:'Bonjour Thomas 👋', seances:'Mes séances', etudiants:'Mes étudiants',
+    rapports:'Rapports à rédiger', gains:'Mes gains',
+    disponibilites:'Mes disponibilités', profil:'Mon profil'
+  };
+  document.getElementById('topbar-title').textContent = titles[id] || 'Espace Mentor';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Status toggle
+let online = true;
+function toggleStatus() {
+  online = !online;
+  const btn = document.getElementById('statusPill');
+  btn.className = 'status-pill ' + (online ? 'online' : 'offline');
+  btn.innerHTML = `<span class="status-dot"></span>${online ? 'Disponible' : 'Indisponible'}`;
+  toast(online ? '✓ Tu es maintenant visible pour les étudiants' : '🔕 Tu es passé hors ligne');
+}
+
+// Modals
+function openModal(id) {
+  document.getElementById('modal-' + id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById('modal-' + id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) { o.classList.remove('open'); document.body.style.overflow = ''; }});
+});
+
+// Checklist
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  const done = document.querySelectorAll('.check-item.done').length;
+  const total = document.querySelectorAll('.check-item').length;
+  document.querySelector('.card-head .badge').textContent = `${done}/${total} complété`;
+  document.querySelector('.card-head .badge').className = `badge ${done === total ? 'green' : 'amber'}`;
+}
+
+// Save profil
+function saveProfil(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '✓ Enregistré !';
+  btn.style.background = 'var(--green)';
+  btn.style.borderColor = 'var(--green)';
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.borderColor = ''; }, 2000);
+}
+
+// Toast
+function toast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// Scroll nav sync
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+// Mobile sidebar toggle
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+document.querySelectorAll('.sidebar .nav-item').forEach(a => {
+  a.addEventListener('click', () => { if(window.innerWidth <= 768) closeSidebar(); });
+});
+</script>
+</body>
+</html>

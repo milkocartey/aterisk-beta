@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Mon espace</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
+    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --green: #16A34A; --green-bg: #DCFCE7; --amber: #92400E; --amber-bg: #FEF3C7;
+    --red: #DC2626; --red-bg: #FEF2F2;
+    --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
+    --sidebar: 240px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar); background: var(--blue); position: fixed;
+    top: 0; left: 0; bottom: 0; display: flex; flex-direction: column;
+    z-index: 50; overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .sidebar-logo a { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; text-decoration: none; letter-spacing: 1px; }
+  .sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  .sidebar-user {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .user-info h4 { font-size: 13px; font-weight: 600; color: white; }
+  .user-info p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+  /* TOKEN BALANCE */
+  .token-balance {
+    margin: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 14px;
+  }
+  .token-balance .tb-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .token-balance .tb-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; line-height: 1; }
+  .token-balance .tb-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .btn-buy-tokens {
+    width: 100%; margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+    color: white; font-size: 12px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  }
+  .btn-buy-tokens:hover { background: rgba(255,255,255,0.2); }
+
+  /* NAV ITEMS */
+  .sidebar-nav { padding: 8px 12px; flex: 1; }
+  .nav-section { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 8px 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 10px; border-radius: 8px; cursor: pointer;
+    transition: all 0.18s; text-decoration: none; margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); }
+  .nav-item.active { background: rgba(255,255,255,0.15); }
+  .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-label { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .nav-item.active .nav-label { color: white; }
+  .nav-badge { margin-left: auto; background: var(--green); color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+
+  .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-footer a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; display: block; padding: 4px 0; transition: color 0.2s; }
+  .sidebar-footer a:hover { color: rgba(255,255,255,0.8); }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* TOP BAR */
+  .topbar {
+    background: white; border-bottom: 1px solid var(--border);
+    padding: 0 36px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 40;
+  }
+  .topbar h1 { font-size: 16px; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .notif-btn { width: 36px; height: 36px; background: var(--blue-pale); border: none; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; background: var(--red); border-radius: 50%; border: 1.5px solid white; }
+  .btn-mentor { background: var(--blue); color: white; border: none; padding: 8px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+  .btn-mentor:hover { background: var(--blue-mid); }
+
+  /* CONTENT */
+  .content { padding: 32px 36px 60px; flex: 1; }
+
+  /* WELCOME BANNER */
+  .welcome-banner {
+    background: var(--blue); border-radius: 16px; padding: 24px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px; overflow: hidden; position: relative;
+  }
+  .welcome-banner::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .welcome-text h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; font-weight: 400; margin-bottom: 6px; }
+  .welcome-text p { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.5; }
+  .welcome-progress { text-align: right; }
+  .progress-ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+  .progress-ring-wrap svg { transform: rotate(-90deg); }
+  .progress-ring-label { position: absolute; text-align: center; }
+  .progress-ring-label .pct { font-size: 20px; font-weight: 700; color: white; line-height: 1; }
+  .progress-ring-label .pct-sub { font-size: 10px; color: rgba(255,255,255,0.5); }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow); }
+  .stat-card .s-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .stat-card .s-val { font-size: 26px; font-weight: 600; color: var(--ink); line-height: 1; }
+  .stat-card .s-sub { font-size: 12px; margin-top: 4px; }
+  .s-up { color: var(--green); } .s-neutral { color: var(--muted); }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 360px; gap: 20px; margin-bottom: 20px; }
+
+  /* CARDS */
+  .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .card-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-header h3 { font-size: 15px; font-weight: 600; }
+  .card-header a { font-size: 12px; color: var(--blue-mid); text-decoration: none; font-weight: 500; }
+  .card-header a:hover { text-decoration: underline; }
+  .card-body { padding: 16px 20px; }
+
+  /* SÉANCES */
+  .seance-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .seance-item:last-child { border-bottom: none; }
+  .seance-date { width: 46px; text-align: center; flex-shrink: 0; background: var(--blue-pale); border-radius: 8px; padding: 8px 4px; }
+  .seance-date .sd-day { font-size: 18px; font-weight: 700; color: var(--blue); line-height: 1; }
+  .seance-date .sd-month { font-size: 10px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+  .seance-info { flex: 1; }
+  .seance-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .seance-info p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .seance-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; flex-shrink: 0; }
+  .badge-upcoming { background: var(--blue-light); color: var(--blue-mid); }
+  .badge-done { background: var(--green-bg); color: var(--green); }
+  .badge-offered { background: var(--amber-bg); color: var(--amber); }
+
+  /* CANDIDATURES */
+  .kanbans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .kanban-col { background: var(--blue-pale); border-radius: var(--radius); padding: 14px; }
+  .kanban-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .kanban-count { background: white; border: 1px solid var(--border); color: var(--muted); font-size: 10px; padding: 1px 7px; border-radius: 20px; }
+  .kanban-card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.18s; }
+  .kanban-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+  .kc-company { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .kc-role { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .kc-footer { display: flex; align-items: center; justify-content: space-between; }
+  .kc-date { font-size: 10px; color: var(--muted); }
+  .kc-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-blue { background: var(--blue-mid); }
+  .dot-amber { background: #F59E0B; }
+  .dot-green { background: var(--green); }
+  .dot-red { background: var(--red); }
+
+  /* RAPPORTS */
+  .rapport-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .rapport-item:last-child { border-bottom: none; }
+  .rapport-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .rapport-info { flex: 1; }
+  .rapport-info h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .rapport-info p { font-size: 11px; color: var(--muted); }
+  .rapport-actions { display: flex; gap: 8px; align-items: center; }
+  .btn-rapport { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 6px; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .btn-dl { background: var(--blue-light); color: var(--blue-mid); }
+  .btn-dl:hover { background: var(--blue); color: white; }
+
+  /* RESSOURCES */
+  .ressources-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .ressource-card { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.18s; text-decoration: none; }
+  .ressource-card:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
+  .ressource-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .ressource-info h4 { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .ressource-info p { font-size: 11px; color: var(--muted); }
+
+  /* ACTIONS RAPIDES */
+  .actions-list { display: flex; flex-direction: column; gap: 8px; }
+  .action-item { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; background: white; transition: all 0.18s; text-decoration: none; }
+  .action-item:hover { border-color: var(--blue-mid); background: var(--blue-pale); transform: translateX(2px); }
+  .action-icon { font-size: 18px; flex-shrink: 0; }
+  .action-info h4 { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 1px; }
+  .action-info p { font-size: 11px; color: var(--muted); }
+  .action-arrow { margin-left: auto; color: var(--muted); font-size: 14px; }
+
+  /* MODAL RAPPORT */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(13,21,38,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal { background: white; border-radius: 20px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.25s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .modal-top { background: var(--blue); padding: 24px 28px; border-radius: 20px 20px 0 0; position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; color: white; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+  .modal-top h2 { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; font-weight: 400; margin-bottom: 4px; }
+  .modal-top p { font-size: 13px; color: rgba(255,255,255,0.65); }
+  .modal-body { padding: 24px 28px; }
+  .rapport-section { margin-bottom: 20px; }
+  .rapport-section-title { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .rapport-section p { font-size: 14px; color: #374151; line-height: 1.7; }
+  .action-check { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; background: var(--blue-pale); border-radius: 8px; margin-bottom: 8px; }
+  .action-num { width: 22px; height: 22px; background: var(--blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .action-text { font-size: 13px; color: var(--ink); line-height: 1.5; font-weight: 500; }
+
+  @media (max-width: 1024px) {
+    .two-col { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .kanbans { grid-template-columns: repeat(2, 1fr); }
+  }
+  .sidebar-close { display: none; background: none; border: none; color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; padding: 4px 8px; margin-left: auto; transition: color 0.2s; }
+  .sidebar-close:hover { color: white; }
+
+  /* Hamburger toggle for mobile */
+  .hamburger { display: none; background: none; border: none; font-size: 22px; cursor: pointer; padding: 6px; color: var(--ink); }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 40; }
+
+  @media (max-width: 768px) {
+    .hamburger { display: block; }
+    .sidebar-close { display: block; }
+    .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .main { margin-left: 0; }
+    .content { padding: 20px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .kanbans { grid-template-columns: 1fr; }
+    .ressources-grid { grid-template-columns: 1fr; }
+    .topbar { padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div>
+      <a href="dashboard.html">ATERISK</a>
+      <p>Espace étudiant</p>
+    </div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-avatar">👩‍🎓</div>
+    <div class="user-info">
+      <h4>Lola Martin</h4>
+      <p>BTS Commerce · Paris</p>
+    </div>
+  </div>
+
+  <div class="token-balance">
+    <div class="tb-label">Mes tokens</div>
+    <div class="tb-val">3<span style="font-size:16px; opacity:0.5"> tokens</span></div>
+    <div class="tb-sub">= 3 séances junior disponibles</div>
+    <button class="btn-buy-tokens" onclick="window.location.href='tokens.html'">+ Acheter des tokens</button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="dashboard.html" class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Tableau de bord</span>
+    </a>
+    <a href="matching.html" class="nav-item">
+      <span class="nav-icon">🎯</span>
+      <span class="nav-label">Mes mentors</span>
+    </a>
+    <a href="secteurs.html" class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Explorer</span>
+    </a>
+
+    <div class="nav-section">Mon parcours</div>
+    <a href="#seances" class="nav-item">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Mes séances</span>
+    </a>
+    <a href="#rapports" class="nav-item">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Mes rapports</span>
+      <span class="nav-badge">2</span>
+    </a>
+    <a href="#candidatures" class="nav-item">
+      <span class="nav-icon">💼</span>
+      <span class="nav-label">Candidatures</span>
+    </a>
+    <a href="ressources.html" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="nav-item">
+      <span class="nav-icon">📚</span>
+      <span class="nav-label">Ressources</span>
+    </a>
+
+    <div class="nav-section">Compte</div>
+    <a href="inscription.html" class="nav-item">
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="admin.html" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;display:block;padding:3px 0">⚙️ Espace admin</a>
+    <a href="index.html">← Retour à l'accueil</a>
+    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <h1>Bonjour Lola 👋</h1>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+      <a href="secteurs.html" class="btn-mentor">Réserver une séance →</a>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>Ta recherche avance, continue !</h2>
+        <p>Tu as eu 2 séances de mentoring ce mois.<br>Ta prochaine séance est lundi 23 mars à 10h00.</p>
+      </div>
+      <div class="welcome-progress">
+        <div class="progress-ring-wrap">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="6"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"
+              stroke-dasharray="100 201" />
+          </svg>
+          <div class="progress-ring-label">
+            <div class="pct">50%</div>
+            <div class="pct-sub">complété</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="s-label">Séances effectuées</div>
+        <div class="s-val">2</div>
+        <div class="s-sub s-up">+1 ce mois</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Candidatures envoyées</div>
+        <div class="s-val">14</div>
+        <div class="s-sub s-up">+4 cette semaine</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Entretiens obtenus</div>
+        <div class="s-val">2</div>
+        <div class="s-sub s-neutral">En cours</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Tokens restants</div>
+        <div class="s-val">3</div>
+        <div class="s-sub s-neutral">= 3 séances junior</div>
+      </div>
+    </div>
+
+    <!-- SÉANCES + ACTIONS -->
+    <div class="two-col" id="seances">
+      <div class="card">
+        <div class="card-header">
+          <h3>Mes séances</h3>
+          <a href="secteurs.html">+ Réserver</a>
+        </div>
+        <div class="card-body">
+          <div class="seance-item" style="flex-wrap:wrap;gap:10px">
+            <div class="seance-date"><div class="sd-day">23</div><div class="sd-month">Mars</div></div>
+            <div class="seance-info">
+              <h4>Sarah L. — Marketing Digital</h4>
+              <p>10h00 – 10h30 · Stratégie LinkedIn & optimisation CV<br>1 token débité</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+              <span class="seance-badge badge-upcoming">À venir</span>
+              <a href="seance.html?room=aterisk-sarah-lola-20260323-1000&mentor=Sarah+L.&student=Lola+M.&topic=Stratégie+LinkedIn+%26+CV&role=etudiant&tokens=1"
+                 style="background:var(--green);color:white;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;transition:all 0.15s;"
+                 onmouseover="this.style.background='#15803D'" onmouseout="this.style.background='var(--green)'">
+                📹 Rejoindre
+              </a>
+            </div>
+          </div>
+          <div class="seance-item">
+            <div class="seance-date" style="background:var(--amber-bg)"><div class="sd-day" style="color:var(--amber)">20</div><div class="sd-month">Mars</div></div>
+            <div class="seance-info">
+              <h4>Sarah L. — Séance découverte</h4>
+              <p>14h00 – 14h30 · Bilan de situation & objectifs<br><span style="color:var(--green);font-weight:600">Offerte à l'inscription ✓</span></p>
+            </div>
+            <span class="seance-badge badge-offered">Offerte</span>
+          </div>
+          <div class="seance-item">
+            <div class="seance-date" style="background:var(--green-bg)"><div class="sd-day" style="color:var(--green)">15</div><div class="sd-month">Mars</div></div>
+            <div class="seance-info">
+              <h4>Thomas R. — Commerce & Réseau</h4>
+              <p>11h00 – 11h30 · Approche marché caché & relances<br>1,5 token débité</p>
+            </div>
+            <span class="seance-badge badge-done">Terminée</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><h3>Actions rapides</h3></div>
+          <div class="card-body">
+            <div class="actions-list">
+              <a href="secteurs.html" class="action-item">
+                <span class="action-icon">🎯</span>
+                <div class="action-info"><h4>Réserver une séance</h4><p>1 token · 30 min avec un mentor</p></div>
+                <span class="action-arrow">→</span>
+              </a>
+              <a href="matching.html" class="action-item">
+                <span class="action-icon">✨</span>
+                <div class="action-info"><h4>Voir mon matching</h4><p>3 mentors sélectionnés pour toi</p></div>
+                <span class="action-arrow">→</span>
+              </a>
+              <a href="tokens.html" class="action-item" href="inscription.html">
+                <span class="action-icon">🪙</span>
+                <div class="action-info"><h4>Acheter des tokens</h4><p>10 € / token — disponibles immédiatement</p></div>
+                <span class="action-arrow">→</span>
+              </a>
+              <a href="#rapports" class="action-item" onclick="openRapport()">
+                <span class="action-icon">📋</span>
+                <div class="action-info"><h4>Voir mon dernier rapport</h4><p>Séance du 15 mars avec Thomas R.</p></div>
+                <span class="action-arrow">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANDIDATURES KANBAN -->
+    <div class="card" style="margin-bottom:20px" id="candidatures">
+      <div class="card-header">
+        <h3>Suivi des candidatures</h3>
+        <a href="#candidatures" onclick="event.preventDefault()">+ Ajouter</a>
+      </div>
+      <div class="card-body" style="padding:14px">
+        <div class="kanbans">
+          <div class="kanban-col">
+            <div class="kanban-title">Envoyées <span class="kanban-count">5</span></div>
+            <div class="kanban-card">
+              <div class="kc-company">Publicis</div>
+              <div class="kc-role">Assistant Marketing Digital</div>
+              <div class="kc-footer"><span class="kc-date">18 mars</span><span class="kc-dot dot-blue"></span></div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-company">LVMH</div>
+              <div class="kc-role">Coordinateur Communication</div>
+              <div class="kc-footer"><span class="kc-date">16 mars</span><span class="kc-dot dot-blue"></span></div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-company">L'Oréal</div>
+              <div class="kc-role">Chargé(e) Marketing</div>
+              <div class="kc-footer"><span class="kc-date">14 mars</span><span class="kc-dot dot-blue"></span></div>
+            </div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-title">En discussion <span class="kanban-count">3</span></div>
+            <div class="kanban-card">
+              <div class="kc-company">Decathlon</div>
+              <div class="kc-role">Assistant Marketing</div>
+              <div class="kc-footer"><span class="kc-date">Relance 20 mars</span><span class="kc-dot dot-amber"></span></div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-company">BlaBlaCar</div>
+              <div class="kc-role">Brand Manager Junior</div>
+              <div class="kc-footer"><span class="kc-date">RDV 25 mars</span><span class="kc-dot dot-amber"></span></div>
+            </div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-title">Entretien <span class="kanban-count">2</span></div>
+            <div class="kanban-card">
+              <div class="kc-company">Hellowork</div>
+              <div class="kc-role">Content Manager</div>
+              <div class="kc-footer"><span class="kc-date">Prévu 24 mars</span><span class="kc-dot dot-green"></span></div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-company">Qonto</div>
+              <div class="kc-role">Growth Marketing</div>
+              <div class="kc-footer"><span class="kc-date">Prévu 26 mars</span><span class="kc-dot dot-green"></span></div>
+            </div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-title">Refus <span class="kanban-count">4</span></div>
+            <div class="kanban-card" style="opacity:0.6">
+              <div class="kc-company">Spotify</div>
+              <div class="kc-role">Marketing Associate</div>
+              <div class="kc-footer"><span class="kc-date">12 mars</span><span class="kc-dot dot-red"></span></div>
+            </div>
+            <div class="kanban-card" style="opacity:0.6">
+              <div class="kc-company">Airbnb</div>
+              <div class="kc-role">Comm' Digitale</div>
+              <div class="kc-footer"><span class="kc-date">10 mars</span><span class="kc-dot dot-red"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAPPORTS + RESSOURCES -->
+    <div class="two-col" id="rapports">
+      <div class="card">
+        <div class="card-header"><h3>Mes rapports de séance</h3></div>
+        <div class="card-body">
+          <div class="rapport-item">
+            <div class="rapport-icon">📋</div>
+            <div class="rapport-info">
+              <h4>Rapport — Thomas R. · 15 mars</h4>
+              <p>Marché caché · Stratégie de relance · 3 actions</p>
+            </div>
+            <div class="rapport-actions">
+              <button class="btn-rapport btn-dl" onclick="openRapport()">Voir</button>
+            </div>
+          </div>
+          <div class="rapport-item">
+            <div class="rapport-icon">📋</div>
+            <div class="rapport-info">
+              <h4>Rapport — Sarah L. · 20 mars</h4>
+              <p>Séance découverte · Bilan · 2 actions</p>
+            </div>
+            <div class="rapport-actions">
+              <button class="btn-rapport btn-dl" onclick="openRapport2()">Voir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="ressources">
+        <div class="card-header"><h3>Ressources</h3><a href="ressources.html" onclick="sessionStorage.setItem('aterisk_subscriber','1')">Voir tout →</a></div>
+        <div class="card-body">
+          <div class="ressources-grid">
+            <a href="ressources.html#cv" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="ressource-card">
+              <div class="ressource-icon" style="background:#EEF2FF">📄</div>
+              <div class="ressource-info"><h4>Template CV</h4><p>Format ATS optimisé</p></div>
+            </a>
+            <a href="ressources.html#cv" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="ressource-card">
+              <div class="ressource-icon" style="background:#F0FDF4">✉️</div>
+              <div class="ressource-info"><h4>Guide LM</h4><p>Structure + exemples</p></div>
+            </a>
+            <a href="ressources.html#reseau" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="ressource-card">
+              <div class="ressource-icon" style="background:#FFF7ED">🔗</div>
+              <div class="ressource-info"><h4>LinkedIn</h4><p>Profil + approche</p></div>
+            </a>
+            <a href="ressources.html#reseau" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="ressource-card">
+              <div class="ressource-icon" style="background:#FDF4FF">🗺️</div>
+              <div class="ressource-info"><h4>Marché caché</h4><p>Méthode + scripts</p></div>
+            </a>
+            <a href="ressources.html#entretien" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="ressource-card">
+              <div class="ressource-icon" style="background:#FEF3C7">🗣️</div>
+              <div class="ressource-info"><h4>Entretien</h4><p>Questions types</p></div>
+            </a>
+            <a href="ressources.html#secteurs" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="ressource-card">
+              <div class="ressource-icon" style="background:#F0FDF4">📣</div>
+              <div class="ressource-info"><h4>Guides secteurs</h4><p>Marketing, Commerce...</p></div>
+            </a>
+            <a href="mapping.html" class="ressource-card">
+              <div class="ressource-icon" style="background:#0D1526">🗺️</div>
+              <div class="ressource-info"><h4>Mapping entreprises</h4><p>450+ acteurs, 15 secteurs</p></div>
+            </a>
+            <a href="ressources.html#webinaires" onclick="sessionStorage.setItem('aterisk_subscriber','1')" class="ressource-card">
+              <div class="ressource-icon" style="background:#F5F3FF">🎥</div>
+              <div class="ressource-info"><h4>Webinaires</h4><p>Replays disponibles</p></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL RAPPORT 1 -->
+<div class="modal-overlay" id="modal-rapport">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeRapport()">✕</button>
+      <h2>Rapport de séance</h2>
+      <p>Thomas R. · 15 mars 2026 · Mentor Senior · 30 min</p>
+    </div>
+    <div class="modal-body">
+      <div class="rapport-section">
+        <div class="rapport-section-title">Résumé de la séance</div>
+        <p>On a travaillé ta stratégie d'approche du marché caché. Tu passes trop de temps sur les offres publiées — on a identifié 8 entreprises cibles à approcher directement via LinkedIn sans passer par les offres d'emploi.</p>
+      </div>
+      <div class="rapport-section">
+        <div class="rapport-section-title">Points clés abordés</div>
+        <p>→ Ton CV est bon mais l'accroche est trop générique — reformuler en 2 lignes max<br>→ 40% de ton réseau LinkedIn est inactif — nettoyage et relance ciblée<br>→ Message de prospection directe : personnaliser selon l'actualité de l'entreprise</p>
+      </div>
+      <div class="rapport-section">
+        <div class="rapport-section-title">Tes 3 actions pour cette semaine</div>
+        <div class="action-check"><div class="action-num">1</div><div class="action-text">Identifier 8 entreprises cibles dans le marketing digital parisien et noter leurs actualités récentes</div></div>
+        <div class="action-check"><div class="action-num">2</div><div class="action-text">Rédiger un message de prospection personnalisé de 5 lignes max et l'envoyer à 3 contacts</div></div>
+        <div class="action-check"><div class="action-num">3</div><div class="action-text">Reformuler l'accroche du CV en mettant en avant ta spécialité marketing digital</div></div>
+      </div>
+      <div class="rapport-section">
+        <div class="rapport-section-title">Mot du mentor</div>
+        <p style="font-style:italic;color:#6B7280">"Tu as le bon état d'esprit — arrête de te battre sur les offres publiées et va chercher là où personne ne cherche. Les 8 entreprises qu'on a identifiées correspondent exactement à ce que tu veux faire. Lance-toi !"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RAPPORT 2 -->
+<div class="modal-overlay" id="modal-rapport2">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeRapport2()">✕</button>
+      <h2>Rapport de séance — Découverte</h2>
+      <p>Sarah L. · 20 mars 2026 · Mentor Junior · 30 min · Offerte</p>
+    </div>
+    <div class="modal-body">
+      <div class="rapport-section">
+        <div class="rapport-section-title">Résumé de la séance</div>
+        <p>Première séance de découverte. On a fait le point sur ta situation, tes objectifs et tes blocages. Tu es en cours de recherche depuis 3 semaines avec peu de retours — on a identifié les deux problèmes principaux.</p>
+      </div>
+      <div class="rapport-section">
+        <div class="rapport-section-title">Points clés abordés</div>
+        <p>→ Ton CV est trop axé jobs étudiants — valoriser davantage les projets scolaires<br>→ Tu cherches trop large — mieux cibler 2 ou 3 secteurs précis</p>
+      </div>
+      <div class="rapport-section">
+        <div class="rapport-section-title">Tes 2 actions pour cette semaine</div>
+        <div class="action-check"><div class="action-num">1</div><div class="action-text">Retravailler la section projets du CV en ajoutant des résultats chiffrés</div></div>
+        <div class="action-check"><div class="action-num">2</div><div class="action-text">Choisir 2 secteurs prioritaires et concentrer toutes les candidatures sur ces cibles</div></div>
+      </div>
+      <div class="rapport-section">
+        <div class="rapport-section-title">Mot du mentor</div>
+        <p style="font-style:italic;color:#6B7280">"Super première séance ! Tu as clairement les compétences — il faut juste mieux les raconter. À très vite pour la suite !"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openRapport() { document.getElementById('modal-rapport').classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeRapport() { document.getElementById('modal-rapport').classList.remove('open'); document.body.style.overflow=''; }
+  function openRapport2() { document.getElementById('modal-rapport2').classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeRapport2() { document.getElementById('modal-rapport2').classList.remove('open'); document.body.style.overflow=''; }
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) { overlay.classList.remove('open'); document.body.style.overflow=''; }
+    });
+  });
+
+  // Smooth scroll for nav
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+
+  // Mobile sidebar toggle
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+  // Close sidebar when clicking a nav link on mobile
+  document.querySelectorAll('.sidebar .nav-item').forEach(a => {
+    a.addEventListener('click', () => { if(window.innerWidth <= 768) closeSidebar(); });
+  });
+</script>
+</body>
+</html>
