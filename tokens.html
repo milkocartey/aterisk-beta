@@ -231,18 +231,18 @@
     <div class="explainer-grid">
       <div class="exp-item">
         <div class="exp-icon">📅</div>
-        <div class="exp-title">1 token = 1 séance junior</div>
+        <div class="exp-title">1 token = 1 séance junior (30 min) — 14€</div>
         <div class="exp-desc">Réserve une séance de 30 min avec un mentor junior (Bac+4/5 en alternance).</div>
       </div>
       <div class="exp-item">
         <div class="exp-icon">⭐</div>
-        <div class="exp-title">1,5 token = 1 séance senior</div>
+        <div class="exp-title">1,5 token = 1 séance senior (30 min) — 22€</div>
         <div class="exp-desc">Réserve une séance de 30 min avec un mentor senior (2+ ans d'expérience).</div>
       </div>
       <div class="exp-item">
         <div class="exp-icon">💸</div>
         <div class="exp-title">70% va au mentor</div>
-        <div class="exp-desc">Sur chaque token consommé, 7€ vont directement au mentor. Aucune commission sur ton placement.</div>
+        <div class="exp-desc">9,80€ par séance junior · 15,40€ par séance senior — versés directement au mentor.</div>
       </div>
     </div>
   </div>
@@ -251,11 +251,11 @@
   <div class="packs">
 
     <!-- 1 TOKEN -->
-    <div class="pack" id="pack-1" onclick="selectPack(1, 10, '1 token', this)">
+    <div class="pack" id="pack-1" onclick="selectPack(1, 14, '1 token', this)">
       <div class="pack-amount"><span class="num">1</span><span class="unit">token</span></div>
       <div class="pack-name">À l'unité</div>
-      <div class="pack-price">10 €</div>
-      <div class="pack-unit-price">10 € / token</div>
+      <div class="pack-price">14 €</div>
+      <div class="pack-unit-price">14 € / token</div>
       <div class="pack-divider"></div>
       <div class="pack-features">
         <div class="pf"><span class="pi">✅</span>1 séance junior (30 min)</div>
@@ -266,12 +266,12 @@
     </div>
 
     <!-- 5 TOKENS -->
-    <div class="pack best selected" id="pack-5" onclick="selectPack(5, 45, '5 tokens (−10%)', this)">
+    <div class="pack best selected" id="pack-5" onclick="selectPack(5, 63, '5 tokens (−10%)', this)">
       <div class="pack-badge">⭐ Le plus populaire</div>
       <div class="pack-amount"><span class="num">5</span><span class="unit">tokens</span></div>
       <div class="pack-name">Pack Standard</div>
-      <div class="pack-price">45 €</div>
-      <div class="pack-unit-price">9 € / token</div>
+      <div class="pack-price">63 €</div>
+      <div class="pack-unit-price">12,60 € / token</div>
       <div class="pack-saving">−10%</div>
       <div class="pack-divider"></div>
       <div class="pack-features">
@@ -284,12 +284,12 @@
     </div>
 
     <!-- 10 TOKENS -->
-    <div class="pack" id="pack-10" onclick="selectPack(10, 80, '10 tokens (−20%)', this)">
+    <div class="pack" id="pack-10" onclick="selectPack(10, 112, '10 tokens (−20%)', this)">
       <div class="pack-badge green">🚀 Meilleur rapport</div>
       <div class="pack-amount"><span class="num">10</span><span class="unit">tokens</span></div>
       <div class="pack-name">Pack Intensif</div>
-      <div class="pack-price">80 €</div>
-      <div class="pack-unit-price">8 € / token</div>
+      <div class="pack-price">112 €</div>
+      <div class="pack-unit-price">11,20 € / token</div>
       <div class="pack-saving">−20%</div>
       <div class="pack-divider"></div>
       <div class="pack-features">
@@ -308,14 +308,14 @@
     <div class="st-icon">🪙</div>
     <div class="st-info">
       <h3>Quantité personnalisée</h3>
-      <p>Choisis exactement combien de tokens tu veux · 10 € / token</p>
+      <p>Choisis exactement combien de tokens tu veux · 14 € / token</p>
     </div>
     <div class="st-qty">
       <button class="qty-btn" onclick="changeQty(-1)">−</button>
       <span class="qty-val" id="qty-val">2</span>
       <button class="qty-btn" onclick="changeQty(1)">+</button>
     </div>
-    <div class="st-price" id="custom-price">20 €</div>
+    <div class="st-price" id="custom-price">28 €</div>
     <button class="st-cta" onclick="selectCustom()">Ajouter</button>
   </div>
 
@@ -331,7 +331,7 @@
     </div>
     <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow)">
       <span style="font-size:20px;flex-shrink:0">💸</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:3px">0 % commission</div><div style="font-size:12px;color:var(--muted)">ATERISK ne prend jamais de commission sur ton placement</div></div>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:3px">À nos risques aussi</div><div style="font-size:12px;color:var(--muted)">On ne perçoit 4% de ton salaire que si tu trouves et déclares ton alternance.</div></div>
     </div>
   </div>
 
@@ -341,12 +341,12 @@
 <div class="checkout-sticky" id="checkoutBar">
   <div class="co-summary">
     <div class="cs-label">Tu ajoutes</div>
-    <div class="cs-val" id="co-val">5 tokens — 45 €</div>
+    <div class="cs-val" id="co-val">5 tokens — 63 €</div>
     <div class="cs-sub" id="co-sub">Nouveau solde après achat : <strong id="co-new-balance">8 tokens</strong></div>
     <div class="co-secure">🔒 Paiement sécurisé par Stripe</div>
   </div>
   <span class="co-dismiss" onclick="dismissCheckout()">Annuler</span>
-  <button class="co-btn" onclick="openModal('payment')">Payer — <span id="co-price">45 €</span> →</button>
+  <button class="co-btn" onclick="openModal('payment')">Payer — <span id="co-price">63 €</span> →</button>
 </div>
 
 <!-- MODAL PAIEMENT -->
@@ -355,12 +355,12 @@
     <div class="pay-head" style="position:relative">
       <button class="modal-close-x" onclick="closeModal('payment')">✕</button>
       <h2>Finaliser l'achat</h2>
-      <p id="pay-head-sub">5 tokens · 45 €</p>
+      <p id="pay-head-sub">5 tokens · 63 €</p>
     </div>
     <div class="pay-body">
       <div class="pay-summary">
         <span class="ps-label" id="pay-sum-label">Pack Standard — 5 tokens</span>
-        <span class="ps-val" id="pay-sum-price">45 €</span>
+        <span class="ps-val" id="pay-sum-price">63 €</span>
       </div>
       <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Informations de paiement</div>
       <div class="card-icons">
@@ -381,7 +381,7 @@
         <label>Nom sur la carte</label>
         <input type="text" placeholder="LOLA MARTIN">
       </div>
-      <button class="pay-btn" onclick="processPayment()" id="pay-btn">Payer <span id="pay-btn-amount">45 €</span> →</button>
+      <button class="pay-btn" onclick="processPayment()" id="pay-btn">Payer <span id="pay-btn-amount">63 €</span> →</button>
       <div class="pay-secure">🔒 Sécurisé par Stripe · SSL 256 bits</div>
     </div>
   </div>
@@ -407,7 +407,7 @@
 
 <script>
   let selectedTokens = 5;
-  let selectedPrice = 45;
+  let selectedPrice = 63;
   let selectedLabel = '5 tokens (−10%)';
   let customQty = 2;
 
@@ -441,7 +441,7 @@
       p.querySelector('.pack-cta').textContent = 'Sélectionner';
     });
     selectedTokens = customQty;
-    selectedPrice = customQty * 10;
+    selectedPrice = customQty * 14;
     selectedLabel = customQty + ' token' + (customQty > 1 ? 's' : '') + ' — personnalisé';
     updateCheckout();
     document.getElementById('checkoutBar').classList.add('visible');
@@ -463,7 +463,7 @@
   function changeQty(delta) {
     customQty = Math.max(1, Math.min(20, customQty + delta));
     document.getElementById('qty-val').textContent = customQty;
-    document.getElementById('custom-price').textContent = (customQty * 10) + ' €';
+    document.getElementById('custom-price').textContent = (customQty * 14) + ' €';
   }
 
   function dismissCheckout() {
