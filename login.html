@@ -541,7 +541,8 @@ function doLogin() {
     btn.style.background = '#16A34A';
     sessionStorage.setItem('aterisk_user', JSON.stringify({ email: account.email, role: account.role, name: account.name }));
     if(account.role === 'etudiant') sessionStorage.setItem('aterisk_subscriber','1');
-    setTimeout(() => { window.location.href = account.redirect; }, 800);
+    const _redir = new URLSearchParams(window.location.search).get('redirect');
+    setTimeout(() => { window.location.href = _redir ? decodeURIComponent(_redir) : account.redirect; }, 800);
   }, 700);
 }
 

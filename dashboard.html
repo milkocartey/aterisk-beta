@@ -251,6 +251,7 @@
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
+<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=dashboard.html');return;}var r=JSON.parse(u).role;if(r==='mentor'){location.replace('dashboard-mentor.html');}if(r==='admin'){location.replace('admin.html');}})();</script>
 
 <!-- SIDEBAR -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>

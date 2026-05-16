@@ -512,6 +512,7 @@
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
+<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=aterisk_rapport_mentor.html');return;}if(JSON.parse(u).role!=='mentor'){location.replace('dashboard.html');}})();</script>
 
 <header>
   <a href="dashboard-mentor.html" class="logo" style="text-decoration:none">ATERISK <span>Espace mentor</span></a>

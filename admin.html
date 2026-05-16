@@ -221,6 +221,7 @@ tr:hover td{background:#FAFAFA;}
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
+<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=admin.html');return;}if(JSON.parse(u).role!=='admin'){location.replace('dashboard.html');}})();</script>
 
 <aside class="sb">
   <div class="sb-logo">
