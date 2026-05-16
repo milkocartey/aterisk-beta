@@ -25,26 +25,34 @@ if (_main) {
 const nav = document.querySelector('nav:not(.sidebar-nav)');
 
 if (nav) {
+  // Dark hero pages use CSS class toggle for transparent→white transition.
+  // Other pages use motion.dev animate() directly on background.
+  const isDarkHero = nav.classList.contains('nav-dark-hero');
   let navScrolled = false;
 
   scroll(() => {
-    const past = window.scrollY > 60;
+    const past = window.scrollY > 80;
     if (past === navScrolled) return;
     navScrolled = past;
 
-    animate(
-      nav,
-      past
-        ? {
-            backgroundColor: 'rgba(255,255,255,0.98)',
-            boxShadow: '0 1px 20px rgba(26,46,122,0.08)',
-          }
-        : {
-            backgroundColor: 'rgba(255,255,255,0.92)',
-            boxShadow: '0 0px 0px rgba(26,46,122,0)',
-          },
-      { duration: 0.3 }
-    );
+    if (isDarkHero) {
+      // CSS handles the visual transition via .nav-scrolled class
+      nav.classList.toggle('nav-scrolled', past);
+    } else {
+      animate(
+        nav,
+        past
+          ? {
+              backgroundColor: 'rgba(255,255,255,0.98)',
+              boxShadow: '0 1px 20px rgba(26,46,122,0.08)',
+            }
+          : {
+              backgroundColor: 'rgba(255,255,255,0.92)',
+              boxShadow: '0 0px 0px rgba(26,46,122,0)',
+            },
+        { duration: 0.3 }
+      );
+    }
   });
 }
 
