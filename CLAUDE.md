@@ -58,13 +58,26 @@ Tokens : 1 token = junior / 1,5 token = senior
 - Structure complète des pages (toutes les vues principales existent)
 - Modèle économique finalisé
 - Contrat d'abonnement étudiant rédigé
-
-### 🔄 En cours
-- À compléter au fur et à mesure
+- **index.html** — redesign complet style startup dark/futuriste (inspiré Genially)
+  - Hero dark navy (`#030712`) avec gradients animés, grid overlay, grain texture
+  - Mega menu nav avec dropdowns hover fluides ("Étudiants ▾" / "Mentors ▾")
+  - Nav transparente sur hero (`nav-dark-hero`) → blanche au scroll
+  - Marquee strip, step cards, dark CTA section
+  - Typographie : DM Serif Display (hero h1) + DM Sans + Unbounded (numéros)
+- **Système d'authentification mock** (sessionStorage)
+  - `login.html` gère `?redirect=PAGE` — après login retour sur la page demandée
+  - Guards synchrones sur 8 pages protégées (avant tout autre script)
+  - Redirections par rôle : etudiant → dashboard.html, mentor → dashboard-mentor.html, admin → admin.html
+- **nav.js** — réécriture critique
+  - Body opacity 100% indépendant du CDN motion.dev (double `requestAnimationFrame` CSS pur)
+  - Exit transition CSS pur (plus de `animate().finished` qui pouvait bloquer)
+  - Dropdown JS click toggle (`dropdown-open`) en plus du hover CSS
+  - Sélecteur `nav:not(.sidebar-nav)` pour éviter le bug sidebar dashboard
 
 ### ❌ À faire
+- **UI des pages internes** — refaire toutes les pages dans le même style que index.html (dark/futuriste, même direction design) — **objectif session suivante**
 - Intégration Stripe (abonnement + tokens + commission)
-- Système d'authentification réel
+- Système d'authentification réel (remplacer le mock sessionStorage)
 - Logique de matching mentor ↔ étudiant
 - Génération automatique des rapports post-séance (IA)
 - Dashboard analytics admin
@@ -74,17 +87,24 @@ Tokens : 1 token = junior / 1,5 token = senior
 ---
 ## Règles de design à respecter
 
-- [ ] Palette de couleurs principale : à préciser
-- [ ] Typographie : à préciser
-- [ ] Style des composants : à préciser
-- [ ] Responsive : mobile-first ou desktop-first ?
+- **Direction artistique** : dark/futuriste startup — référence = index.html actuel + genially.com
+- **Palette** : Navy sombre `#030712` (hero/dark sections) + blanc `#fff` (sections claires) + bleu ATERISK `#1A2E7A`
+- **Typographie** : DM Serif Display (titres héros), DM Sans (corps), Unbounded (accents chiffres)
+- **Boutons** : `border-radius: 100px` (pill) partout
+- **Animations** : CSS pur pour le critique (opacity body), motion.dev pour le décoratif
+- Responsive desktop-first (mais mobile vérifié)
 
 ---
 ## Décisions techniques prises
 
-→ À remplir au fil des sessions Claude Code
+- Pas de framework, pas de build — HTML/CSS/JS pur
+- motion.dev importé depuis CDN via `motion.js` local — utilisé uniquement pour animations décoratives, jamais pour le rendu critique (body opacity)
+- `body{opacity:0;transition:none}` en CSS inline dans chaque page pour éviter le flash → restauré par nav.js via double rAF
+- sessionStorage key : `aterisk_user` → JSON `{role: 'etudiant'|'mentor'|'admin', name: '...'}`
+- Guards de page : IIFE synchrone au tout début du `<body>`, avant tout script
+- `scroll.js` utilise des transitions CSS (pas WAAPI) pour éviter le bug de revert motion.dev
 
 ---
 ## Prochaine session — objectif
 
-→ Mettre à jour avant chaque session Claude Code
+Refaire l'UI de toutes les pages internes (dashboard.html, dashboard-mentor.html, matching.html, seance.html, tokens.html, mapping.html, ressources.html, secteurs.html, tarifs.html, admin.html…) dans la même direction design que index.html — dark/futuriste, mega menu cohérent, pill buttons, typographie unifiée.
