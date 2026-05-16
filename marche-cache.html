@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Le marché caché</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
+    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --accent: #F4A200; --green: #16A34A; --green-bg: #DCFCE7;
+    --amber: #92400E; --amber-bg: #FEF3C7;
+    --red: #DC2626; --red-bg: #FEF2F2;
+    --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
+    --sidebar: 240px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar); background: var(--blue); position: fixed;
+    top: 0; left: 0; bottom: 0; display: flex; flex-direction: column;
+    z-index: 50; overflow-y: auto; transition: transform 0.3s ease;
+  }
+  .sidebar-logo {
+    padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .sidebar-logo a { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; text-decoration: none; letter-spacing: 1px; }
+  .sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .sidebar-close { display: block; background: none; border: none; color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; padding: 4px 8px; margin-left: auto; transition: color 0.2s; }
+  .sidebar-close:hover { color: white; }
+  .sidebar-user {
+    padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .user-info h4 { font-size: 13px; font-weight: 600; color: white; }
+  .user-info p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+  .token-balance {
+    margin: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 14px;
+  }
+  .token-balance .tb-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .token-balance .tb-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; line-height: 1; }
+  .token-balance .tb-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .btn-buy-tokens {
+    width: 100%; margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+    color: white; font-size: 12px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  }
+  .btn-buy-tokens:hover { background: rgba(255,255,255,0.2); }
+  .sidebar-nav { padding: 8px 12px; flex: 1; }
+  .nav-section { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 8px 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 10px; border-radius: 8px; cursor: pointer;
+    transition: all 0.18s; text-decoration: none; margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); }
+  .nav-item.active { background: rgba(255,255,255,0.15); }
+  .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-label { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .nav-item.active .nav-label { color: white; }
+  .nav-badge { margin-left: auto; background: var(--green); color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+  .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-footer a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; display: block; padding: 4px 0; transition: color 0.2s; }
+  .sidebar-footer a:hover { color: rgba(255,255,255,0.8); }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left 0.3s ease; }
+  .main.expanded { margin-left: 0; }
+
+  /* TOPBAR */
+  .topbar {
+    background: white; border-bottom: 1px solid var(--border);
+    padding: 0 36px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 40;
+  }
+  .topbar h1 { font-size: 16px; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .hamburger { display: flex; align-items: center; justify-content: center; background: none; border: none; font-size: 22px; cursor: pointer; padding: 6px; color: var(--ink); border-radius: 8px; transition: background 0.15s; }
+  .hamburger:hover { background: var(--blue-pale); }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 40; }
+
+  /* CONTENT */
+  .content { padding: 32px 36px 60px; flex: 1; }
+
+  /* QUIZ */
+  .quiz-wrap {
+    background: white; border: 1px solid var(--border); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 40px 48px; max-width: 720px; margin: 0 auto 32px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .quiz-wrap.fade-out { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+  .quiz-intro { text-align: center; margin-bottom: 36px; }
+  .quiz-intro .q-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-mid); margin-bottom: 10px; }
+  .quiz-intro h2 { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; margin-bottom: 8px; }
+  .quiz-intro p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .quiz-progress-bar { height: 6px; background: var(--border); border-radius: 6px; margin-bottom: 36px; overflow: hidden; }
+  .quiz-progress-fill { height: 100%; background: var(--blue-mid); border-radius: 6px; transition: width 0.4s ease; }
+  .quiz-question { display: none; }
+  .quiz-question.active { display: block; animation: fadeQ 0.3s ease; }
+  @keyframes fadeQ { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
+  .q-num { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .q-text { font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 24px; line-height: 1.4; }
+  .q-options { display: flex; flex-direction: column; gap: 10px; }
+  .q-option {
+    padding: 14px 18px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    cursor: pointer; transition: all 0.18s; font-size: 14px; color: var(--ink);
+    background: white; display: flex; align-items: center; gap: 12px;
+  }
+  .q-option:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
+  .q-option.selected { border-color: var(--blue-mid); background: var(--blue-light); color: var(--blue); font-weight: 500; }
+  .q-option-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.18s; font-size: 10px; color: white; font-weight: 700; }
+  .q-option.selected .q-option-dot { border-color: var(--blue-mid); background: var(--blue-mid); }
+  .q-option.selected .q-option-dot::after { content: '✓'; }
+
+  /* QUIZ RESULT */
+  .quiz-result { display: none; text-align: center; padding: 8px 0; }
+  .quiz-result.active { display: block; animation: fadeQ 0.4s ease; }
+  .qr-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--blue-light); color: var(--blue-mid); font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .qr-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--ink); margin-bottom: 12px; line-height: 1.3; }
+  .qr-desc { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .btn-reveal {
+    background: var(--blue); color: white; border: none; padding: 14px 32px;
+    border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-reveal:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
+
+  /* PAGE CONTENT */
+  .page-content { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; pointer-events: none; }
+  .page-content.visible { opacity: 1; transform: none; pointer-events: auto; }
+
+  /* PROFILE BANNER */
+  .profile-banner {
+    display: none; background: var(--blue-light); border: 1px solid var(--blue-mid);
+    border-radius: var(--radius); padding: 14px 20px; margin-bottom: 28px;
+    align-items: center; gap: 12px;
+  }
+  .pb-icon { font-size: 20px; }
+  .pb-text { font-size: 13px; color: var(--blue); line-height: 1.5; }
+
+  /* SECTION EYEBROW */
+  .section-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-mid); margin-bottom: 10px; }
+
+  /* ACCROCHE */
+  .accroche-card { background: white; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 40px 44px; margin-bottom: 28px; }
+  .accroche-title { font-family: 'DM Serif Display', serif; font-size: 30px; font-weight: 400; line-height: 1.2; margin-bottom: 14px; color: var(--ink); }
+  .accroche-subtitle { font-size: 15px; font-weight: 600; color: var(--blue-mid); margin-bottom: 20px; }
+  .accroche-para { font-size: 15px; color: #374151; line-height: 1.8; }
+  .stats-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+  .stat-trio-card { background: var(--blue-pale); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; text-align: center; }
+  .stat-trio-val { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--blue); margin-bottom: 6px; }
+  .stat-trio-label { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* CARTOGRAPHIE */
+  .carto-section { background: white; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 32px; margin-bottom: 28px; }
+  .carto-section > h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .carto-section > p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+
+  /* SCORE BANDEAU */
+  .score-bandeau {
+    background: var(--blue); border-radius: var(--radius); padding: 18px 22px;
+    display: grid; grid-template-columns: repeat(3, 1fr) 140px; gap: 20px; align-items: center;
+    margin-bottom: 24px;
+  }
+  .sb-label { font-size: 10px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .sb-val { font-size: 22px; font-weight: 700; color: white; }
+  .sb-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .sb-jauge-label { font-size: 10px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .sb-jauge-bar { height: 8px; background: rgba(255,255,255,0.15); border-radius: 8px; overflow: hidden; }
+  .sb-jauge-fill { height: 100%; background: #86EFAC; border-radius: 8px; transition: width 0.4s ease; }
+  .sb-jauge-pct { font-size: 12px; color: #86EFAC; margin-top: 4px; font-weight: 600; }
+
+  /* CERCLES */
+  .cercles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .cercle-col { background: var(--blue-pale); border-radius: var(--radius); padding: 18px; }
+  .cercle-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .cercle-num { width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cercle-desc { font-size: 11px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+  .contact-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .contact-input-row input {
+    flex: 1; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; background: white;
+  }
+  .contact-input-row input:focus { border-color: var(--blue-mid); }
+  .btn-add { padding: 9px 14px; background: var(--blue); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+  .btn-add:hover { background: var(--blue-mid); }
+  .contacts-pills { display: flex; flex-direction: column; gap: 8px; }
+  .contact-pill { background: white; border: 1px solid var(--border); border-left: 3px solid var(--border); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
+  .contact-pill.pro { border-left-color: var(--blue-mid); }
+  .contact-pill.no { border-left-color: var(--border); opacity: 0.65; }
+  .contact-pill.maybe { border-left-color: #F59E0B; }
+  .cp-name { font-size: 13px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cp-select { font-size: 11px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; font-family: 'DM Sans', sans-serif; background: white; color: var(--muted); cursor: pointer; flex-shrink: 0; }
+  .cp-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 2px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
+  .cp-del:hover { color: var(--red); }
+
+  /* LINKEDIN SLIDER */
+  .li-val { font-size: 28px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .li-sub { font-size: 11px; color: var(--muted); margin-bottom: 14px; }
+  input[type="range"] { width: 100%; accent-color: var(--blue); cursor: pointer; }
+  .li-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* PLAN ACTION */
+  .plan-action { background: var(--blue-pale); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; }
+  .plan-action h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .plan-items { display: flex; flex-direction: column; gap: 10px; }
+  .plan-item { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .plan-icon { flex-shrink: 0; font-size: 15px; }
+
+  /* LINKEDIN SECTION */
+  .linkedin-section { background: white; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 32px; margin-bottom: 28px; }
+  .linkedin-section h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+  .checklist { display: flex; flex-direction: column; gap: 12px; }
+  .check-item { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border: 1.5px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .check-item:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
+  .check-item.checked { border-color: var(--green); background: var(--green-bg); }
+  .check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.18s; margin-top: 1px; font-size: 12px; color: white; font-weight: 700; }
+  .check-item.checked .check-box { background: var(--green); border-color: var(--green); }
+  .check-item.checked .check-box::after { content: '✓'; }
+  .check-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .check-item.checked .check-content h4 { text-decoration: line-through; color: var(--muted); }
+  .check-content p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .check-example { background: var(--blue-pale); border-left: 3px solid var(--blue-mid); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 13px; color: var(--blue); margin-top: 10px; font-style: italic; line-height: 1.5; }
+
+  /* MESSAGES */
+  .messages-section { background: white; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 32px; margin-bottom: 28px; }
+  .messages-section h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+  .template-card { background: var(--blue-pale); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; position: relative; }
+  .template-label { font-size: 11px; font-weight: 700; color: var(--blue-mid); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .template-text { font-size: 14px; color: var(--ink); line-height: 1.8; white-space: pre-line; padding-right: 80px; }
+  .btn-copy { position: absolute; top: 14px; right: 14px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--blue-mid); transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+  .btn-copy:hover { background: var(--blue-light); border-color: var(--blue-mid); }
+  .btn-copy.copied { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .template-note { background: var(--amber-bg); border-left: 3px solid #F59E0B; padding: 14px 18px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 13px; color: var(--amber); line-height: 1.7; margin-top: 20px; }
+
+  /* CTA FINAL */
+  .cta-final { background: var(--blue); border-radius: 20px; padding: 44px 48px; }
+  .cta-final-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; font-weight: 400; line-height: 1.25; margin-bottom: 16px; }
+  .cta-final-para { font-size: 15px; color: rgba(255,255,255,0.7); line-height: 1.8; margin-bottom: 32px; }
+  .cta-features { background: rgba(255,255,255,0.08); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+  .cta-feature { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6; padding: 0 20px 0 0; border-right: 1px solid rgba(255,255,255,0.15); margin-right: 20px; }
+  .cta-feature:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+  .cta-feature strong { display: block; color: white; font-size: 14px; margin-bottom: 4px; }
+  .cta-buttons { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .btn-cta-primary { background: white; color: var(--blue); border: none; padding: 14px 28px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+  .btn-cta-primary:hover { background: var(--blue-pale); transform: translateY(-1px); }
+  .btn-cta-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 14px 24px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+  .btn-cta-secondary:hover { background: rgba(255,255,255,0.2); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .cercles-grid { grid-template-columns: 1fr 1fr; }
+    .score-bandeau { grid-template-columns: repeat(2, 1fr); }
+    .cta-features { grid-template-columns: 1fr; }
+    .cta-feature { border-right: none; margin-right: 0; padding-right: 0; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .cta-feature:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .main, .main.expanded { margin-left: 0; }
+    .content { padding: 20px; }
+    .topbar { padding: 0 20px; }
+    .quiz-wrap { padding: 24px 20px; }
+    .accroche-card { padding: 24px 20px; }
+    .accroche-title { font-size: 22px; }
+    .stats-trio { grid-template-columns: 1fr; }
+    .cercles-grid { grid-template-columns: 1fr; }
+    .score-bandeau { grid-template-columns: 1fr 1fr; }
+    .cta-final { padding: 28px 22px; }
+    .cta-final-title { font-size: 22px; }
+    .cta-buttons { flex-direction: column; align-items: stretch; text-align: center; justify-content: center; }
+    .template-text { padding-right: 0; }
+    .btn-copy { position: static; margin-bottom: 12px; width: fit-content; }
+  }
+</style>
+<style>body{opacity:0;transition:none}</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div>
+      <a href="dashboard.html">ATERISK</a>
+      <p>Espace étudiant</p>
+    </div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-avatar">👩‍🎓</div>
+    <div class="user-info">
+      <h4 id="sb-name">Mon profil</h4>
+      <p id="sb-detail">Étudiant(e)</p>
+    </div>
+  </div>
+
+  <div class="token-balance">
+    <div class="tb-label">Mes tokens</div>
+    <div class="tb-val">3<span style="font-size:16px;opacity:0.5"> tokens</span></div>
+    <div class="tb-sub">= 3 séances junior disponibles</div>
+    <button class="btn-buy-tokens" onclick="window.location.href='tokens.html'">+ Acheter des tokens</button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="dashboard.html" class="nav-item">
+      <span class="nav-icon">🏠</span><span class="nav-label">Tableau de bord</span>
+    </a>
+    <a href="matching.html" class="nav-item">
+      <span class="nav-icon">🎯</span><span class="nav-label">Mes mentors</span>
+    </a>
+    <a href="secteurs.html" class="nav-item">
+      <span class="nav-icon">🔍</span><span class="nav-label">Explorer</span>
+    </a>
+
+    <div class="nav-section">Mon parcours</div>
+    <a href="dashboard.html#seances" class="nav-item">
+      <span class="nav-icon">📅</span><span class="nav-label">Mes séances</span>
+    </a>
+    <a href="dashboard.html#rapports" class="nav-item">
+      <span class="nav-icon">📋</span><span class="nav-label">Mes rapports</span>
+      <span class="nav-badge">2</span>
+    </a>
+    <a href="dashboard.html#candidatures" class="nav-item">
+      <span class="nav-icon">💼</span><span class="nav-label">Candidatures</span>
+    </a>
+    <a href="ressources.html" class="nav-item">
+      <span class="nav-icon">📚</span><span class="nav-label">Ressources</span>
+    </a>
+    <a href="marche-cache.html" class="nav-item active">
+      <span class="nav-icon">🗺️</span><span class="nav-label">Marché caché</span>
+    </a>
+
+    <div class="nav-section">Compte</div>
+    <a href="inscription.html" class="nav-item">
+      <span class="nav-icon">👤</span><span class="nav-label">Mon profil</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="admin.html" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;display:block;padding:3px 0">⚙️ Espace admin</a>
+    <a href="index.html">← Retour à l'accueil</a>
+    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+  </div>
+</aside>
+
+<div class="main" id="main">
+
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <h1>Ressource — Le marché caché</h1>
+    </div>
+    <div class="topbar-right">
+      <a href="secteurs.html" style="background:var(--blue);color:white;border:none;padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s">Réserver une séance →</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── QUIZ ─────────────────────────────────────────────────────────── -->
+    <div class="quiz-wrap" id="quizWrap">
+      <div class="quiz-intro">
+        <div class="q-eyebrow">Diagnostic — 2 minutes</div>
+        <h2>Où tu en es avec le marché caché ?</h2>
+        <p>5 questions pour personnaliser tes recommandations et comprendre ton point de départ.</p>
+      </div>
+
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="quizProgress" style="width:0%"></div>
+      </div>
+
+      <div class="quiz-question active" id="q1">
+        <div class="q-num">Question 1 / 5</div>
+        <div class="q-text">Quand tu penses à ton entourage, combien de personnes travaillent dans une entreprise ou ont un poste professionnel ?</div>
+        <div class="q-options">
+          <div class="q-option" onclick="selectAnswer(1,1,this)"><div class="q-option-dot"></div>Moins de 5 personnes</div>
+          <div class="q-option" onclick="selectAnswer(1,2,this)"><div class="q-option-dot"></div>Entre 5 et 15 personnes</div>
+          <div class="q-option" onclick="selectAnswer(1,3,this)"><div class="q-option-dot"></div>Plus de 15 personnes</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" id="q2">
+        <div class="q-num">Question 2 / 5</div>
+        <div class="q-text">Est-ce que tu as déjà demandé à quelqu'un de ton entourage de t'aider dans ta recherche ?</div>
+        <div class="q-options">
+          <div class="q-option" onclick="selectAnswer(2,1,this)"><div class="q-option-dot"></div>Non, je n'ose pas / je ne sais pas comment</div>
+          <div class="q-option" onclick="selectAnswer(2,2,this)"><div class="q-option-dot"></div>Oui, mais sans résultat concret</div>
+          <div class="q-option" onclick="selectAnswer(2,3,this)"><div class="q-option-dot"></div>Oui, et ça m'a ouvert des portes</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" id="q3">
+        <div class="q-num">Question 3 / 5</div>
+        <div class="q-text">Ton profil LinkedIn est...</div>
+        <div class="q-options">
+          <div class="q-option" onclick="selectAnswer(3,1,this)"><div class="q-option-dot"></div>Incomplet ou inexistant</div>
+          <div class="q-option" onclick="selectAnswer(3,2,this)"><div class="q-option-dot"></div>Créé mais peu actif</div>
+          <div class="q-option" onclick="selectAnswer(3,3,this)"><div class="q-option-dot"></div>Optimisé et j'écris des messages régulièrement</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" id="q4">
+        <div class="q-num">Question 4 / 5</div>
+        <div class="q-text">Tu as envoyé des candidatures spontanées ?</div>
+        <div class="q-options">
+          <div class="q-option" onclick="selectAnswer(4,1,this)"><div class="q-option-dot"></div>Non, je ne sais pas trop comment faire</div>
+          <div class="q-option" onclick="selectAnswer(4,2,this)"><div class="q-option-dot"></div>Oui, mais j'ai eu presque aucun retour</div>
+          <div class="q-option" onclick="selectAnswer(4,3,this)"><div class="q-option-dot"></div>Oui, et j'ai eu quelques échanges</div>
+        </div>
+      </div>
+
+      <div class="quiz-question" id="q5">
+        <div class="q-num">Question 5 / 5</div>
+        <div class="q-text">Selon toi, pourquoi tu n'as pas encore trouvé ?</div>
+        <div class="q-options">
+          <div class="q-option" onclick="selectAnswer(5,1,this)"><div class="q-option-dot"></div>Je n'ai pas le bon réseau / je ne connais personne</div>
+          <div class="q-option" onclick="selectAnswer(5,2,this)"><div class="q-option-dot"></div>Je ne sais pas ce qui cloche dans mon approche</div>
+          <div class="q-option" onclick="selectAnswer(5,3,this)"><div class="q-option-dot"></div>Je galère à me démarquer parmi les autres candidats</div>
+        </div>
+      </div>
+
+      <div class="quiz-result" id="quizResult">
+        <div class="qr-badge" id="qrBadge">Ton profil</div>
+        <div class="qr-title" id="qrTitle"></div>
+        <div class="qr-desc" id="qrDesc"></div>
+        <button class="btn-reveal" onclick="revealContent()">Voir ma stratégie →</button>
+      </div>
+    </div>
+
+    <!-- ── MAIN CONTENT ──────────────────────────────────────────────────── -->
+    <div class="page-content" id="pageContent">
+
+      <!-- Profile banner -->
+      <div class="profile-banner" id="profileBanner">
+        <span class="pb-icon">🎯</span>
+        <div class="pb-text">Profil détecté : <strong id="profileLabel"></strong> — <span id="profileShortDesc"></span></div>
+      </div>
+
+      <!-- BLOC 1 — ACCROCHE -->
+      <div class="accroche-card">
+        <div class="section-eyebrow">Le marché caché</div>
+        <h1 class="accroche-title">"Ce que le fils de la DRH sait — et qu'on ne t'a jamais appris."</h1>
+        <p class="accroche-subtitle" id="accrocheSubtitle">Pas de réseau familial dans le monde pro ? On va en construire un.</p>
+        <p class="accroche-para">Chaque année, 40 % des alternances se trouvent sans qu'une seule offre soit publiée. Pas parce que les recruteurs sont secrets. Parce que quand un poste s'ouvre, la première réaction humaine c'est de penser à quelqu'un qu'on connaît déjà. Ce n'est pas de la malveillance — c'est de la confiance. Et certains étudiants ont grandi entourés de ces personnes-là. D'autres non. C'est une inégalité de départ, pas de mérite. Ce guide existe pour réduire cet écart.</p>
+        <div class="stats-trio">
+          <div class="stat-trio-card">
+            <div class="stat-trio-val">40%</div>
+            <div class="stat-trio-label">des alternances trouvées hors jobboards</div>
+          </div>
+          <div class="stat-trio-card">
+            <div class="stat-trio-val">200+</div>
+            <div class="stat-trio-label">candidatures reçues en moyenne par offre publiée</div>
+          </div>
+          <div class="stat-trio-card">
+            <div class="stat-trio-val">3–4</div>
+            <div class="stat-trio-label">réponses attendues sur 20 messages LinkedIn envoyés</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOC 2 — CARTOGRAPHIE -->
+      <div class="carto-section">
+        <h2>Ton réseau existe. Cartographie-le.</h2>
+        <p>Tout le monde a un réseau. La plupart ne savent pas qu'ils l'ont. Ajoute tes contacts — la page va t'indiquer lesquels activer en priorité.</p>
+
+        <div class="score-bandeau">
+          <div>
+            <div class="sb-label">Contacts renseignés</div>
+            <div class="sb-val" id="scoreTotal">0</div>
+            <div class="sb-sub">total ajoutés</div>
+          </div>
+          <div>
+            <div class="sb-label">Contacts utiles</div>
+            <div class="sb-val" id="scoreUtiles">0</div>
+            <div class="sb-sub">dans le monde pro</div>
+          </div>
+          <div>
+            <div class="sb-label">Reach estimé</div>
+            <div class="sb-val" id="scoreReach">0</div>
+            <div class="sb-sub">personnes potentielles <span style="font-size:10px;opacity:0.7">(×15)</span></div>
+          </div>
+          <div>
+            <div class="sb-jauge-label">Potentiel réseau</div>
+            <div class="sb-jauge-bar"><div class="sb-jauge-fill" id="jaugeFill" style="width:0%"></div></div>
+            <div class="sb-jauge-pct" id="jaugePct">0%</div>
+          </div>
+        </div>
+
+        <div class="cercles-grid">
+          <!-- Cercle 1 -->
+          <div class="cercle-col">
+            <div class="cercle-title"><div class="cercle-num">1</div> Contacts proches</div>
+            <div class="cercle-desc">Famille, amis proches, camarades de classe</div>
+            <div class="contact-input-row">
+              <input type="text" id="input-c1" placeholder="Prénom..." onkeydown="if(event.key==='Enter')addContact(1)">
+              <button class="btn-add" onclick="addContact(1)">Ajouter</button>
+            </div>
+            <div class="contacts-pills" id="pills-c1"></div>
+          </div>
+
+          <!-- Cercle 2 -->
+          <div class="cercle-col">
+            <div class="cercle-title"><div class="cercle-num">2</div> Contacts intermédiaires</div>
+            <div class="cercle-desc">Anciens profs, tuteurs de stage, anciens collègues, parents d'amis</div>
+            <div class="contact-input-row">
+              <input type="text" id="input-c2" placeholder="Prénom..." onkeydown="if(event.key==='Enter')addContact(2)">
+              <button class="btn-add" onclick="addContact(2)">Ajouter</button>
+            </div>
+            <div class="contacts-pills" id="pills-c2"></div>
+          </div>
+
+          <!-- Cercle 3 -->
+          <div class="cercle-col">
+            <div class="cercle-title"><div class="cercle-num">3</div> Contacts LinkedIn</div>
+            <div class="cercle-desc">Personnes avec qui tu es connecté mais que tu ne connais pas vraiment</div>
+            <div class="li-val" id="liVal">0</div>
+            <div class="li-sub">connexions LinkedIn</div>
+            <input type="range" min="0" max="500" step="10" value="0" id="liSlider" oninput="updateLinkedin(this.value)">
+            <div class="li-labels"><span>0</span><span>250</span><span>500+</span></div>
+          </div>
+        </div>
+
+        <div class="plan-action">
+          <h3>📌 Ce que tu dois faire avec ça</h3>
+          <div class="plan-items" id="planItems">
+            <div class="plan-item"><span class="plan-icon">👆</span>Commence par là : liste 5 personnes de ton entourage direct. Tu en as forcément.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOC 3 — LINKEDIN -->
+      <div class="linkedin-section">
+        <h2>LinkedIn : ton profil parle avant toi.</h2>
+        <div class="checklist">
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"></div>
+            <div class="check-content">
+              <h4>Photo professionnelle</h4>
+              <p>Pas besoin d'un photographe. Un fond neutre, bonne lumière, tu souris. Un profil avec photo reçoit 21x plus de vues.</p>
+            </div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"></div>
+            <div class="check-content">
+              <h4>Titre optimisé</h4>
+              <p>Pas juste ta formation. Le titre est la première chose qu'un recruteur voit dans les résultats de recherche.</p>
+              <div class="check-example" id="linkedinTitreEx">Étudiant(e) en [Formation] | En recherche d'alternance dès septembre 2026 | Spécialisation [Secteur]</div>
+            </div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"></div>
+            <div class="check-content">
+              <h4>500+ relations</h4>
+              <p>En dessous de 500 relations, LinkedIn affiche ton nombre exact. Au-dessus, il affiche "500+". Ce seuil change la perception de ton profil. Ajoute des connexions — même des gens que tu connais peu.</p>
+            </div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"></div>
+            <div class="check-content">
+              <h4>Résumé en 3 lignes</h4>
+              <p>Qui tu es / Ce que tu cherches / Ce que tu apportes. Court, concret, sans jargon. C'est ton accroche.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOC 4 — MESSAGES -->
+      <div class="messages-section">
+        <h2>Les messages qui ouvrent des portes.</h2>
+        <div class="template-card">
+          <div class="template-label">Template 1 — Message réseau proche</div>
+          <button class="btn-copy" onclick="copyTemplate('tpl1',this)">📋 Copier</button>
+          <div class="template-text" id="tpl1"></div>
+        </div>
+        <div class="template-card">
+          <div class="template-label">Template 2 — Message LinkedIn inconnu</div>
+          <button class="btn-copy" onclick="copyTemplate('tpl2',this)">📋 Copier</button>
+          <div class="template-text" id="tpl2"></div>
+        </div>
+        <div class="template-note">
+          Sur 20 messages envoyés, attends-toi à 3 ou 4 réponses. C'est normal — ce n'est pas un refus, c'est le volume. La clé c'est la régularité et la personnalisation. Et c'est exactement là qu'un mentor ATERISK change la donne : il connaît déjà les bonnes personnes.
+        </div>
+      </div>
+
+      <!-- BLOC 5 — CTA FINAL -->
+      <div class="cta-final">
+        <div class="cta-final-title">Tu vois le chemin. Le problème, c'est qu'il est long à parcourir seul.</div>
+        <p class="cta-final-para">Construire un réseau quand on part de zéro, ça prend du temps. Trouver les bons mots, contacter les bonnes personnes, relancer sans paraître insistant — c'est une compétence. Et comme toute compétence, elle s'apprend beaucoup plus vite avec quelqu'un qui l'a déjà. C'est exactement ce que font les mentors ATERISK : ils ont le réseau, ils savent comment te présenter, et ils t'ouvrent des portes que tu ne pourrais pas ouvrir seul.</p>
+        <div class="cta-features">
+          <div class="cta-feature">
+            <strong>Séance découverte offerte</strong>
+            30 min avec un mentor junior dès l'inscription
+          </div>
+          <div class="cta-feature">
+            <strong>Matching personnalisé</strong>
+            Un mentor dans ton secteur <span id="ctaSecteur"></span>
+          </div>
+          <div class="cta-feature">
+            <strong>Aucun frais si tu ne trouves pas</strong>
+            On prend notre part seulement quand tu réussis
+          </div>
+        </div>
+        <div class="cta-buttons">
+          <a href="secteurs.html" class="btn-cta-primary">Commencer ma recherche avec un mentor →</a>
+          <a href="tarifs.html" class="btn-cta-secondary">Voir les tarifs</a>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// ── USER DATA ────────────────────────────────────────────────────────────
+const user = JSON.parse(sessionStorage.getItem('aterisk_user') || '{}');
+const prenom = user.prenom || (user.name ? user.name.split(' ')[0] : '') || 'toi';
+const secteurs = user.secteurs || [];
+const formation = user.formation || '';
+
+// Sidebar user info
+if (user.name) document.getElementById('sb-name').textContent = user.name;
+if (user.formation && user.ville) document.getElementById('sb-detail').textContent = user.formation + ' · ' + user.ville;
+else if (user.formation) document.getElementById('sb-detail').textContent = user.formation;
+
+// ── PROFILE DEFINITIONS ──────────────────────────────────────────────────
+const PROFILES = {
+  'reseau-invisible': {
+    badge: 'Réseau invisible',
+    title: 'Tu pars de loin, mais pas de zéro.',
+    desc: 'Ton réseau est encore à construire — mais tout le monde commence quelque part. Ce guide va t\'aider à identifier des contacts que tu n\'imagines pas avoir, et à activer des portes que tu croyais fermées.',
+    subtitle: 'Pas de réseau familial dans le monde pro ? On va en construire un.',
+  },
+  'reseau-dormant': {
+    badge: 'Réseau dormant',
+    title: 'Ton réseau existe. Tu ne sais pas encore t\'en servir.',
+    desc: 'Tu as des contacts dans le monde pro — ils ne demandent qu\'à être activés. La plupart des gens sont ravis d\'aider, ils attendent juste qu\'on leur demande correctement.',
+    subtitle: 'Tu as plus de contacts utiles que tu ne le crois. Voilà comment les activer.',
+  },
+  'reseau-bloque': {
+    badge: 'Réseau bloqué',
+    title: 'Tu fais les bons gestes. Mais il manque quelque chose.',
+    desc: 'Tu es déjà actif sur le réseau et la prospection — le blocage est ailleurs : dans la qualité des messages, le ciblage, ou la capacité à convertir un échange en opportunité concrète.',
+    subtitle: 'Tes candidatures partent dans le vide. Le problème n\'est pas toi — c\'est la méthode.',
+  },
+};
+
+// ── QUIZ ─────────────────────────────────────────────────────────────────
+const quizAnswers = {};
+let currentQ = 1;
+
+function selectAnswer(qNum, value, el) {
+  el.closest('.q-options').querySelectorAll('.q-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  quizAnswers[qNum] = value;
+  setTimeout(() => {
+    if (qNum < 5) showQuestion(qNum + 1);
+    else computeAndShowResult();
+  }, 360);
+}
+
+function showQuestion(n) {
+  document.getElementById('q' + currentQ).classList.remove('active');
+  currentQ = n;
+  document.getElementById('q' + n).classList.add('active');
+  document.getElementById('quizProgress').style.width = ((n - 1) * 20) + '%';
+}
+
+function computeAndShowResult() {
+  for (let i = 1; i <= 5; i++) document.getElementById('q' + i).classList.remove('active');
+  document.getElementById('quizProgress').style.width = '100%';
+
+  const score = Object.values(quizAnswers).reduce((a, b) => a + b, 0);
+  const profil = score <= 8 ? 'reseau-invisible' : score <= 12 ? 'reseau-dormant' : 'reseau-bloque';
+  sessionStorage.setItem('aterisk_profil_marche', profil);
+
+  const p = PROFILES[profil];
+  document.getElementById('qrBadge').textContent = p.badge;
+  document.getElementById('qrTitle').textContent = p.title;
+  document.getElementById('qrDesc').textContent = p.desc;
+  window._currentProfil = profil;
+  document.getElementById('quizResult').classList.add('active');
+}
+
+function revealContent() {
+  const wrap = document.getElementById('quizWrap');
+  wrap.classList.add('fade-out');
+  setTimeout(() => {
+    wrap.style.display = 'none';
+    applyProfile(window._currentProfil || sessionStorage.getItem('aterisk_profil_marche'));
+    initTemplates();
+    initLinkedInExample();
+    initCTASecteur();
+    const content = document.getElementById('pageContent');
+    content.classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 420);
+}
+
+function applyProfile(profil) {
+  if (!profil || !PROFILES[profil]) return;
+  const p = PROFILES[profil];
+  document.getElementById('accrocheSubtitle').textContent = p.subtitle;
+  document.getElementById('profileLabel').textContent = p.badge;
+  document.getElementById('profileShortDesc').textContent = p.title;
+  document.getElementById('profileBanner').style.display = 'flex';
+}
+
+// ── RÉSEAU CARTOGRAPHIE ──────────────────────────────────────────────────
+let reseauData = { cercle1: [], cercle2: [], linkedin: 0 };
+try {
+  const saved = sessionStorage.getItem('aterisk_marche_cache');
+  if (saved) reseauData = JSON.parse(saved);
+} catch(e) {}
+
+function saveReseau() {
+  sessionStorage.setItem('aterisk_marche_cache', JSON.stringify(reseauData));
+}
+
+function addContact(circle) {
+  const input = document.getElementById('input-c' + circle);
+  const name = input.value.trim();
+  if (!name) return;
+  reseauData['cercle' + circle].push({ name, pro: 'maybe' });
+  input.value = '';
+  saveReseau();
+  renderPills(circle);
+  updateScore();
+  updatePlanAction();
+}
+
+function setContactStatus(circle, idx, val) {
+  reseauData['cercle' + circle][idx].pro = val;
+  saveReseau();
+  renderPills(circle);
+  updateScore();
+  updatePlanAction();
+}
+
+function removeContact(circle, idx) {
+  reseauData['cercle' + circle].splice(idx, 1);
+  saveReseau();
+  renderPills(circle);
+  updateScore();
+  updatePlanAction();
+}
+
+function renderPills(circle) {
+  const list = reseauData['cercle' + circle];
+  const container = document.getElementById('pills-c' + circle);
+  container.innerHTML = '';
+  list.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'contact-pill ' + (c.pro === 'yes' ? 'pro' : c.pro === 'no' ? 'no' : 'maybe');
+    div.innerHTML =
+      '<span class="cp-name">' + esc(c.name) + '</span>' +
+      '<select class="cp-select" onchange="setContactStatus(' + circle + ',' + i + ',this.value)">' +
+        '<option value="yes"' + (c.pro==='yes'?' selected':'') + '>Oui ✅</option>' +
+        '<option value="no"' + (c.pro==='no'?' selected':'') + '>Non</option>' +
+        '<option value="maybe"' + (c.pro==='maybe'?' selected':'') + '>Je sais pas 🤷</option>' +
+      '</select>' +
+      '<button class="cp-del" onclick="removeContact(' + circle + ',' + i + ')" title="Supprimer">✕</button>';
+    container.appendChild(div);
+  });
+}
+
+function updateLinkedin(val) {
+  reseauData.linkedin = parseInt(val);
+  document.getElementById('liVal').textContent = val >= 500 ? '500+' : val;
+  saveReseau();
+  updateScore();
+  updatePlanAction();
+}
+
+function updateScore() {
+  const all = [...reseauData.cercle1, ...reseauData.cercle2];
+  const total = reseauData.cercle1.length + reseauData.cercle2.length;
+  const utiles = all.filter(c => c.pro === 'yes').length;
+  const reach = utiles * 15;
+  const pct = Math.min(Math.round((utiles / 30) * 100), 100);
+  document.getElementById('scoreTotal').textContent = total;
+  document.getElementById('scoreUtiles').textContent = utiles;
+  document.getElementById('scoreReach').textContent = reach;
+  document.getElementById('jaugeFill').style.width = pct + '%';
+  document.getElementById('jaugePct').textContent = pct + '%';
+}
+
+function updatePlanAction() {
+  const c1 = reseauData.cercle1;
+  const c2 = reseauData.cercle2;
+  const li = reseauData.linkedin;
+  const c1Pro = c1.filter(c => c.pro === 'yes');
+  const c1Maybe = c1.filter(c => c.pro === 'maybe');
+  const items = [];
+
+  if (c1.length === 0) {
+    items.push({ icon: '👆', text: 'Commence par là : liste 5 personnes de ton entourage direct. Tu en as forcément.' });
+  } else if (c1Pro.length > 0) {
+    items.push({ icon: '🎯', text: 'Ces personnes sont ta priorité cette semaine : ' + c1Pro.map(c=>c.name).join(', ') + '. Voilà quoi leur dire — utilise le Template 1 ci-dessous.' });
+  }
+
+  if (c1Maybe.length > 0) {
+    items.push({ icon: '🔍', text: 'Ces contacts méritent une vérification rapide : ' + c1Maybe.map(c=>c.name).join(', ') + '. Un message simple suffit pour savoir s\'ils peuvent t\'aider.' });
+  }
+
+  if (c2.length === 0) {
+    items.push({ icon: '👩‍🏫', text: 'Tes anciens profs et tuteurs sont souvent les contacts les plus puissants. Ils connaissent des recruteurs et sont ravis d\'aider.' });
+  }
+
+  if (li > 100) {
+    items.push({ icon: '💼', text: 'Tu as ' + (li >= 500 ? '500+' : li) + ' connexions LinkedIn. Tu ne les utilises probablement pas activement — utilise le Template 2 ci-dessous pour commencer.' });
+  }
+
+  if (items.length === 0) {
+    items.push({ icon: '✅', text: 'Continue à enrichir ta cartographie — plus tu ajoutes de contacts, plus le plan devient précis.' });
+  }
+
+  document.getElementById('planItems').innerHTML = items
+    .map(it => '<div class="plan-item"><span class="plan-icon">' + it.icon + '</span>' + esc(it.text) + '</div>')
+    .join('');
+}
+
+// ── LINKEDIN EXAMPLE ─────────────────────────────────────────────────────
+function initLinkedInExample() {
+  const el = document.getElementById('linkedinTitreEx');
+  let titre = 'Étudiant(e) en ';
+  titre += formation ? formation : '[Formation]';
+  titre += ' | En recherche d\'alternance dès septembre 2026';
+  if (secteurs.length > 0) titre += ' | Spécialisation ' + cleanSector(secteurs[0]);
+  el.textContent = titre;
+}
+
+// ── MESSAGE TEMPLATES ─────────────────────────────────────────────────────
+function initTemplates() {
+  const sec = secteurs.length > 0 ? cleanSector(secteurs[0]) : '[secteur]';
+  const form = formation || '[formation]';
+  const firstContact = reseauData.cercle1.length > 0 ? reseauData.cercle1[0].name : '[Prénom]';
+
+  document.getElementById('tpl1').textContent =
+    'Salut ' + firstContact + ',\n\n' +
+    'Je me permets de te contacter car je cherche activement une alternance en ' + sec + '.\n\n' +
+    'Est-ce que par hasard tu connais des personnes dans ce domaine à qui ça vaudrait le coup que je parle ? Même une mise en contact simple serait précieuse.\n\n' +
+    'Merci !';
+
+  document.getElementById('tpl2').textContent =
+    'Bonjour [Prénom],\n\n' +
+    'Votre parcours chez [Entreprise] m\'intéresse — notamment votre travail sur [domaine].\n\n' +
+    'Je suis étudiant(e) en ' + form + ', en recherche d\'une alternance en ' + sec + '. Seriez-vous disponible 20 min pour échanger sur votre secteur et les réalités du recrutement ?\n\n' +
+    'Merci pour votre temps.';
+}
+
+function copyTemplate(id, btn) {
+  const text = document.getElementById(id).textContent;
+  const done = () => {
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copié';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '📋 Copier'; }, 2000);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+  } else { fallback(); }
+  function fallback() {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    done();
+  }
+}
+
+// ── CTA SECTEUR ───────────────────────────────────────────────────────────
+function initCTASecteur() {
+  if (secteurs.length > 0) {
+    document.getElementById('ctaSecteur').textContent = '— ' + secteurs.map(cleanSector).join(', ');
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function cleanSector(s) { return s.replace(/^[\p{Emoji}\s]+/u, '').trim(); }
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function toggleCheck(el) { el.classList.toggle('checked'); }
+
+// ── SIDEBAR TOGGLE ────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (window.innerWidth <= 768) {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  } else {
+    sidebar.classList.toggle('closed');
+    main.classList.toggle('expanded');
+  }
+}
+function closeSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    sidebar.classList.add('closed');
+    main.classList.add('expanded');
+  }
+}
+document.querySelectorAll('.sidebar .nav-item').forEach(a => {
+  a.addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); });
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+renderPills(1);
+renderPills(2);
+if (reseauData.linkedin > 0) {
+  document.getElementById('liSlider').value = Math.min(reseauData.linkedin, 500);
+  document.getElementById('liVal').textContent = reseauData.linkedin >= 500 ? '500+' : reseauData.linkedin;
+}
+updateScore();
+updatePlanAction();
+
+// If quiz was already done, skip it
+const savedProfil = sessionStorage.getItem('aterisk_profil_marche');
+if (savedProfil && PROFILES[savedProfil]) {
+  window._currentProfil = savedProfil;
+  document.getElementById('quizWrap').style.display = 'none';
+  applyProfile(savedProfil);
+  initTemplates();
+  initLinkedInExample();
+  initCTASecteur();
+  document.getElementById('pageContent').classList.add('visible');
+}
+</script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
+</body>
+</html>

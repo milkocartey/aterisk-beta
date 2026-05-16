@@ -80,6 +80,24 @@
 
   .nav-cta:hover { background: var(--blue-mid) !important; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,46,122,0.25); }
 
+  /* ─── HERO ENTRANCE — pre-hidden until Motion animates in ─── */
+  .hero-tag,
+  .hero h1,
+  .hero-sub,
+  .hero-actions,
+  .stat-item,
+  .mentor-card {
+    opacity: 0;
+  }
+
+  /* ─── SCROLL ENTRANCE — pre-hidden until scroll.js animates in ─── */
+  .step,
+  .why-point,
+  .sector-card,
+  #cta-title {
+    opacity: 0;
+  }
+
   /* ─── HERO ─── */
   .hero {
     display: flex;
@@ -191,7 +209,8 @@
     cursor: pointer;
   }
 
-  .btn-primary:hover { background: var(--blue-mid); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,46,122,0.28); }
+  .btn-primary:hover { background: var(--blue-mid); box-shadow: 0 8px 24px rgba(26,46,122,0.28); }
+  .btn-primary { will-change: transform; }
 
   .btn-secondary {
     background: transparent;
@@ -538,7 +557,8 @@
     transition: all 0.2s;
   }
 
-  .why-point:hover { background: rgba(255,255,255,0.1); transform: translateX(4px); }
+  .why-point:hover { background: rgba(255,255,255,0.1); }
+  .why-point { will-change: transform; }
 
   .why-icon {
     font-size: 22px;
@@ -584,10 +604,10 @@
     display: block;
   }
 
+  .sector-card { will-change: transform; }
   .sector-card:hover {
     border-color: var(--blue-mid);
     box-shadow: 0 8px 24px rgba(26,46,122,0.1);
-    transform: translateY(-3px);
   }
 
   .sector-emoji { font-size: 28px; margin-bottom: 10px; }
@@ -679,6 +699,7 @@
     footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 20px; }
   }
 </style>
+<style>body{opacity:0;transition:none}</style>
 </head>
 <body>
 <script>
@@ -828,22 +849,22 @@
     <h2 class="section-title fade-up">Simple. Rapide. Efficace.</h2>
     <p class="section-sub fade-up">De l'inscription à la signature de ton contrat — ATERISK t'accompagne à chaque étape.</p>
     <div class="steps" style="grid-template-columns: repeat(4,1fr)">
-      <div class="step fade-up">
+      <div class="step">
         <div class="step-num">1</div>
         <h3>Tu crées ton profil</h3>
         <p>Secteur visé, formation, niveau de recherche. 2 minutes, et ta première séance découverte est offerte.</p>
       </div>
-      <div class="step fade-up" style="transition-delay:0.1s">
+      <div class="step" style="transition-delay:0.1s">
         <div class="step-num">2</div>
         <h3>On te matche avec un mentor</h3>
         <p>En fonction de ton profil, on sélectionne le mentor le plus pertinent — ou tu explores librement par secteur.</p>
       </div>
-      <div class="step fade-up" style="transition-delay:0.2s">
+      <div class="step" style="transition-delay:0.2s">
         <div class="step-num">3</div>
         <h3>Tu avances avec ton mentor</h3>
         <p>Séances à la carte selon tes besoins. Après chaque séance, un rapport personnalisé avec tes actions est envoyé automatiquement.</p>
       </div>
-      <div class="step fade-up" style="transition-delay:0.3s">
+      <div class="step" style="transition-delay:0.3s">
         <div class="step-num">4</div>
         <h3>Tu signes & rejoins les alumni</h3>
         <p>Tu trouves ton alternance. ATERISK prend 4% de ton salaire pendant 4 mois — et tu intègres le réseau alumni.</p>
@@ -902,42 +923,42 @@
     <h2 class="section-title fade-up">Trouve un mentor dans ton secteur</h2>
     <p class="section-sub fade-up">Tu vises plusieurs secteurs ? Explore librement et compose ton accompagnement sur-mesure.</p>
     <div class="sectors-grid">
-      <a href="secteurs.html#marketing" class="sector-card fade-up">
+      <a href="secteurs.html#marketing" class="sector-card">
         <div class="sector-emoji">📣</div>
         <div class="sector-name">Marketing & Com'</div>
         <div class="sector-count">12 mentors disponibles</div>
       </a>
-      <a href="secteurs.html#commerce" class="sector-card fade-up" style="transition-delay:0.05s">
+      <a href="secteurs.html#commerce" class="sector-card" style="transition-delay:0.05s">
         <div class="sector-emoji">💼</div>
         <div class="sector-name">Commerce & Vente</div>
         <div class="sector-count">9 mentors disponibles</div>
       </a>
-      <a href="secteurs.html#tech" class="sector-card fade-up" style="transition-delay:0.1s">
+      <a href="secteurs.html#tech" class="sector-card" style="transition-delay:0.1s">
         <div class="sector-emoji">💻</div>
         <div class="sector-name">Tech & Digital</div>
         <div class="sector-count">7 mentors disponibles</div>
       </a>
-      <a href="secteurs.html#rh" class="sector-card fade-up" style="transition-delay:0.15s">
+      <a href="secteurs.html#rh" class="sector-card" style="transition-delay:0.15s">
         <div class="sector-emoji">🤝</div>
         <div class="sector-name">Ressources Humaines</div>
         <div class="sector-count">5 mentors disponibles</div>
       </a>
-      <a href="secteurs.html#finance" class="sector-card fade-up" style="transition-delay:0.2s">
+      <a href="secteurs.html#finance" class="sector-card" style="transition-delay:0.2s">
         <div class="sector-emoji">📊</div>
         <div class="sector-name">Finance & Gestion</div>
         <div class="sector-count">6 mentors disponibles</div>
       </a>
-      <a href="secteurs.html#juridique" class="sector-card fade-up" style="transition-delay:0.25s">
+      <a href="secteurs.html#juridique" class="sector-card" style="transition-delay:0.25s">
         <div class="sector-emoji">⚖️</div>
         <div class="sector-name">Juridique</div>
         <div class="sector-count">3 mentors disponibles</div>
       </a>
-      <a href="secteurs.html#creation" class="sector-card fade-up" style="transition-delay:0.3s">
+      <a href="secteurs.html#creation" class="sector-card" style="transition-delay:0.3s">
         <div class="sector-emoji">🎨</div>
         <div class="sector-name">Création & Design</div>
         <div class="sector-count">4 mentors disponibles</div>
       </a>
-      <a href="secteurs.html" class="sector-card fade-up" style="transition-delay:0.35s; border-style: dashed;">
+      <a href="secteurs.html" class="sector-card" style="transition-delay:0.35s; border-style: dashed;">
         <div class="sector-emoji">＋</div>
         <div class="sector-name">Voir tous les secteurs</div>
         <div class="sector-count">Explorer</div>
@@ -950,7 +971,7 @@
 <section class="cta-section">
   <div class="cta-inner">
     <div class="section-eyebrow">Prêt ?</div>
-    <h2 class="section-title fade-up">1ère séance <em style="color:var(--blue-mid)">offerte.</em></h2>
+    <h2 class="section-title" id="cta-title">1ère séance <em style="color:var(--blue-mid)">offerte.</em></h2>
     <p class="section-sub fade-up">On ne prend notre part que quand tu signes ton contrat. Rejoins les étudiants qui ont arrêté d'envoyer des candidatures dans le vide.</p>
     <div class="cta-pair">
       <a href="inscription.html" class="btn-primary">Je commence — 1ère séance offerte →</a>
@@ -967,20 +988,6 @@
 </footer>
 
 <script>
-  // Fade-up — show immediately if already in viewport, else on scroll
-  const fadeObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    });
-  }, { threshold: 0.05 });
-
-  document.querySelectorAll('.fade-up').forEach(el => {
-    fadeObserver.observe(el);
-    // Also check immediately in case already visible
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight) el.classList.add('visible');
-  });
-
   // Stats counter animation
   function animateCounters() {
     document.querySelectorAll('.stat-num[data-target]').forEach(el => {
@@ -1028,5 +1035,92 @@
   <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:12px">© 2026 ATERISK SAS — Tous droits réservés</p>
 </footer>
 
+<script type="module">
+import { animate, inView, scroll } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
+
+// ── HERO ENTRANCE ANIMATIONS ──────────────────────────────────────────────
+
+// 1. .hero-tag — opacity + scale
+animate(
+  '.hero-tag',
+  { opacity: [0, 1], scale: [0.92, 1] },
+  { duration: 0.4, delay: 0 }
+);
+
+// 2. h1 — opacity + translateY
+animate(
+  '.hero h1',
+  { opacity: [0, 1], y: [20, 0] },
+  { duration: 0.5, delay: 0.12 }
+);
+
+// 3. .hero-sub — opacity + translateY
+animate(
+  '.hero-sub',
+  { opacity: [0, 1], y: [16, 0] },
+  { duration: 0.5, delay: 0.22 }
+);
+
+// 4. .hero-actions — opacity + translateY
+animate(
+  '.hero-actions',
+  { opacity: [0, 1], y: [12, 0] },
+  { duration: 0.5, delay: 0.34 }
+);
+
+// 5. .stat-item — stagger, 60ms between each
+document.querySelectorAll('.stat-item').forEach((el, i) => {
+  animate(
+    el,
+    { opacity: [0, 1], y: [16, 0] },
+    { duration: 0.5, delay: 0.44 + i * 0.06 }
+  );
+});
+
+// 6. mentor cards — cascade with spring
+const cardDelays = { 'card-1': 0.2, 'card-2': 0.35, 'card-3': 0.48 };
+document.querySelectorAll('.mentor-card').forEach(card => {
+  const cls = ['card-1', 'card-2', 'card-3'].find(c => card.classList.contains(c));
+  const delay = cardDelays[cls] ?? 0.2;
+  animate(
+    card,
+    { opacity: [0, 1], y: [40, 0] },
+    { type: 'spring', stiffness: 60, damping: 14, delay }
+  );
+});
+
+// 7. card-2 float loop — start after entrance settles
+setTimeout(() => {
+  const card2 = document.querySelector('.mentor-card.card-2');
+  if (!card2) return;
+  // Animate from current position (0) to -8px and back, looping forever
+  animate(
+    card2,
+    { y: [0, -8, 0] },
+    {
+      duration: 3,
+      repeat: Infinity,
+      easing: 'ease-in-out',
+    }
+  );
+}, 1400);
+
+// Logo scale linked to scroll 0→100px (index.html only)
+const navLogo = document.querySelector('.nav-logo');
+if (navLogo) {
+  scroll(
+    ({ y }) => {
+      const progress = Math.min(y.progress, 1);
+      const scale = 1 - progress * 0.05;
+      navLogo.style.transform = `scale(${scale})`;
+      navLogo.style.transformOrigin = 'left center';
+    },
+    { offset: [0, 100] }
+  );
+}
+</script>
+<script type="module" src="scroll.js"></script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
 </body>
 </html>

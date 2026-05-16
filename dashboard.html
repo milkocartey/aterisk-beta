@@ -248,6 +248,7 @@
     .topbar { padding: 0 20px; }
   }
 </style>
+<style>body{opacity:0;transition:none}</style>
 </head>
 <body>
 
@@ -591,6 +592,14 @@
               <div class="ressource-icon" style="background:#F5F3FF">🎥</div>
               <div class="ressource-info"><h4>Webinaires</h4><p>Replays disponibles</p></div>
             </a>
+            <a href="scripts-linkedin.html" class="ressource-card">
+              <div class="ressource-icon" style="background:#F0FDFA">💬</div>
+              <div class="ressource-info"><h4>Générateur de scripts LinkedIn</h4><p>Le bon message pour chaque situation</p></div>
+            </a>
+            <a href="marche-cache.html" class="ressource-card" style="grid-column:1/-1">
+              <div class="ressource-icon" style="background:#EFF6FF">🔍</div>
+              <div class="ressource-info"><h4>Le marché caché</h4><p>Trouve des alternances avant tout le monde</p></div>
+            </a>
           </div>
         </div>
       </div>
@@ -711,5 +720,7 @@
     a.addEventListener('click', () => { if(window.innerWidth <= 768) closeSidebar(); });
   });
 </script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
 </body>
 </html>

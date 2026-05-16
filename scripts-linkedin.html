@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Scripts LinkedIn</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
+    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --accent: #F4A200; --green: #16A34A; --green-bg: #DCFCE7;
+    --amber: #92400E; --amber-bg: #FEF3C7;
+    --red: #DC2626; --red-bg: #FEF2F2;
+    --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
+    --sidebar: 240px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar); background: var(--blue); position: fixed;
+    top: 0; left: 0; bottom: 0; display: flex; flex-direction: column;
+    z-index: 50; overflow-y: auto; transition: transform 0.3s ease;
+  }
+  .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: flex-start; justify-content: space-between; }
+  .sidebar-logo a { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; text-decoration: none; letter-spacing: 1px; }
+  .sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .sidebar-close { display: block; background: none; border: none; color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; padding: 4px 8px; margin-left: auto; transition: color 0.2s; }
+  .sidebar-close:hover { color: white; }
+  .sidebar-user { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+  .user-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .user-info h4 { font-size: 13px; font-weight: 600; color: white; }
+  .user-info p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+  .token-balance { margin: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 14px; }
+  .token-balance .tb-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .token-balance .tb-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; line-height: 1; }
+  .token-balance .tb-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .btn-buy-tokens { width: 100%; margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .btn-buy-tokens:hover { background: rgba(255,255,255,0.2); }
+  .sidebar-nav { padding: 8px 12px; flex: 1; }
+  .nav-section { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 8px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; cursor: pointer; transition: all 0.18s; text-decoration: none; margin-bottom: 2px; }
+  .nav-item:hover { background: rgba(255,255,255,0.08); }
+  .nav-item.active { background: rgba(255,255,255,0.15); }
+  .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-label { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .nav-item.active .nav-label { color: white; }
+  .nav-badge { margin-left: auto; background: var(--green); color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+  .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-footer a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; display: block; padding: 4px 0; transition: color 0.2s; }
+  .sidebar-footer a:hover { color: rgba(255,255,255,0.8); }
+
+  /* ── MAIN ── */
+  .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; transition: margin-left 0.3s ease; }
+  .main.expanded { margin-left: 0; }
+  .sidebar.closed { transform: translateX(-100%); }
+
+  /* ── TOPBAR ── */
+  .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 36px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+  .topbar h1 { font-size: 16px; font-weight: 600; }
+  .hamburger { display: flex; align-items: center; justify-content: center; background: none; border: none; font-size: 22px; cursor: pointer; padding: 6px; color: var(--ink); border-radius: 8px; transition: background 0.15s; }
+  .hamburger:hover { background: var(--blue-pale); }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 40; }
+
+  /* ── CONTENT ── */
+  .content { padding: 32px 36px 60px; flex: 1; max-width: 860px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .page-header-left h2 { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; line-height: 1.2; margin-bottom: 6px; }
+  .page-header-left p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .gen-counter-badge { background: white; border: 1.5px solid var(--border); border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .gen-counter-badge .gc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .gen-counter-badge.exhausted .gc-dot { background: var(--red); }
+  .gen-counter-badge.exhausted { color: var(--muted); }
+
+  /* ── SAVED SCRIPT ZONE ── */
+  .saved-zone { background: var(--blue-pale); border: 1.5px solid var(--blue-light); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+  .saved-zone-header { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .saved-zone-header h3 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .saved-zone-date { font-size: 12px; color: var(--muted); }
+  .saved-zone-body { padding: 16px 20px; }
+  .saved-zone-actions { padding: 0 20px 16px; display: flex; gap: 10px; align-items: center; }
+
+  /* ── FORM CARD ── */
+  .form-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; }
+
+  /* ── FORM BLOC ── */
+  .form-bloc { padding: 24px 28px; border-bottom: 1px solid var(--border); transition: border-color 0.2s; }
+  .form-bloc:last-child { border-bottom: none; }
+  .form-bloc.error { border-left: 3px solid var(--red); }
+  .bloc-label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .bloc-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+  .bloc-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; font-style: italic; }
+
+  /* ── FIELDS ── */
+  .field-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .field input[type="text"] { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s; background: white; }
+  .field input[type="text"]:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(42,69,176,0.08); }
+  .field input::placeholder { color: #C0C8DC; }
+  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 5px; }
+
+  /* ── RELATION CARDS ── */
+  .relation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .relation-card { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; transition: all 0.18s; }
+  .relation-card:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
+  .relation-card.selected { border-color: var(--blue-mid); background: var(--blue-light); }
+  .relation-card .rc-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .relation-card.selected .rc-title { color: var(--blue); }
+  .relation-card .rc-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* ── OBJECTIF CHIPS ── */
+  .objectif-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .obj-chip { padding: 9px 16px; border-radius: 20px; border: 1.5px solid var(--border); font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.18s; background: white; user-select: none; }
+  .obj-chip:hover { border-color: var(--blue-mid); color: var(--blue); }
+  .obj-chip.selected { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
+
+  /* ── CONTEXT RADIOS ── */
+  .context-options { display: flex; flex-direction: column; gap: 8px; }
+  .context-option { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .context-option:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
+  .context-option.selected { border-color: var(--blue-mid); background: var(--blue-light); }
+  .context-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
+  .context-option.selected .context-radio { border-color: var(--blue-mid); background: var(--blue-mid); }
+  .context-option.selected .context-radio::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: white; display: block; }
+  .context-option-label { font-size: 13px; font-weight: 500; color: var(--ink); flex: 1; }
+  .context-option.selected .context-option-label { color: var(--blue); }
+  .context-detail-input { margin-top: 8px; margin-left: 30px; display: none; }
+  .context-detail-input.visible { display: block; }
+  .context-detail-input input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; transition: border-color 0.2s; }
+  .context-detail-input input:focus { border-color: var(--blue-mid); }
+
+  /* ── BOUTON GÉNÉRER ── */
+  .generate-wrap { padding: 24px 28px; background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .btn-generate { width: 100%; height: 48px; background: var(--blue); color: white; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .btn-generate:hover:not(:disabled) { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
+  .btn-generate:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-generate.loading { background: var(--blue-mid); }
+  .gen-limit-msg { font-size: 12px; color: var(--muted); margin-top: 10px; text-align: center; line-height: 1.5; }
+  .gen-limit-msg.exhausted { color: var(--red); }
+  .btn-disabled-msg { width: 100%; height: 48px; background: var(--border); color: var(--muted); border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: not-allowed; display: flex; align-items: center; justify-content: center; }
+  .gen-error { background: var(--red-bg); border: 1px solid #FECACA; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #991B1B; margin-top: 12px; display: none; }
+  .gen-error.visible { display: block; }
+
+  /* ── SPINNER ── */
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── RESULT ZONE ── */
+  .result-zone { display: none; opacity: 0; transition: opacity 0.3s ease; margin-bottom: 20px; }
+  .result-zone.visible { display: block; }
+  .result-zone.show { opacity: 1; }
+  .result-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .result-header { background: var(--blue); padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; }
+  .result-header-left { font-size: 15px; font-weight: 600; color: white; }
+  .result-header-badge { background: rgba(255,255,255,0.15); color: white; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; }
+  .result-body { padding: 20px 22px; }
+  .result-textarea { width: 100%; min-height: 280px; background: var(--blue-pale); border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.7; padding: 16px; color: var(--ink); resize: none; outline: none; overflow: hidden; transition: border-color 0.2s; }
+  .result-textarea:focus { border-color: var(--blue-mid); }
+  .result-actions { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+  .btn-copy-res { padding: 10px 20px; background: var(--blue); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+  .btn-copy-res:hover { background: var(--blue-mid); }
+  .btn-copy-res.copied { background: var(--green); }
+  .btn-variant { padding: 10px 20px; background: white; color: var(--blue-mid); border: 1.5px solid var(--blue-mid); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-variant:hover { background: var(--blue-light); }
+  .btn-variant:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-restart { background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; padding: 10px 4px; transition: color 0.2s; margin-left: auto; }
+  .btn-restart:hover { color: var(--ink); }
+  .result-amber-note { background: var(--amber-bg); border-left: 3px solid #F59E0B; padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 13px; color: var(--amber); line-height: 1.6; margin-top: 14px; }
+
+  /* ── SHARED TEXTAREA STYLE ── */
+  .script-textarea { width: 100%; min-height: 180px; background: var(--blue-pale); border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.7; padding: 14px; color: var(--ink); resize: none; outline: none; overflow: hidden; }
+  .script-textarea:focus { border-color: var(--blue-mid); }
+
+  /* ── SHARED BUTTONS ── */
+  .btn-copy-sm { padding: 7px 14px; background: var(--blue); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+  .btn-copy-sm:hover { background: var(--blue-mid); }
+  .btn-copy-sm.copied { background: var(--green); }
+  .btn-reload-params { padding: 7px 14px; background: white; color: var(--blue-mid); border: 1.5px solid var(--blue-mid); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-reload-params:hover { background: var(--blue-light); }
+
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .main, .main.expanded { margin-left: 0; }
+    .content { padding: 20px; }
+    .topbar { padding: 0 20px; }
+    .field-grid-3 { grid-template-columns: 1fr; }
+    .relation-grid { grid-template-columns: 1fr 1fr; }
+    .page-header { flex-direction: column; gap: 12px; }
+    .form-bloc { padding: 18px 20px; }
+    .generate-wrap { padding: 18px 20px; }
+    .result-body { padding: 16px 18px; }
+  }
+  @media (max-width: 480px) {
+    .relation-grid { grid-template-columns: 1fr; }
+  }
+</style>
+<style>body{opacity:0;transition:none}</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div>
+      <a href="dashboard.html">ATERISK</a>
+      <p>Espace étudiant</p>
+    </div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-avatar">👩‍🎓</div>
+    <div class="user-info">
+      <h4 id="sb-name">Mon profil</h4>
+      <p id="sb-detail">Étudiant(e)</p>
+    </div>
+  </div>
+
+  <div class="token-balance">
+    <div class="tb-label">Mes tokens</div>
+    <div class="tb-val">3<span style="font-size:16px;opacity:0.5"> tokens</span></div>
+    <div class="tb-sub">= 3 séances junior disponibles</div>
+    <button class="btn-buy-tokens" onclick="window.location.href='tokens.html'">+ Acheter des tokens</button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="dashboard.html" class="nav-item">
+      <span class="nav-icon">🏠</span><span class="nav-label">Tableau de bord</span>
+    </a>
+    <a href="matching.html" class="nav-item">
+      <span class="nav-icon">🎯</span><span class="nav-label">Mes mentors</span>
+    </a>
+    <a href="secteurs.html" class="nav-item">
+      <span class="nav-icon">🔍</span><span class="nav-label">Explorer</span>
+    </a>
+
+    <div class="nav-section">Mon parcours</div>
+    <a href="dashboard.html#seances" class="nav-item">
+      <span class="nav-icon">📅</span><span class="nav-label">Mes séances</span>
+    </a>
+    <a href="dashboard.html#rapports" class="nav-item">
+      <span class="nav-icon">📋</span><span class="nav-label">Mes rapports</span>
+      <span class="nav-badge">2</span>
+    </a>
+    <a href="dashboard.html#candidatures" class="nav-item">
+      <span class="nav-icon">💼</span><span class="nav-label">Candidatures</span>
+    </a>
+    <a href="ressources.html" class="nav-item">
+      <span class="nav-icon">📚</span><span class="nav-label">Ressources</span>
+    </a>
+    <a href="marche-cache.html" class="nav-item">
+      <span class="nav-icon">🗺️</span><span class="nav-label">Marché caché</span>
+    </a>
+    <a href="scripts-linkedin.html" class="nav-item active">
+      <span class="nav-icon">💬</span><span class="nav-label">Scripts LinkedIn</span>
+    </a>
+
+    <div class="nav-section">Compte</div>
+    <a href="inscription.html" class="nav-item">
+      <span class="nav-icon">👤</span><span class="nav-label">Mon profil</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="admin.html" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;display:block;padding:3px 0">⚙️ Espace admin</a>
+    <a href="index.html">← Retour à l'accueil</a>
+    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+  </div>
+</aside>
+
+<div class="main" id="main">
+
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <h1>Scripts LinkedIn</h1>
+    </div>
+    <div>
+      <a href="secteurs.html" style="background:var(--blue);color:white;border:none;padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s">Réserver une séance →</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Le bon message, à la bonne personne.</h2>
+        <p>Renseigne le contexte, on génère le script adapté à ta situation. Copie, ajuste, envoie.</p>
+      </div>
+      <div class="gen-counter-badge" id="genCounterBadge">
+        <div class="gc-dot"></div>
+        <span id="genCounterText">5 générations restantes</span>
+      </div>
+    </div>
+
+    <!-- ── ZONE 4 — DERNIER SCRIPT SAUVEGARDÉ ── -->
+    <div class="saved-zone" id="savedZone" style="display:none">
+      <div class="saved-zone-header">
+        <h3>💾 Ton dernier script</h3>
+        <span class="saved-zone-date" id="savedZoneDate"></span>
+      </div>
+      <div class="saved-zone-body">
+        <textarea class="script-textarea" id="savedTextarea" oninput="autoResize(this)" readonly></textarea>
+      </div>
+      <div class="saved-zone-actions">
+        <button class="btn-copy-sm" id="btnCopySaved" onclick="copyText('savedTextarea', this)">📋 Copier</button>
+        <button class="btn-reload-params" onclick="reloadParams()">↩ Regénérer avec ce contexte</button>
+      </div>
+    </div>
+
+    <!-- ── ZONE 2 — FORMULAIRE ── -->
+    <div class="form-card" id="formCard">
+
+      <!-- BLOC A -->
+      <div class="form-bloc" id="blocA">
+        <div class="bloc-label">À qui tu écris ?</div>
+        <div class="field-grid-3" style="margin-top:14px">
+          <div class="field">
+            <label>Prénom + Nom</label>
+            <input type="text" id="nomContact" placeholder="Marie D." oninput="clearBlocError('blocA')">
+          </div>
+          <div class="field">
+            <label>Poste actuel</label>
+            <input type="text" id="posteContact" placeholder="Responsable Marketing chez Decathlon" oninput="clearBlocError('blocA')">
+          </div>
+          <div class="field">
+            <label>Entreprise</label>
+            <input type="text" id="entrepriseContact" placeholder="Decathlon" oninput="clearBlocError('blocA')">
+          </div>
+        </div>
+        <div class="bloc-note">Tu peux coller l'URL de son profil LinkedIn pour copier ces infos — LinkedIn bloque l'accès automatique, mais 20 secondes suffisent.</div>
+      </div>
+
+      <!-- BLOC B -->
+      <div class="form-bloc" id="blocB">
+        <div class="bloc-label">Votre relation ?</div>
+        <div class="relation-grid" style="margin-top:14px" id="relationGrid">
+          <div class="relation-card" onclick="selectRelation(this, 'Premier contact total')">
+            <div class="rc-title">Premier contact total</div>
+            <div class="rc-sub">Vous ne vous connaissez pas</div>
+          </div>
+          <div class="relation-card" onclick="selectRelation(this, 'Connexion LinkedIn existante')">
+            <div class="rc-title">Connexion LinkedIn existante</div>
+            <div class="rc-sub">Vous êtes connectés mais n'avez jamais échangé</div>
+          </div>
+          <div class="relation-card" onclick="selectRelation(this, 'Il a réagi à quelque chose')">
+            <div class="rc-title">Il a réagi à quelque chose</div>
+            <div class="rc-sub">Post liké, commentaire, événement commun</div>
+          </div>
+          <div class="relation-card" onclick="selectRelation(this, 'On a déjà échangé')">
+            <div class="rc-title">On a déjà échangé</div>
+            <div class="rc-sub">Email, call ou message il y a moins de 3 mois</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOC C -->
+      <div class="form-bloc" id="blocC">
+        <div class="bloc-label">Ce que tu veux obtenir ?</div>
+        <div class="objectif-chips" style="margin-top:14px" id="objectifChips">
+          <div class="obj-chip" onclick="toggleChip(this)">Décrocher un entretien</div>
+          <div class="obj-chip" onclick="toggleChip(this)">Obtenir un conseil / avis</div>
+          <div class="obj-chip" onclick="toggleChip(this)">Demander une mise en relation</div>
+          <div class="obj-chip" onclick="toggleChip(this)">Candidature spontanée directe</div>
+        </div>
+      </div>
+
+      <!-- BLOC D -->
+      <div class="form-bloc" id="blocD">
+        <div class="bloc-label">Tu as un élément de contexte ?</div>
+        <div class="bloc-sub">Optionnel mais ça change tout</div>
+        <div class="context-options" id="contextOptions">
+          <div>
+            <div class="context-option" onclick="selectContext(this, 'ctx-post')">
+              <div class="context-radio"></div>
+              <span class="context-option-label">Un post qu'il a publié récemment</span>
+            </div>
+            <div class="context-detail-input" id="ctx-post">
+              <input type="text" placeholder="Quel sujet ?">
+            </div>
+          </div>
+          <div>
+            <div class="context-option" onclick="selectContext(this, 'ctx-actu')">
+              <div class="context-radio"></div>
+              <span class="context-option-label">Une actualité de son entreprise</span>
+            </div>
+            <div class="context-detail-input" id="ctx-actu">
+              <input type="text" placeholder="Laquelle ?">
+            </div>
+          </div>
+          <div>
+            <div class="context-option" onclick="selectContext(this, 'ctx-connexion')">
+              <div class="context-radio"></div>
+              <span class="context-option-label">Une connexion en commun</span>
+            </div>
+            <div class="context-detail-input" id="ctx-connexion">
+              <input type="text" placeholder="Qui ?">
+            </div>
+          </div>
+          <div>
+            <div class="context-option" onclick="selectContext(this, null)">
+              <div class="context-radio"></div>
+              <span class="context-option-label">Rien de particulier</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /form-card -->
+
+    <!-- ── BOUTON GÉNÉRER ── -->
+    <div class="generate-wrap" id="generateWrap">
+      <button class="btn-generate" id="btnGenerate" onclick="generate(false)">
+        Générer mon script →
+      </button>
+      <div class="gen-limit-msg" id="genLimitMsg">5 générations restantes aujourd'hui</div>
+      <div class="gen-error" id="genError">Une erreur s'est produite. Réessaie dans quelques secondes.</div>
+    </div>
+
+    <!-- ── ZONE 3 — RÉSULTAT ── -->
+    <div class="result-zone" id="resultZone">
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-header-left">Script généré</div>
+          <div class="result-header-badge" id="resultBadge">—</div>
+        </div>
+        <div class="result-body">
+          <textarea class="result-textarea" id="resultTextarea" oninput="autoResize(this)" placeholder="Le script apparaît ici…"></textarea>
+          <div class="result-actions">
+            <button class="btn-copy-res" id="btnCopyResult" onclick="copyText('resultTextarea', this)">📋 Copier le script</button>
+            <button class="btn-variant" id="btnVariant" onclick="generate(true)">⚡ Variante</button>
+            <button class="btn-restart" onclick="restart()">Recommencer</button>
+          </div>
+          <div class="result-amber-note">💡 Pense à personnaliser : remplace <strong>[les éléments entre crochets]</strong> par des détails réels avant d'envoyer.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// ── CONFIG ───────────────────────────────────────────────────────────────
+// Remplacer par ta clé API Anthropic
+// ou définir window.ATERISK_API_KEY avant le chargement de ce script
+const API_KEY = window.ATERISK_API_KEY || '';
+const API_URL = 'https://api.anthropic.com/v1/messages';
+const DAILY_LIMIT = 5;
+
+// ── USER DATA ─────────────────────────────────────────────────────────────
+const user = JSON.parse(sessionStorage.getItem('aterisk_user') || '{}');
+const prenom = user.prenom || (user.name ? user.name.split(' ')[0] : '') || '';
+const secteurs = user.secteurs || [];
+const formation = user.formation || '';
+const secteurPrincipal = secteurs[0] ? secteurs[0].replace(/^[\p{Emoji}\s]+/u, '').trim() : '';
+
+// Sidebar user info
+if (user.name) document.getElementById('sb-name').textContent = user.name;
+if (user.formation && user.ville) document.getElementById('sb-detail').textContent = user.formation + ' · ' + user.ville;
+else if (user.formation) document.getElementById('sb-detail').textContent = user.formation;
+
+// ── USAGE LIMIT ───────────────────────────────────────────────────────────
+function getTodayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+function getUsage() {
+  try {
+    const raw = localStorage.getItem('aterisk_scripts_usage');
+    if (!raw) return { date: getTodayStr(), count: 0 };
+    const d = JSON.parse(raw);
+    if (d.date !== getTodayStr()) return { date: getTodayStr(), count: 0 };
+    return d;
+  } catch { return { date: getTodayStr(), count: 0 }; }
+}
+function setUsage(count) {
+  localStorage.setItem('aterisk_scripts_usage', JSON.stringify({ date: getTodayStr(), count }));
+}
+function getRemainingGen() {
+  return Math.max(0, DAILY_LIMIT - getUsage().count);
+}
+function incrementUsage() {
+  const u = getUsage();
+  setUsage(u.count + 1);
+}
+
+function updateCounterUI() {
+  const remaining = getRemainingGen();
+  const badge = document.getElementById('genCounterBadge');
+  const text = document.getElementById('genCounterText');
+  const msg = document.getElementById('genLimitMsg');
+  text.textContent = remaining + ' génération' + (remaining !== 1 ? 's' : '') + ' restante' + (remaining !== 1 ? 's' : '') + ' aujourd\'hui';
+  msg.textContent = text.textContent;
+  if (remaining === 0) {
+    badge.classList.add('exhausted');
+    msg.classList.add('exhausted');
+    msg.innerHTML = 'Tu as utilisé tes 5 générations aujourd\'hui. Reviens demain — ou <a href="secteurs.html" style="color:var(--red);font-weight:600;text-decoration:underline">réserve une séance avec un mentor</a> pour un accompagnement sur mesure.';
+  }
+}
+
+// ── FORM STATE ────────────────────────────────────────────────────────────
+let selectedRelation = '';
+let selectedContextInputId = null;
+
+function selectRelation(el, value) {
+  document.querySelectorAll('#relationGrid .relation-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRelation = value;
+  clearBlocError('blocB');
+}
+
+function toggleChip(el) {
+  el.classList.toggle('selected');
+  clearBlocError('blocC');
+}
+
+function selectContext(el, detailId) {
+  // Deselect all context options
+  document.querySelectorAll('#contextOptions .context-option').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.context-detail-input').forEach(d => d.classList.remove('visible'));
+  el.classList.add('selected');
+  selectedContextInputId = detailId;
+  if (detailId) document.getElementById(detailId).classList.add('visible');
+}
+
+function getContextText() {
+  if (!selectedContextInputId) return 'aucun';
+  const container = document.getElementById(selectedContextInputId);
+  const label = container.previousElementSibling.querySelector('.context-option-label').textContent;
+  const detail = container.querySelector('input').value.trim();
+  return detail ? label + ' : ' + detail : label;
+}
+
+function clearBlocError(blocId) {
+  document.getElementById(blocId).classList.remove('error');
+}
+
+// ── VALIDATION ────────────────────────────────────────────────────────────
+function validate() {
+  let valid = true;
+  const poste = document.getElementById('posteContact').value.trim();
+  const entreprise = document.getElementById('entrepriseContact').value.trim();
+  if (!poste && !entreprise) {
+    document.getElementById('blocA').classList.add('error');
+    if (valid) { document.getElementById('blocA').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    valid = false;
+  }
+  if (!selectedRelation) {
+    document.getElementById('blocB').classList.add('error');
+    if (valid) { document.getElementById('blocB').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    valid = false;
+  }
+  const objs = Array.from(document.querySelectorAll('#objectifChips .obj-chip.selected'));
+  if (objs.length === 0) {
+    document.getElementById('blocC').classList.add('error');
+    if (valid) { document.getElementById('blocC').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    valid = false;
+  }
+  return valid;
+}
+
+// ── PROMPT BUILDER ────────────────────────────────────────────────────────
+function buildPrompt(isVariant) {
+  const nomContact = document.getElementById('nomContact').value.trim() || 'non précisé';
+  const posteContact = document.getElementById('posteContact').value.trim() || 'non précisé';
+  const entrepriseContact = document.getElementById('entrepriseContact').value.trim() || 'non précisé';
+  const objectifsChoisis = Array.from(document.querySelectorAll('#objectifChips .obj-chip.selected')).map(el => el.textContent.trim());
+  const elementPersonnel = getContextText();
+
+  let prompt = `Tu génères un message LinkedIn professionnel pour un étudiant en recherche d'alternance.
+
+PROFIL DE L'ÉTUDIANT :
+- Formation : ${formation || 'non précisée'}
+- Secteur recherché : ${secteurPrincipal || 'non précisé'}
+- Prénom : ${prenom || 'non précisé'}
+
+DESTINATAIRE :
+- Identité : ${nomContact}
+- Poste : ${posteContact}
+- Entreprise : ${entrepriseContact}
+
+CONTEXTE :
+- Relation : ${selectedRelation}
+- Objectif(s) : ${objectifsChoisis.join(', ')}
+- Élément personnel : ${elementPersonnel}
+
+CONTRAINTES DU MESSAGE :
+- Longueur : 80 à 120 mots maximum
+- Ton : professionnel mais chaleureux, jamais obséquieux
+- Structure : accroche personnalisée / qui je suis en une phrase / ce que je demande clairement / call to action simple
+- Ne pas commencer par "Je me permets de"
+- Ne jamais mentionner qu'il a été généré par une IA
+- Utiliser ${prenom || "le prénom de l'étudiant"} comme expéditeur en signature
+- Mettre entre [crochets] les éléments que l'étudiant devra personnaliser s'il manque des informations précises
+
+Génère uniquement le message, sans introduction, sans commentaire, sans guillemets englobants.`;
+
+  if (isVariant) {
+    prompt += '\n\nGénère une variante différente du message précédent. Change l\'accroche, le ton ou la structure, mais garde le même objectif.';
+  }
+  return prompt;
+}
+
+// ── API CALL ──────────────────────────────────────────────────────────────
+async function callAPI(prompt) {
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+      'x-api-key': API_KEY,
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  const data = await resp.json();
+  return data.content?.[0]?.text || '';
+}
+
+// ── GENERATE ─────────────────────────────────────────────────────────────
+async function generate(isVariant) {
+  if (!validate()) return;
+  if (getRemainingGen() <= 0) return;
+
+  const btn = document.getElementById('btnGenerate');
+  const variantBtn = document.getElementById('btnVariant');
+  const errorEl = document.getElementById('genError');
+
+  // Loading state
+  btn.disabled = true;
+  variantBtn.disabled = true;
+  errorEl.classList.remove('visible');
+  btn.classList.add('loading');
+  btn.innerHTML = '<div class="spinner"></div> Génération en cours…';
+
+  try {
+    const prompt = buildPrompt(isVariant);
+    const text = await callAPI(prompt);
+
+    // Success
+    const textarea = document.getElementById('resultTextarea');
+    textarea.value = text;
+    autoResize(textarea);
+
+    // Badge
+    const objectifsChoisis = Array.from(document.querySelectorAll('#objectifChips .obj-chip.selected')).map(el => el.textContent.trim());
+    document.getElementById('resultBadge').textContent = selectedRelation + ' · ' + objectifsChoisis[0];
+
+    // Show result zone
+    const zone = document.getElementById('resultZone');
+    zone.style.display = 'block';
+    setTimeout(() => {
+      zone.classList.add('show');
+      zone.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 20);
+
+    // Increment + update UI
+    incrementUsage();
+    updateCounterUI();
+
+    // Save to localStorage
+    const params = {
+      nomContact: document.getElementById('nomContact').value.trim(),
+      posteContact: document.getElementById('posteContact').value.trim(),
+      entrepriseContact: document.getElementById('entrepriseContact').value.trim(),
+      relationChoisie: selectedRelation,
+      objectifsChoisis,
+      elementPersonnel: getContextText(),
+    };
+    localStorage.setItem('aterisk_scripts_sauv', JSON.stringify({
+      script: text,
+      params,
+      date: new Date().toISOString(),
+    }));
+    renderSavedZone();
+
+  } catch (err) {
+    errorEl.classList.add('visible');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    variantBtn.disabled = false;
+    btn.classList.remove('loading');
+    btn.innerHTML = 'Générer mon script →';
+    if (getRemainingGen() === 0) {
+      btn.disabled = true;
+    }
+  }
+}
+
+// ── COPY ─────────────────────────────────────────────────────────────────
+function copyText(textareaId, btn) {
+  const text = document.getElementById(textareaId).value;
+  const origHTML = btn.innerHTML;
+  const done = () => {
+    btn.classList.add('copied');
+    btn.innerHTML = '✓ Copié !';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = origHTML; }, 2000);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+  } else { fallback(); }
+  function fallback() {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    done();
+  }
+}
+
+// ── RESTART ───────────────────────────────────────────────────────────────
+function restart() {
+  const zone = document.getElementById('resultZone');
+  zone.classList.remove('show');
+  setTimeout(() => { zone.style.display = 'none'; }, 310);
+  document.getElementById('resultTextarea').value = '';
+  document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── RELOAD PARAMS ─────────────────────────────────────────────────────────
+function reloadParams() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('aterisk_scripts_sauv') || 'null');
+    if (!saved || !saved.params) return;
+    const p = saved.params;
+    document.getElementById('nomContact').value = p.nomContact || '';
+    document.getElementById('posteContact').value = p.posteContact || '';
+    document.getElementById('entrepriseContact').value = p.entrepriseContact || '';
+    if (p.relationChoisie) {
+      document.querySelectorAll('#relationGrid .relation-card').forEach(card => {
+        if (card.querySelector('.rc-title').textContent === p.relationChoisie) {
+          selectRelation(card, p.relationChoisie);
+        }
+      });
+    }
+    if (p.objectifsChoisis) {
+      document.querySelectorAll('#objectifChips .obj-chip').forEach(chip => {
+        chip.classList.toggle('selected', p.objectifsChoisis.includes(chip.textContent.trim()));
+      });
+    }
+    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {}
+}
+
+// ── SAVED ZONE ────────────────────────────────────────────────────────────
+function renderSavedZone() {
+  try {
+    const raw = localStorage.getItem('aterisk_scripts_sauv');
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved.script) return;
+    document.getElementById('savedZone').style.display = 'block';
+    const ta = document.getElementById('savedTextarea');
+    ta.value = saved.script;
+    autoResize(ta);
+    // Date
+    const date = new Date(saved.date);
+    const now = new Date();
+    const diffDays = Math.floor((now - date) / 86400000);
+    let dateStr;
+    if (diffDays === 0) dateStr = 'Aujourd\'hui';
+    else if (diffDays === 1) dateStr = 'Il y a 1 jour';
+    else dateStr = 'Il y a ' + diffDays + ' jours';
+    document.getElementById('savedZoneDate').textContent = dateStr;
+  } catch(e) {}
+}
+
+// ── AUTO RESIZE TEXTAREA ──────────────────────────────────────────────────
+function autoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+
+// ── SIDEBAR TOGGLE ────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (window.innerWidth <= 768) {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  } else {
+    sidebar.classList.toggle('closed');
+    main.classList.toggle('expanded');
+  }
+}
+function closeSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    sidebar.classList.add('closed');
+    main.classList.add('expanded');
+  }
+}
+document.querySelectorAll('.sidebar .nav-item').forEach(a => {
+  a.addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); });
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+updateCounterUI();
+renderSavedZone();
+
+// If API key is absent, show disabled state
+if (!API_KEY) {
+  const wrap = document.getElementById('generateWrap');
+  document.getElementById('btnGenerate').style.display = 'none';
+  document.getElementById('genLimitMsg').style.display = 'none';
+  const msg = document.createElement('div');
+  msg.className = 'btn-disabled-msg';
+  msg.textContent = '⏳ Fonctionnalité bientôt disponible';
+  wrap.insertBefore(msg, wrap.firstChild);
+}
+
+// Disable generate button if limit reached
+if (getRemainingGen() === 0 && API_KEY) {
+  document.getElementById('btnGenerate').disabled = true;
+}
+</script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
+</body>
+</html>

@@ -242,6 +242,7 @@
   .ns-footer a:hover { color:rgba(255,255,255,0.8); }
   @media (max-width: 768px) { .nav-right { display:none; } }
 </style>
+<style>body{opacity:0;transition:none}</style>
 </head>
 <body>
 
@@ -327,12 +328,12 @@
       <div class="fc-sub">Comment trouver 80% des offres non publiées. La méthode ATERISK en 7 étapes.</div>
       <div class="fc-cta">Accéder au guide →</div>
     </a>
-    <a href="#" class="featured-card amber" onclick="openModal('script-linkedin'); return false;">
+    <a href="scripts-linkedin.html" class="featured-card amber">
       <span class="fc-emoji">💬</span>
       <div class="fc-badge">⚡ Populaire</div>
       <div class="fc-title">Scripts LinkedIn & relance</div>
-      <div class="fc-sub">10 messages qui obtiennent des réponses. Copie-colle et adapte à ta situation.</div>
-      <div class="fc-cta">Voir les scripts →</div>
+      <div class="fc-sub">Génère le message parfait pour chaque situation en 30 secondes. Alimenté par l'IA ATERISK.</div>
+      <div class="fc-cta">Générer mon script →</div>
     </a>
   </div>
 
@@ -403,11 +404,11 @@
     </div>
     <div class="resources-grid">
 
-      <a href="#" class="resource-card" onclick="openModal('script-linkedin'); return false;">
+      <a href="scripts-linkedin.html" class="resource-card">
         <div class="rc-type"><div class="rc-type-icon type-script">💬</div><span class="rc-type-label type-script">Scripts</span></div>
-        <div class="rc-title">10 messages LinkedIn qui obtiennent des réponses</div>
-        <div class="rc-desc">Premier contact, relance, remerciement — copie-colle et adapte.</div>
-        <div class="rc-footer"><span class="rc-badge badge-pop">🔥 Populaire</span><span class="rc-dl">↓ PDF</span></div>
+        <div class="rc-title">Générateur de scripts LinkedIn — IA</div>
+        <div class="rc-desc">Génère le message parfait selon ta situation : premier contact, relance, candidature spontanée.</div>
+        <div class="rc-footer"><span class="rc-badge badge-pop">🔥 Populaire</span><span class="rc-dl">→ Générer</span></div>
       </a>
 
       <a href="#" class="resource-card" onclick="openModal('marche-cache'); return false;">
@@ -633,35 +634,6 @@
   </div>
 </div>
 
-<!-- MODAL SCRIPTS LINKEDIN -->
-<div class="modal-overlay" id="modal-script-linkedin">
-  <div class="modal">
-    <div class="modal-top">
-      <div class="modal-top-icon" style="background:var(--teal-bg)">💬</div>
-      <div class="modal-top-info">
-        <h2>Scripts LinkedIn & relance</h2>
-        <p>Scripts · PDF · 10 messages prêts à l'emploi</p>
-      </div>
-      <button class="modal-close" onclick="closeModal('script-linkedin')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-section">
-        <h3>À propos</h3>
-        <p>10 messages testés et validés par les mentors ATERISK. Taux de réponse moyen de 35% contre 8% pour un message générique.</p>
-      </div>
-      <div class="modal-section">
-        <h3>Aperçu — Message de premier contact</h3>
-        <div class="preview-block" style="font-style:italic; color:var(--teal)">
-          "Bonjour [Prénom],<br><br>
-          Je vous contacte car [raison spécifique liée à leur actualité/poste]. Je suis actuellement en [formation] et je cherche une alternance en [domaine] pour [période].<br><br>
-          Votre parcours chez [entreprise] m'intéresse particulièrement car [raison précise]. Seriez-vous disponible pour un échange de 15 minutes ?<br><br>
-          Merci d'avance, [Prénom]"
-        </div>
-      </div>
-      <button class="btn-download" onclick="startDownload(this, 'script-linkedin')">↓ Télécharger les 10 scripts PDF</button>
-    </div>
-  </div>
-</div>
 
 <!-- MODAL CV MARKETING -->
 <div class="modal-overlay" id="modal-cv-marketing">
@@ -889,5 +861,7 @@
     }
   });
 </script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
 </body>
 </html>

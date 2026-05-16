@@ -329,6 +329,7 @@
   .ns-footer a:hover { color:rgba(255,255,255,0.8); }
   @media (max-width: 768px) { .nav-right { display:none; } }
 </style>
+<style>body{opacity:0;transition:none}</style>
 </head>
 <body>
 
@@ -745,5 +746,7 @@
   // Active nav item
   (function(){ const p = location.pathname.split('/').pop(); document.querySelectorAll('.ns-item').forEach(a => { if(a.getAttribute('href') === p) a.classList.add('active'); }); })();
 </script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
 </body>
 </html>

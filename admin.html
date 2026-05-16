@@ -218,6 +218,7 @@ tr:hover td{background:#FAFAFA;}
   .cand-empty p{font-size:14px;}
   .cand-date{font-size:11px;color:var(--muted);margin-top:2px;}
 </style>
+<style>body{opacity:0;transition:none}</style>
 </head>
 <body>
 
@@ -1288,5 +1289,7 @@ window.show = function(id, btn){
   if(badge && pending){ badge.textContent=pending; badge.style.display=''; }
 })();
 </script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
 </body>
 </html>

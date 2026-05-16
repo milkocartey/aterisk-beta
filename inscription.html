@@ -81,13 +81,8 @@
     color: var(--ink);
     background: var(--white);
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: none;
     appearance: none;
-  }
-
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--blue-mid);
-    box-shadow: 0 0 0 3px rgba(42,69,176,0.1);
   }
 
   input::placeholder, textarea::placeholder { color: #C0C8DC; }
@@ -148,7 +143,7 @@
     font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
     cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .btn-next:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
+  .btn-next:hover { background: var(--blue-mid); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
   .btn-prev {
     padding: 15px 20px; background: white; color: var(--muted);
     border: 1.5px solid var(--border); border-radius: var(--radius);
@@ -288,6 +283,7 @@
   .chip-error { outline: 2px solid #DC2626; outline-offset: -2px; border-radius: 22px; }
   .niveau-cards.cards-error .niveau-card { border-color: #FECACA; }
 </style>
+<style>body{opacity:0;transition:none}</style>
 </head>
 <body>
 
@@ -680,7 +676,13 @@
     sessionStorage.setItem('aterisk_user', JSON.stringify({
       email: document.getElementById('email').value.trim(),
       role: 'etudiant',
-      name: document.getElementById('prenom').value.trim() + ' ' + document.getElementById('nom').value.trim().charAt(0) + '.'
+      name: document.getElementById('prenom').value.trim() + ' ' + document.getElementById('nom').value.trim().charAt(0) + '.',
+      prenom: document.getElementById('prenom').value.trim(),
+      formation: document.getElementById('formation').value.trim(),
+      ville: document.getElementById('ville').value.trim(),
+      secteurs: Array.from(document.querySelectorAll('#secteurs-chips .chip.selected')).map(el => el.textContent.trim()),
+      niveau: document.querySelector('.niveau-card.selected')?.querySelector('.n-label')?.textContent?.trim() || '',
+      objectifs: Array.from(document.querySelectorAll('.objectif-item.selected')).map(el => el.querySelector('.objectif-text')?.textContent?.trim())
     }));
     document.getElementById('step4').classList.remove('active');
     document.getElementById('successBlock').classList.add('active');
@@ -881,5 +883,8 @@
     if (e.target === this) closeContract();
   });
 </script>
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
+<script type="module" src="form-animations.js"></script>
 </body>
 </html>
