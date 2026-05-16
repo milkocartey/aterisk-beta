@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Trouve ton alternance, pas au hasard</title>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue: #1A2E7A;
@@ -15,7 +15,6 @@
     --muted: #6B7280;
     --border: #DDE3F0;
     --white: #FFFFFF;
-    --accent: #F4A200;
     --dark: #030712;
   }
 
@@ -28,26 +27,28 @@
     overflow-x: hidden;
   }
 
-  /* ─── NAV ─── */
+  /* ═══════════════════════════════════════
+     NAV — dark hero transparent → scrolled white
+  ═══════════════════════════════════════ */
   nav.nav-dark-hero {
     position: fixed;
     top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 0 48px;
+    z-index: 200;
+    padding: 0 40px;
     height: 68px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: transparent;
     border-bottom: 1px solid transparent;
-    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   nav.nav-dark-hero.nav-scrolled {
     background: rgba(255,255,255,0.97);
-    border-bottom-color: rgba(221,227,240,0.8);
-    box-shadow: 0 1px 28px rgba(26,46,122,0.08);
-    backdrop-filter: blur(16px);
+    border-bottom-color: rgba(221,227,240,0.7);
+    box-shadow: 0 1px 32px rgba(26,46,122,0.08);
+    backdrop-filter: blur(20px);
   }
 
   .nav-logo {
@@ -56,52 +57,55 @@
     color: white;
     letter-spacing: 1px;
     text-decoration: none;
-    transition: color 0.35s ease;
+    transition: color 0.3s ease;
+    flex-shrink: 0;
   }
 
   nav.nav-scrolled .nav-logo { color: var(--blue); }
 
+  /* ── Nav links container ── */
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 4px;
   }
 
-  .nav-links a {
+  /* ── Simple nav links ── */
+  .nav-link {
     font-size: 14px;
     font-weight: 500;
     color: rgba(255,255,255,0.6);
     text-decoration: none;
-    transition: color 0.2s;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: color 0.15s ease, background 0.15s ease;
+    white-space: nowrap;
   }
 
-  .nav-links a:hover { color: white; }
+  .nav-link:hover { color: white; background: rgba(255,255,255,0.06); }
 
-  nav.nav-scrolled .nav-links a { color: var(--muted); }
-  nav.nav-scrolled .nav-links a:hover { color: var(--blue); }
+  nav.nav-scrolled .nav-link { color: var(--muted); }
+  nav.nav-scrolled .nav-link:hover { color: var(--ink); background: var(--blue-pale); }
 
-  .nav-link-connexion {
-    color: rgba(255,255,255,0.92) !important;
-    font-weight: 600 !important;
-  }
-
+  .nav-link-connexion { color: rgba(255,255,255,0.9) !important; font-weight: 600 !important; }
   nav.nav-scrolled .nav-link-connexion { color: var(--blue) !important; }
 
   .nav-cta {
     background: rgba(255,255,255,0.12) !important;
     color: white !important;
-    padding: 9px 22px;
+    padding: 9px 20px;
     border-radius: 100px;
     font-weight: 700 !important;
     font-size: 13px !important;
     transition: all 0.15s cubic-bezier(0.4,0,0.4,1) !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
-    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    white-space: nowrap;
+    margin-left: 6px;
+    text-decoration: none;
   }
 
   .nav-cta:hover {
     background: rgba(255,255,255,0.2) !important;
-    color: white !important;
     transform: translateY(-1px);
   }
 
@@ -113,10 +117,153 @@
 
   nav.nav-scrolled .nav-cta:hover {
     background: var(--blue-mid) !important;
-    box-shadow: 0 4px 16px rgba(26,46,122,0.28) !important;
+    box-shadow: 0 4px 18px rgba(26,46,122,0.28) !important;
   }
 
-  /* ─── HERO ─── */
+  /* ═══════════════════════════════════════
+     DROPDOWN MEGA MENU
+  ═══════════════════════════════════════ */
+  .nav-dropdown {
+    position: relative;
+  }
+
+  /* Trigger button */
+  .nav-dropdown-trigger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: color 0.15s ease, background 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-dropdown:hover .nav-dropdown-trigger,
+  .nav-dropdown-trigger:hover {
+    color: white;
+    background: rgba(255,255,255,0.06);
+  }
+
+  nav.nav-scrolled .nav-dropdown-trigger { color: var(--muted); }
+  nav.nav-scrolled .nav-dropdown:hover .nav-dropdown-trigger { color: var(--ink); background: var(--blue-pale); }
+
+  /* Chevron */
+  .nav-chevron {
+    display: inline-block;
+    width: 10px; height: 6px;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), opacity 0.15s;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
+  }
+
+  .nav-dropdown:hover .nav-chevron { transform: rotate(180deg); opacity: 1; }
+
+  /* Scrolled chevron */
+  nav.nav-scrolled .nav-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  nav.nav-scrolled .nav-dropdown:hover .nav-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230D1526' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  /* Dropdown panel */
+  .nav-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: white;
+    border: 1px solid rgba(221,227,240,0.9);
+    border-radius: 18px;
+    padding: 8px;
+    box-shadow: 0 24px 64px rgba(26,46,122,0.14), 0 4px 16px rgba(0,0,0,0.06);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.4,0,0.2,1);
+    min-width: 310px;
+    z-index: 300;
+  }
+
+  /* Invisible bridge fills the gap between trigger and panel */
+  .nav-dropdown-panel::before {
+    content: '';
+    position: absolute;
+    top: -14px; left: -16px; right: -16px;
+    height: 14px;
+  }
+
+  .nav-dropdown:hover .nav-dropdown-panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Panel items */
+  .ndi {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: background 0.12s ease, transform 0.15s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer;
+  }
+
+  .ndi:hover {
+    background: var(--blue-pale);
+    transform: translateX(3px);
+  }
+
+  .ndi-icon {
+    width: 36px; height: 36px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+    transition: background 0.12s;
+  }
+
+  .ndi:hover .ndi-icon { background: var(--blue-light); }
+
+  .ndi-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+    line-height: 1.25;
+  }
+
+  .ndi-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .nav-dropdown-sep {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 0;
+    opacity: 0.6;
+  }
+
+  /* ═══════════════════════════════════════
+     HERO
+  ═══════════════════════════════════════ */
   .hero {
     position: relative;
     overflow: hidden;
@@ -130,7 +277,6 @@
     background: var(--dark);
   }
 
-  /* Animated gradient glow */
   .hero-glow {
     position: absolute;
     inset: 0;
@@ -156,7 +302,6 @@
     }
   }
 
-  /* Grid lines */
   .hero-grid {
     position: absolute;
     inset: 0;
@@ -167,26 +312,24 @@
     mask-image: radial-gradient(ellipse 100% 85% at center 30%, black 0%, transparent 80%);
   }
 
-  /* Grain noise overlay */
   .hero-noise {
     position: absolute;
     inset: -50%;
     width: 200%; height: 200%;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-    opacity: 0.035;
+    opacity: 0.03;
     pointer-events: none;
     animation: noiseShift 0.5s steps(2) infinite;
   }
 
   @keyframes noiseShift {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(-1%, -1%); }
-    50% { transform: translate(1%, 0%); }
-    75% { transform: translate(-1%, 1%); }
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(-1%, -1%); }
+    50%  { transform: translate(1%, 0%); }
+    75%  { transform: translate(-1%, 1%); }
     100% { transform: translate(0%, -1%); }
   }
 
-  /* Bottom fade */
   .hero-fade {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -199,7 +342,7 @@
   .hero-content {
     position: relative;
     z-index: 3;
-    max-width: 900px;
+    max-width: 860px;
     width: 100%;
     padding-bottom: 100px;
   }
@@ -207,16 +350,16 @@
   .hero-tag {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.75);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.7);
     font-size: 12px;
     font-weight: 600;
     padding: 7px 16px;
     border-radius: 100px;
     margin-bottom: 36px;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.5px;
     backdrop-filter: blur(10px);
   }
 
@@ -231,17 +374,22 @@
 
   @keyframes dotPulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.75); }
+    50% { opacity: 0.4; transform: scale(0.7); }
   }
 
+  /* ── HERO h1 : DM Serif Display — élégant comme la CTA section ── */
   .hero h1 {
-    font-family: 'Unbounded', sans-serif;
-    font-size: clamp(32px, 5.2vw, 68px);
-    line-height: 1.06;
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(48px, 7.5vw, 92px);
+    line-height: 1.02;
     color: white;
     margin-bottom: 28px;
-    font-weight: 800;
-    letter-spacing: -2px;
+    font-weight: 400;
+    letter-spacing: -1.5px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
   }
 
   .gradient-text {
@@ -254,9 +402,9 @@
   .hero-sub {
     font-size: 18px;
     line-height: 1.72;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.42);
     margin-bottom: 52px;
-    max-width: 540px;
+    max-width: 520px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -286,26 +434,22 @@
     cursor: pointer;
     will-change: transform;
     transition: all 0.15s cubic-bezier(0.4,0,0.4,1);
-    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 24px rgba(0,0,0,0.28);
     letter-spacing: -0.1px;
   }
 
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-  }
-
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(0,0,0,0.3); }
   .btn-primary:active { transform: scale(0.96); }
 
   .btn-ghost {
     background: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.78);
     padding: 16px 28px;
     border-radius: 100px;
     font-size: 15px;
     font-weight: 500;
     text-decoration: none;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.10);
     transition: all 0.15s cubic-bezier(0.4,0,0.4,1);
     display: inline-flex;
     align-items: center;
@@ -315,11 +459,7 @@
     backdrop-filter: blur(8px);
   }
 
-  .btn-ghost:hover {
-    background: rgba(255,255,255,0.11);
-    border-color: rgba(255,255,255,0.18);
-    transform: translateY(-1px);
-  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.11); border-color: rgba(255,255,255,0.18); transform: translateY(-1px); }
 
   .btn-blue {
     background: var(--blue);
@@ -339,12 +479,7 @@
     will-change: transform;
   }
 
-  .btn-blue:hover {
-    background: var(--blue-mid);
-    box-shadow: 0 8px 24px rgba(26,46,122,0.30);
-    transform: translateY(-2px);
-  }
-
+  .btn-blue:hover { background: var(--blue-mid); box-shadow: 0 8px 24px rgba(26,46,122,0.30); transform: translateY(-2px); }
   .btn-blue:active { transform: scale(0.96); }
 
   .btn-outline {
@@ -364,11 +499,7 @@
     cursor: pointer;
   }
 
-  .btn-outline:hover {
-    border-color: var(--blue-mid);
-    background: var(--blue-pale);
-  }
-
+  .btn-outline:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
   .btn-outline:active { transform: scale(0.96); }
 
   /* ── HERO STATS ── */
@@ -412,24 +543,14 @@
     display: block;
   }
 
-  .stat-label {
-    font-size: 12px;
-    color: rgba(255,255,255,0.35);
-    line-height: 1.4;
-  }
-
-  .stat-ring {
-    margin-top: 10px;
-    display: flex;
-    justify-content: flex-start;
-  }
-
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.4; }
+  .stat-ring { margin-top: 10px; display: flex; }
   .stat-ring svg { transform: rotate(-90deg); }
 
   /* ── MARQUEE ── */
   .marquee-strip {
     background: var(--blue);
-    padding: 14px 0;
+    padding: 13px 0;
     overflow: hidden;
     position: relative;
     z-index: 5;
@@ -438,7 +559,7 @@
   .marquee-track {
     display: flex;
     width: max-content;
-    animation: marqueeScroll 32s linear infinite;
+    animation: marqueeScroll 34s linear infinite;
   }
 
   .marquee-track:hover { animation-play-state: paused; }
@@ -452,31 +573,25 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 0 32px;
+    padding: 0 28px;
     font-size: 13px;
     font-weight: 600;
-    color: rgba(255,255,255,0.65);
+    color: rgba(255,255,255,0.60);
     white-space: nowrap;
     flex-shrink: 0;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1px;
   }
 
   .marquee-dot {
     width: 3px; height: 3px;
-    background: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.22);
     border-radius: 50%;
     flex-shrink: 0;
   }
 
   /* ── SECTIONS ── */
-  .section {
-    padding: 100px 48px;
-  }
-
-  .section-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
+  .section { padding: 100px 48px; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
 
   .section-eyebrow {
     font-size: 11px;
@@ -516,7 +631,6 @@
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 32px 26px;
-    position: relative;
     transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
     box-shadow: 0 2px 8px rgba(26,46,122,0.04);
     will-change: transform;
@@ -543,19 +657,8 @@
     box-shadow: 0 4px 16px rgba(26,46,122,0.25);
   }
 
-  .step h3 {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--ink);
-    line-height: 1.3;
-  }
-
-  .step p {
-    font-size: 14px;
-    line-height: 1.75;
-    color: var(--muted);
-  }
+  .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--ink); line-height: 1.3; }
+  .step p { font-size: 14px; line-height: 1.75; color: var(--muted); }
 
   /* ── POURQUOI ── */
   .why-section {
@@ -575,11 +678,7 @@
     pointer-events: none;
   }
 
-  .why-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    position: relative;
-  }
+  .why-inner { max-width: 1100px; margin: 0 auto; position: relative; }
 
   .why-grid {
     display: grid;
@@ -592,11 +691,7 @@
   .why-section .section-title { color: white; }
   .why-section .section-sub { color: rgba(255,255,255,0.50); margin-bottom: 0; }
 
-  .why-points {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  .why-points { display: flex; flex-direction: column; gap: 12px; }
 
   .why-point {
     background: rgba(255,255,255,0.05);
@@ -610,35 +705,13 @@
     will-change: transform;
   }
 
-  .why-point:hover {
-    background: rgba(255,255,255,0.09);
-    border-color: rgba(255,255,255,0.14);
-  }
-
-  .why-icon {
-    font-size: 20px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .why-point h4 {
-    font-size: 15px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 4px;
-  }
-
-  .why-point p {
-    font-size: 13px;
-    color: rgba(255,255,255,0.45);
-    line-height: 1.65;
-  }
+  .why-point:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.14); }
+  .why-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .why-point h4 { font-size: 15px; font-weight: 600; color: white; margin-bottom: 4px; }
+  .why-point p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.65; }
 
   /* ── SECTEURS ── */
-  .sectors-section {
-    background: var(--blue-pale);
-    padding: 100px 48px;
-  }
+  .sectors-section { background: var(--blue-pale); padding: 100px 48px; }
 
   .sectors-grid {
     display: grid;
@@ -690,33 +763,13 @@
     mask-image: radial-gradient(ellipse 85% 85% at center, black 0%, transparent 72%);
   }
 
-  .cta-inner {
-    position: relative;
-    z-index: 3;
-    max-width: 700px;
-    margin: 0 auto;
-  }
+  .cta-inner { position: relative; z-index: 3; max-width: 700px; margin: 0 auto; }
 
   .cta-section .section-eyebrow { color: rgba(255,255,255,0.35); }
+  .cta-section .section-title { color: white; font-size: clamp(36px, 4.5vw, 58px); margin-bottom: 20px; }
+  .cta-section .section-sub { color: rgba(255,255,255,0.38); margin: 0 auto 52px; max-width: 500px; }
 
-  .cta-section .section-title {
-    color: white;
-    font-size: clamp(36px, 4.5vw, 58px);
-    margin-bottom: 20px;
-  }
-
-  .cta-section .section-sub {
-    color: rgba(255,255,255,0.40);
-    margin: 0 auto 52px;
-    max-width: 500px;
-  }
-
-  .cta-pair {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
+  .cta-pair { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
   /* ── FOOTER ── */
   footer {
@@ -728,13 +781,13 @@
     border-top: 1px solid rgba(255,255,255,0.04);
   }
 
-  /* .fade-up opacity/transform gérés exclusivement par motion.js (inline) */
+  /* .fade-up géré exclusivement par motion.js */
 
   @media (max-width: 768px) {
     nav.nav-dark-hero { padding: 0 20px; }
     .nav-links { display: none; }
     .hero { padding: 120px 20px 0; min-height: auto; }
-    .hero h1 { font-size: clamp(28px, 8vw, 44px); letter-spacing: -0.5px; }
+    .hero h1 { font-size: clamp(36px, 9vw, 52px); letter-spacing: -0.5px; }
     .hero-stats { grid-template-columns: 1fr; border-radius: 14px; }
     .hero-stats .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .section { padding: 60px 20px; }
@@ -749,39 +802,99 @@
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
-<script>
-  (function(){
-    const alreadyVisited = localStorage.getItem('aterisk_visited');
-    const user = sessionStorage.getItem('aterisk_user');
-    if(alreadyVisited || user) {
-      window.addEventListener('DOMContentLoaded', () => {
-        const bar = document.createElement('div');
-        bar.style.cssText = 'position:fixed;top:68px;left:0;right:0;z-index:99;background:#1A2E7A;color:white;padding:10px 48px;font-size:13px;display:flex;align-items:center;justify-content:space-between;animation:slideDown 0.4s ease';
-        const label = user ? 'Bon retour ! ' : 'Tu as déjà un compte ? ';
-        const dest = user ? (JSON.parse(user).role === 'mentor' ? 'dashboard-mentor.html' : 'dashboard.html') : 'login.html';
-        const btnText = user ? 'Mon espace →' : 'Se connecter →';
-        bar.innerHTML = label + '<a href="' + dest + '" style="color:white;font-weight:600;text-decoration:underline;margin-left:8px">' + btnText + '</a><button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:16px;cursor:pointer;margin-left:auto;padding:0 4px">✕</button>';
-        document.body.appendChild(bar);
-        const style = document.createElement('style');
-        style.textContent = '@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}';
-        document.head.appendChild(style);
-      });
-    }
-    localStorage.setItem('aterisk_visited', '1');
-  })();
-</script>
 
 <!-- NAV -->
 <nav class="nav-dark-hero">
   <a href="index.html" class="nav-logo">ATERISK</a>
   <div class="nav-links">
-    <a href="#comment">Comment ça marche</a>
-    <a href="#secteurs">Secteurs</a>
-    <a href="tarifs.html">Tarifs</a>
-    <a href="ressources.html">Ressources</a>
-    <a href="mapping.html">Mapping</a>
-    <a href="mentor-inscription.html">Devenir mentor</a>
-    <a href="login.html" class="nav-link-connexion">Connexion</a>
+
+    <!-- Dropdown Étudiants -->
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger">
+        Étudiants
+        <span class="nav-chevron"></span>
+      </button>
+      <div class="nav-dropdown-panel">
+        <a href="inscription.html" class="ndi">
+          <div class="ndi-icon">🎓</div>
+          <div>
+            <div class="ndi-title">Trouver mon mentor</div>
+            <div class="ndi-desc">1ère séance offerte · match personnalisé</div>
+          </div>
+        </a>
+        <a href="matching.html" class="ndi">
+          <div class="ndi-icon">🔗</div>
+          <div>
+            <div class="ndi-title">Voir les matchs</div>
+            <div class="ndi-desc">Explore les profils disponibles par secteur</div>
+          </div>
+        </a>
+        <a href="secteurs.html" class="ndi">
+          <div class="ndi-icon">🧭</div>
+          <div>
+            <div class="ndi-title">Secteurs</div>
+            <div class="ndi-desc">Marketing, Tech, Finance, RH, Juridique…</div>
+          </div>
+        </a>
+        <div class="nav-dropdown-sep"></div>
+        <a href="ressources.html" class="ndi">
+          <div class="ndi-icon">📁</div>
+          <div>
+            <div class="ndi-title">Ressources</div>
+            <div class="ndi-desc">CV, lettre de motivation, guides pratiques</div>
+          </div>
+        </a>
+        <a href="mapping.html" class="ndi">
+          <div class="ndi-icon">🗺️</div>
+          <div>
+            <div class="ndi-title">Mapping entreprises</div>
+            <div class="ndi-desc">Carte interactive des opportunités en France</div>
+          </div>
+        </a>
+        <a href="tarifs.html" class="ndi">
+          <div class="ndi-icon">💶</div>
+          <div>
+            <div class="ndi-title">Tarifs</div>
+            <div class="ndi-desc">19€/mois · commission uniquement à la réussite</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Dropdown Mentors -->
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger">
+        Mentors
+        <span class="nav-chevron"></span>
+      </button>
+      <div class="nav-dropdown-panel" style="min-width:280px">
+        <a href="mentor-inscription.html" class="ndi">
+          <div class="ndi-icon">✨</div>
+          <div>
+            <div class="ndi-title">Devenir mentor</div>
+            <div class="ndi-desc">Partage ton expérience · génère des revenus</div>
+          </div>
+        </a>
+        <a href="dashboard-mentor.html" class="ndi">
+          <div class="ndi-icon">📊</div>
+          <div>
+            <div class="ndi-title">Espace mentor</div>
+            <div class="ndi-desc">Gérer tes séances, revenus et étudiants</div>
+          </div>
+        </a>
+        <div class="nav-dropdown-sep"></div>
+        <a href="seance.html" class="ndi">
+          <div class="ndi-icon">🗓️</div>
+          <div>
+            <div class="ndi-title">Comment se passent les séances ?</div>
+            <div class="ndi-desc">30 min · rapport automatique · 70% pour toi</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <a href="tarifs.html" class="nav-link">Tarifs</a>
+    <a href="login.html" class="nav-link nav-link-connexion">Connexion</a>
     <a href="inscription.html" class="nav-cta">S'inscrire →</a>
   </div>
 </nav>
@@ -796,8 +909,8 @@
       <span class="hero-tag-dot"></span>
       Plateforme de mentorat alternance
     </div>
-    <h1>Trouve ton alternance,<br><span class="gradient-text">pas au hasard.</span></h1>
-    <p class="hero-sub">ATERISK connecte les étudiants avec des mentors qui ont déjà vécu leur recherche. 1ère séance offerte — ATERISK, à nos risques aussi.</p>
+    <h1>Trouve ton alternance,<br><em class="gradient-text">pas au hasard.</em></h1>
+    <p class="hero-sub">ATERISK connecte les étudiants avec des mentors qui ont déjà vécu leur recherche. 1ère séance offerte — à nos risques aussi.</p>
     <div class="hero-actions">
       <a href="inscription.html" class="btn-primary">Commencer — c'est gratuit →</a>
       <a href="#comment" class="btn-ghost">Comment ça marche</a>
@@ -840,7 +953,6 @@
 <!-- MARQUEE -->
 <div class="marquee-strip">
   <div class="marquee-track">
-    <!-- Contenu dupliqué pour boucle infinie -->
     <div class="marquee-item"><span>880K+ contrats alternance en 2024</span></div>
     <div class="marquee-item"><span class="marquee-dot"></span></div>
     <div class="marquee-item"><span>1ère séance offerte</span></div>
@@ -1004,7 +1116,7 @@
   <div class="hero-grid"></div>
   <div class="cta-inner">
     <div class="section-eyebrow">Prêt ?</div>
-    <h2 class="section-title" id="cta-title">1ère séance <span class="gradient-text">offerte.</span></h2>
+    <h2 class="section-title" id="cta-title">1ère séance <em class="gradient-text">offerte.</em></h2>
     <p class="section-sub">On ne prend notre part que quand tu signes ton contrat. Rejoins les étudiants qui ont arrêté d'envoyer des candidatures dans le vide.</p>
     <div class="cta-pair">
       <a href="inscription.html" class="btn-primary">Je commence — c'est gratuit →</a>
@@ -1017,17 +1129,16 @@
 <footer>
   <span style="font-family:'DM Serif Display',serif;font-size:18px;color:rgba(255,255,255,0.85);letter-spacing:1px">ATERISK</span>
   <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
-    <a href="tarifs.html" style="font-size:12px;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Tarifs</a>
-    <a href="cgu.html" style="font-size:12px;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">CGU</a>
-    <a href="cgu.html#donnees" style="font-size:12px;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Données personnelles</a>
-    <a href="cgu.html#mentions" style="font-size:12px;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Mentions légales</a>
-    <a href="mailto:hello@aterisk.fr" style="font-size:12px;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Contact</a>
+    <a href="tarifs.html" style="font-size:12px;color:rgba(255,255,255,0.28);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='rgba(255,255,255,0.65)'" onmouseout="this.style.color='rgba(255,255,255,0.28)'">Tarifs</a>
+    <a href="cgu.html" style="font-size:12px;color:rgba(255,255,255,0.28);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='rgba(255,255,255,0.65)'" onmouseout="this.style.color='rgba(255,255,255,0.28)'">CGU</a>
+    <a href="cgu.html#donnees" style="font-size:12px;color:rgba(255,255,255,0.28);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='rgba(255,255,255,0.65)'" onmouseout="this.style.color='rgba(255,255,255,0.28)'">Données personnelles</a>
+    <a href="cgu.html#mentions" style="font-size:12px;color:rgba(255,255,255,0.28);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='rgba(255,255,255,0.65)'" onmouseout="this.style.color='rgba(255,255,255,0.28)'">Mentions légales</a>
+    <a href="mailto:hello@aterisk.fr" style="font-size:12px;color:rgba(255,255,255,0.28);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='rgba(255,255,255,0.65)'" onmouseout="this.style.color='rgba(255,255,255,0.28)'">Contact</a>
   </div>
-  <p style="font-size:11px;color:rgba(255,255,255,0.18)">© 2026 ATERISK SAS</p>
+  <p style="font-size:11px;color:rgba(255,255,255,0.16)">© 2026 ATERISK SAS</p>
 </footer>
 
 <script>
-  // Stats counter
   function animateCounters() {
     document.querySelectorAll('.stat-num[data-target]').forEach(el => {
       const target = parseInt(el.dataset.target);
@@ -1055,23 +1166,13 @@
 </script>
 
 <script type="module">
-// ── HERO ENTRANCE ──────────────────────────────────────────────────────────
 const _heroEls = ['.hero-tag', '.hero h1', '.hero-sub', '.hero-actions'];
-
-_heroEls.forEach(sel => {
-  const el = document.querySelector(sel);
-  if (el) el.style.opacity = '0';
-});
+_heroEls.forEach(sel => { const el = document.querySelector(sel); if (el) el.style.opacity = '0'; });
 document.querySelectorAll('.stat-item').forEach(el => { el.style.opacity = '0'; });
 
 function _heroReveal() {
-  _heroEls.forEach(sel => {
-    const el = document.querySelector(sel);
-    if (el && el.style.opacity === '0') el.style.opacity = '';
-  });
-  document.querySelectorAll('.stat-item').forEach(el => {
-    if (el.style.opacity === '0') el.style.opacity = '';
-  });
+  _heroEls.forEach(sel => { const el = document.querySelector(sel); if (el && el.style.opacity === '0') el.style.opacity = ''; });
+  document.querySelectorAll('.stat-item').forEach(el => { if (el.style.opacity === '0') el.style.opacity = ''; });
 }
 const _safety = setTimeout(_heroReveal, 2000);
 
@@ -1079,25 +1180,21 @@ try {
   const { animate, scroll } = await import('https://cdn.jsdelivr.net/npm/motion@latest/+esm');
   clearTimeout(_safety);
 
-  animate('.hero-tag',    { opacity: [0, 1], y: [12, 0] },  { duration: 0.45, delay: 0.05 });
-  animate('.hero h1',     { opacity: [0, 1], y: [28, 0] },  { duration: 0.6,  delay: 0.18 });
-  animate('.hero-sub',    { opacity: [0, 1], y: [20, 0] },  { duration: 0.55, delay: 0.30 });
-  animate('.hero-actions',{ opacity: [0, 1], y: [16, 0] },  { duration: 0.5,  delay: 0.42 });
-
+  animate('.hero-tag',     { opacity: [0, 1], y: [10, 0] }, { duration: 0.4,  delay: 0.05 });
+  animate('.hero h1',      { opacity: [0, 1], y: [32, 0] }, { duration: 0.65, delay: 0.18 });
+  animate('.hero-sub',     { opacity: [0, 1], y: [20, 0] }, { duration: 0.55, delay: 0.32 });
+  animate('.hero-actions', { opacity: [0, 1], y: [16, 0] }, { duration: 0.5,  delay: 0.44 });
   document.querySelectorAll('.stat-item').forEach((el, i) => {
-    animate(el, { opacity: [0, 1], y: [14, 0] }, { duration: 0.45, delay: 0.54 + i * 0.08 });
+    animate(el, { opacity: [0, 1], y: [14, 0] }, { duration: 0.45, delay: 0.56 + i * 0.09 });
   });
 
-  // Nav logo scale on scroll
   const navLogo = document.querySelector('.nav-logo');
   if (navLogo) {
     scroll(({ y }) => {
-      const s = 1 - Math.min(y.progress, 1) * 0.06;
-      navLogo.style.transform = `scale(${s})`;
+      navLogo.style.transform = `scale(${1 - Math.min(y.progress, 1) * 0.06})`;
       navLogo.style.transformOrigin = 'left center';
     }, { offset: [0, 120] });
   }
-
 } catch(e) { _heroReveal(); }
 </script>
 <script type="module" src="scroll.js"></script>
