@@ -120,6 +120,15 @@
     box-shadow: 0 4px 18px rgba(26,46,122,0.28) !important;
   }
 
+  /* .dropdown-open = click/touch mirror of :hover */
+  .nav-dropdown.dropdown-open .nav-dropdown-panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .nav-dropdown.dropdown-open .nav-chevron { transform: rotate(180deg); opacity: 1; }
+  nav.nav-scrolled .nav-dropdown.dropdown-open .nav-dropdown-trigger { color: var(--ink); background: var(--blue-pale); }
+
   /* ═══════════════════════════════════════
      DROPDOWN MEGA MENU
   ═══════════════════════════════════════ */
