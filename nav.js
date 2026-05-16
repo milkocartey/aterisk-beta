@@ -1,30 +1,19 @@
 import { animate, scroll } from './motion.js';
 
-// ── BODY OPACITY FAILSAFE ─────────────────────────────────────────────────
-// If motion.js / CDN is slow, body stays at opacity:0 forever from the
-// flash-prevention CSS. Force-restore visibility within 1.2s no matter what.
-setTimeout(() => {
-  if (parseFloat(getComputedStyle(document.body).opacity) < 0.9) {
-    document.body.style.transition = 'opacity 0.3s ease';
+// ── BODY ENTER — CSS pur, aucune dépendance CDN ───────────────────────────
+// body{opacity:0;transition:none} empêche le flash. On enlève transition:none
+// puis on pose opacity:1 dans le prochain frame — le browser fait le fondu.
+requestAnimationFrame(() => {
+  document.body.style.transition = 'opacity 0.22s ease-out';
+  requestAnimationFrame(() => {
     document.body.style.opacity = '1';
-  }
-}, 1200);
+  });
+});
 
-// ── PAGE ENTER TRANSITION ─────────────────────────────────────────────────
-animate(
-  document.body,
-  { opacity: [0, 1] },
-  { duration: 0.22, easing: 'ease-out' }
-);
-
-// Animate main content panel with spring y-entrance (not the body itself)
+// Animate .main/.page-wrap avec motion.dev (non critique)
 const _main = document.querySelector('.main, .page-wrap');
 if (_main) {
-  animate(
-    _main,
-    { opacity: [0, 1], y: [24, 0] },
-    { type: 'spring', stiffness: 70, damping: 18 }
-  );
+  animate(_main, { opacity: [0, 1], y: [24, 0] }, { type: 'spring', stiffness: 70, damping: 18 });
 }
 
 // ── NAV SCROLL ────────────────────────────────────────────────────────────
@@ -54,30 +43,23 @@ if (nav) {
 }
 
 // ── DROPDOWN CLICK TOGGLE ─────────────────────────────────────────────────
-// CSS :hover handles desktop hover. JS click handles touch + keyboard.
 document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
   trigger.addEventListener('click', e => {
     e.stopPropagation();
     const dropdown = trigger.closest('.nav-dropdown');
     const isOpen = dropdown.classList.contains('dropdown-open');
-
-    // Close all open dropdowns first
-    document.querySelectorAll('.nav-dropdown.dropdown-open').forEach(d => {
-      d.classList.remove('dropdown-open');
-    });
-
+    document.querySelectorAll('.nav-dropdown.dropdown-open').forEach(d => d.classList.remove('dropdown-open'));
     if (!isOpen) dropdown.classList.add('dropdown-open');
   });
 });
 
-// Close dropdowns when clicking outside
 document.addEventListener('click', () => {
-  document.querySelectorAll('.nav-dropdown.dropdown-open').forEach(d => {
-    d.classList.remove('dropdown-open');
-  });
+  document.querySelectorAll('.nav-dropdown.dropdown-open').forEach(d => d.classList.remove('dropdown-open'));
 });
 
-// ── PAGE EXIT TRANSITION ──────────────────────────────────────────────────
+// ── PAGE EXIT — CSS pur, aucune dépendance CDN ────────────────────────────
+// On n'utilise PAS motion.dev ici — si le CDN est lent, la navigation
+// serait bloquée sur e.preventDefault(). CSS transition + setTimeout = fiable.
 document.querySelectorAll('a[href]').forEach(link => {
   const href = link.getAttribute('href');
 
@@ -93,24 +75,10 @@ document.querySelectorAll('a[href]').forEach(link => {
 
   link.addEventListener('click', e => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-
     e.preventDefault();
     const dest = link.href;
-
-    // Failsafe: navigate no matter what after 350ms
-    let done = false;
-    const go = () => { if (!done) { done = true; window.location.href = dest; } };
-
-    try {
-      animate(
-        document.body,
-        { opacity: [1, 0] },
-        { duration: 0.18, easing: 'ease-in' }
-      ).finished.then(go);
-    } catch (_) {
-      go();
-    }
-
-    setTimeout(go, 350);
+    document.body.style.transition = 'opacity 0.18s ease-in';
+    document.body.style.opacity = '0';
+    setTimeout(() => { window.location.href = dest; }, 200);
   });
 });
