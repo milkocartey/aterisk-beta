@@ -1,21 +1,32 @@
 import { animate, scroll } from './motion.js';
 
 // ── PAGE ENTER TRANSITION ─────────────────────────────────────────────────
-// body starts at opacity:0 (set in <head> style), animate in on load
+// Animate body opacity only — y-transform on body breaks position:fixed
+// (sidebar, modals) by creating a new containing block for them.
 animate(
   document.body,
-  { opacity: [0, 1], y: [10, 0] },
-  { duration: 0.3, easing: 'ease-out' }
+  { opacity: [0, 1] },
+  { duration: 0.22, easing: 'ease-out' }
 );
 
+// Animate main content panel with spring y-entrance (not the body itself)
+const _main = document.querySelector('.main, .page-wrap');
+if (_main) {
+  animate(
+    _main,
+    { opacity: [0, 1], y: [24, 0] },
+    { type: 'spring', stiffness: 70, damping: 18 }
+  );
+}
+
 // ── NAV SCROLL ────────────────────────────────────────────────────────────
-const nav = document.querySelector('nav');
+// :not(.sidebar-nav) ensures we never accidentally select the sidebar's <nav>
+// which would turn the sidebar background white on scroll.
+const nav = document.querySelector('nav:not(.sidebar-nav)');
 
 if (nav) {
   let navScrolled = false;
 
-  // scroll() fires the callback on every scroll tick.
-  // We read window.scrollY inside it for the pixel threshold.
   scroll(() => {
     const past = window.scrollY > 60;
     if (past === navScrolled) return;
@@ -38,11 +49,9 @@ if (nav) {
 }
 
 // ── PAGE EXIT TRANSITION ──────────────────────────────────────────────────
-// Intercept all internal .html links (not anchors, not external)
 document.querySelectorAll('a[href]').forEach(link => {
   const href = link.getAttribute('href');
 
-  // Skip: anchors, empty, external URLs, mailto/tel, already-handled fragments
   if (
     !href ||
     href.startsWith('#') ||
@@ -54,7 +63,6 @@ document.querySelectorAll('a[href]').forEach(link => {
   ) return;
 
   link.addEventListener('click', e => {
-    // Allow ctrl/cmd+click to open in new tab normally
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
     e.preventDefault();
@@ -62,8 +70,8 @@ document.querySelectorAll('a[href]').forEach(link => {
 
     animate(
       document.body,
-      { opacity: [1, 0], y: [0, -10] },
-      { duration: 0.22, easing: 'ease-in' }
+      { opacity: [1, 0] },
+      { duration: 0.18, easing: 'ease-in' }
     ).finished.then(() => {
       window.location.href = dest;
     });

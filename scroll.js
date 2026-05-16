@@ -20,8 +20,7 @@ setTimeout(() => {
   }
 }, 2000);
 
-// ── Helper: run callback immediately if container is already in viewport, ──
-// otherwise wait for inView() + IntersectionObserver fallback (100ms grace).
+// ── whenVisible: fires immediately if in viewport, else waits ─────────────
 function whenVisible(container, callback) {
   const rect = container.getBoundingClientRect();
   if (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) {
@@ -50,39 +49,37 @@ function whenVisible(container, callback) {
 
 // ── SECTION SCROLL ANIMATIONS ─────────────────────────────────────────────
 
-// 1. #comment — 4 .step elements, stagger
+// 1. Steps — stagger from below with spring
 const stepsContainer = document.querySelector('.steps');
 if (stepsContainer) {
   whenVisible(stepsContainer, () => {
     const steps = stepsContainer.querySelectorAll('.step');
-    const delays = [0, 0.08, 0.16, 0.24];
     steps.forEach((el, i) => {
       animate(
         el,
-        { opacity: [0, 1], y: [24, 0] },
-        { type: 'spring', stiffness: 90, damping: 20, delay: delays[i] ?? i * 0.08 }
+        { opacity: [0, 1], y: [48, 0] },
+        { type: 'spring', stiffness: 70, damping: 16, delay: i * 0.1 }
       );
     });
   });
 }
 
-// 2. .why-section — .why-point elements, stagger x slide
+// 2. Why-points — stagger from left with spring
 const whyPoints = document.querySelector('.why-points');
 if (whyPoints) {
   whenVisible(whyPoints, () => {
     const points = whyPoints.querySelectorAll('.why-point');
-    const delays = [0, 0.1, 0.18, 0.26];
     points.forEach((el, i) => {
       animate(
         el,
-        { opacity: [0, 1], x: [-20, 0] },
-        { type: 'spring', stiffness: 100, damping: 22, delay: delays[i] ?? i * 0.1 }
+        { opacity: [0, 1], x: [-32, 0] },
+        { type: 'spring', stiffness: 80, damping: 18, delay: i * 0.1 }
       );
     });
   });
 }
 
-// 3. .sectors-section — .sector-card elements, stagger scale
+// 3. Sector cards — scale + fade stagger
 const sectorsGrid = document.querySelector('.sectors-grid');
 if (sectorsGrid) {
   whenVisible(sectorsGrid, () => {
@@ -90,61 +87,61 @@ if (sectorsGrid) {
     cards.forEach((el, i) => {
       animate(
         el,
-        { opacity: [0, 1], scale: [0.95, 1] },
-        { type: 'spring', stiffness: 120, damping: 22, delay: i * 0.05 }
+        { opacity: [0, 1], scale: [0.94, 1], y: [20, 0] },
+        { type: 'spring', stiffness: 90, damping: 18, delay: i * 0.06 }
       );
     });
   });
 }
 
-// 4. .cta-section — title scale in, then btn-primary attention pulse
+// 4. CTA section — title scale-in + button pulse
 const ctaTitle = document.getElementById('cta-title');
 if (ctaTitle) {
   whenVisible(ctaTitle, () => {
     animate(
       ctaTitle,
-      { opacity: [0, 1], scale: [0.97, 1] },
-      { type: 'spring', stiffness: 80, damping: 20 }
+      { opacity: [0, 1], scale: [0.95, 1], y: [24, 0] },
+      { type: 'spring', stiffness: 70, damping: 16 }
     );
     setTimeout(() => {
       const ctaBtn = document.querySelector('.cta-section .btn-primary');
       if (ctaBtn) {
         animate(
           ctaBtn,
-          { scale: [1, 1.04, 1] },
-          { duration: 0.5, easing: 'ease-in-out' }
+          { scale: [1, 1.05, 1] },
+          { duration: 0.6, easing: 'ease-in-out' }
         );
       }
-    }, 800);
+    }, 700);
   });
 }
 
 // ── HOVER INTERACTIONS ────────────────────────────────────────────────────
 
-// .sector-card — scale + lift on hover
+// Sector cards — lift + scale
 document.querySelectorAll('.sector-card').forEach(el => {
   el.addEventListener('mouseenter', () => {
-    animate(el, { scale: 1.03, y: -4 }, { type: 'spring', stiffness: 250, damping: 22, duration: 0.25 });
+    animate(el, { scale: 1.03, y: -6 }, { type: 'spring', stiffness: 280, damping: 22 });
   });
   el.addEventListener('mouseleave', () => {
-    animate(el, { scale: 1, y: 0 }, { type: 'spring', stiffness: 250, damping: 22 });
+    animate(el, { scale: 1, y: 0 }, { type: 'spring', stiffness: 280, damping: 22 });
   });
 });
 
-// .why-point — nudge right on hover
+// Why-points — nudge right
 document.querySelectorAll('.why-point').forEach(el => {
   el.addEventListener('mouseenter', () => {
-    animate(el, { x: 6 }, { type: 'spring', stiffness: 400, damping: 30, duration: 0.2 });
+    animate(el, { x: 8 }, { type: 'spring', stiffness: 400, damping: 30 });
   });
   el.addEventListener('mouseleave', () => {
     animate(el, { x: 0 }, { type: 'spring', stiffness: 400, damping: 30 });
   });
 });
 
-// .btn-primary — scale on hover
+// Buttons — scale
 document.querySelectorAll('.btn-primary').forEach(el => {
   el.addEventListener('mouseenter', () => {
-    animate(el, { scale: 1.03 }, { type: 'spring', stiffness: 300, damping: 25 });
+    animate(el, { scale: 1.04 }, { type: 'spring', stiffness: 300, damping: 25 });
   });
   el.addEventListener('mouseleave', () => {
     animate(el, { scale: 1 }, { type: 'spring', stiffness: 300, damping: 25 });

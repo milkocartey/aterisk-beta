@@ -3,116 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ATERISK — Ton mentor idéal</title>
+<title>ATERISK — Mes mentors</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --blue: #1A2E7A;
-    --blue-mid: #2A45B0;
-    --blue-light: #E8EEF9;
-    --blue-pale: #F3F6FD;
-    --ink: #0D1526;
-    --muted: #6B7280;
-    --border: #DDE3F0;
-    --white: #FFFFFF;
-    --green: #16A34A;
-    --green-bg: #DCFCE7;
-    --amber: #92400E;
-    --amber-bg: #FEF3C7;
-    --radius: 12px;
-    --shadow: 0 4px 24px rgba(26,46,122,0.08);
+    --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
+    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --green: #16A34A; --green-bg: #DCFCE7; --amber: #92400E; --amber-bg: #FEF3C7;
+    --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
+    --sidebar: 240px;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); }
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); display: flex; min-height: 100vh; }
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 0 48px; height: 64px;
+  /* SIDEBAR */
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(13,21,38,0.4); z-index: 40; }
+  .sidebar-overlay.open { display: block; }
+  .sidebar {
+    width: var(--sidebar); background: var(--blue); position: fixed;
+    top: 0; left: 0; bottom: 0; display: flex; flex-direction: column;
+    z-index: 50; overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .sidebar-logo a { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; text-decoration: none; letter-spacing: 1px; }
+  .sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .sidebar-close { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; padding: 4px 8px; transition: color 0.2s; display: none; }
+  .sidebar-close:hover { color: white; }
+  .sidebar-user {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .user-info h4 { font-size: 13px; font-weight: 600; color: white; }
+  .user-info p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+  .token-balance {
+    margin: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 14px;
+  }
+  .token-balance .tb-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .token-balance .tb-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; line-height: 1; }
+  .token-balance .tb-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .btn-buy-tokens {
+    width: 100%; margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+    color: white; font-size: 12px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  }
+  .btn-buy-tokens:hover { background: rgba(255,255,255,0.2); }
+  .sidebar-nav { padding: 8px 12px; flex: 1; }
+  .nav-section { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 8px 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px; border-radius: 8px; cursor: pointer;
+    transition: all 0.18s; text-decoration: none; margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); }
+  .nav-item.active { background: rgba(255,255,255,0.15); }
+  .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-label { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .nav-item.active .nav-label { color: white; }
+  .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-footer a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; display: block; padding: 4px 0; transition: color 0.2s; }
+  .sidebar-footer a:hover { color: rgba(255,255,255,0.8); }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    background: white; border-bottom: 1px solid var(--border);
+    padding: 0 36px; height: 64px;
     display: flex; align-items: center; justify-content: space-between;
-    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(221,227,240,0.6);
+    position: sticky; top: 0; z-index: 40;
   }
-  .nav-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--blue); text-decoration: none; letter-spacing: 1px; }
-  .nav-right { display: flex; align-items: center; gap: 20px; }
-  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-  .nav-link:hover { color: var(--blue); }
-  .nav-cta { font-size: 13px; font-weight: 600; color: white; background: var(--blue); padding: 9px 20px; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
-  .nav-cta:hover { background: var(--blue-mid); transform: translateY(-1px); }
-  .nav-back { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-  .nav-back:hover { color: var(--blue); }
-  .nav-explore { font-size: 13px; font-weight: 500; color: var(--blue-mid); text-decoration: none; border: 1px solid var(--border); padding: 7px 16px; border-radius: 8px; transition: all 0.2s; }
-  .nav-explore:hover { background: var(--blue-light); }
-
-  /* HEADER */
-  .page-header {
-    padding: 96px 48px 40px;
-    max-width: 1100px; margin: 0 auto;
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .topbar h1 { font-size: 16px; font-weight: 600; }
+  .hamburger { background: none; border: none; font-size: 20px; cursor: pointer; padding: 6px; border-radius: 8px; color: var(--ink); transition: background 0.15s; display: none; }
+  .hamburger:hover { background: var(--blue-pale); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .token-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--blue-pale); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 500;
   }
 
+  /* CONTENT */
+  .content { padding: 32px 36px 60px; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom: 24px; }
   .match-tag {
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--green-bg); color: var(--green);
     font-size: 12px; font-weight: 600; padding: 6px 14px;
     border-radius: 20px; margin-bottom: 16px; letter-spacing: 0.5px;
   }
-
   .match-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-
   .page-header h1 {
     font-family: 'DM Serif Display', serif;
-    font-size: clamp(28px, 3.5vw, 42px);
+    font-size: clamp(24px, 3vw, 36px);
     font-weight: 400; line-height: 1.15;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
-
   .page-header h1 em { font-style: italic; color: var(--blue-mid); }
-
-  .page-header p { font-size: 16px; color: var(--muted); line-height: 1.65; max-width: 520px; }
+  .page-header p { font-size: 15px; color: var(--muted); line-height: 1.65; max-width: 520px; }
 
   /* PROFILE RECAP */
-  .profile-recap {
-    max-width: 1100px; margin: 0 auto 32px;
-    padding: 0 48px;
-  }
-
+  .profile-recap { margin-bottom: 28px; }
   .recap-card {
     background: white; border: 1px solid var(--border);
     border-radius: var(--radius); padding: 16px 20px;
     display: flex; align-items: center; gap: 20px;
     box-shadow: var(--shadow);
   }
-
   .recap-avatar {
     width: 44px; height: 44px; background: var(--blue-light);
     border-radius: 50%; display: flex; align-items: center;
     justify-content: center; font-size: 18px; flex-shrink: 0;
   }
-
   .recap-info h3 { font-size: 15px; font-weight: 600; }
   .recap-info p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-
   .recap-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
   .recap-tag {
     font-size: 12px; font-weight: 500; padding: 4px 12px;
     background: var(--blue-light); color: var(--blue-mid);
     border-radius: 20px;
   }
-
   .recap-edit { font-size: 12px; color: var(--muted); text-decoration: none; margin-left: 12px; flex-shrink: 0; transition: color 0.2s; }
   .recap-edit:hover { color: var(--blue); }
-
-  /* MAIN LAYOUT */
-  .main { max-width: 1100px; margin: 0 auto; padding: 0 48px 80px; }
 
   /* SECTION HEADER */
   .section-header {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 20px;
   }
-
   .section-header h2 { font-size: 18px; font-weight: 600; }
   .section-header p { font-size: 13px; color: var(--muted); }
 
@@ -126,423 +155,333 @@
     box-shadow: var(--shadow); transition: all 0.25s;
     cursor: pointer; position: relative;
   }
-
   .mentor-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(26,46,122,0.14); border-color: var(--blue-mid); }
-
   .mentor-card.featured { border-color: var(--blue-mid); }
-
   .card-top {
     background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
-    padding: 20px;
-    position: relative; overflow: hidden;
+    padding: 20px; position: relative; overflow: hidden;
   }
-
   .card-top::before {
-    content: '';
-    position: absolute; top: -30px; right: -30px;
-    width: 100px; height: 100px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 50%;
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 100px; height: 100px; background: rgba(255,255,255,0.06); border-radius: 50%;
   }
-
   .card-badge-row { display: flex; gap: 8px; margin-bottom: 14px; }
-
-  .level-badge {
-    font-size: 10px; font-weight: 700; padding: 3px 10px;
-    border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase;
-  }
-
+  .level-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
   .level-badge.junior { background: rgba(255,255,255,0.15); color: white; }
   .level-badge.senior { background: var(--amber-bg); color: var(--amber); }
-
-  .match-score {
-    font-size: 11px; font-weight: 600; padding: 3px 10px;
-    border-radius: 4px; background: var(--green-bg); color: var(--green);
-    margin-left: auto;
-  }
-
-  .card-avatar {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: rgba(255,255,255,0.15);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; margin-bottom: 10px;
-    border: 2px solid rgba(255,255,255,0.2);
-  }
-
+  .match-score { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: var(--green-bg); color: var(--green); margin-left: auto; }
+  .card-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 10px; border: 2px solid rgba(255,255,255,0.2); }
   .card-name { font-size: 17px; font-weight: 600; color: white; margin-bottom: 2px; }
   .card-role { font-size: 12px; color: rgba(255,255,255,0.7); }
-
   .card-body { padding: 18px 20px; }
-
   .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-  .card-tag {
-    font-size: 11px; font-weight: 500; padding: 4px 10px;
-    border-radius: 20px; background: var(--blue-light); color: var(--blue-mid);
-  }
-
+  .card-tag { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; background: var(--blue-light); color: var(--blue-mid); }
   .card-bio { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
-
   .card-meta { display: flex; gap: 16px; padding-top: 14px; border-top: 1px solid var(--border); margin-bottom: 16px; }
   .card-meta-item { display: flex; flex-direction: column; gap: 2px; }
   .card-meta-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .card-meta-val { font-size: 13px; font-weight: 600; color: var(--ink); }
-
   .card-avail { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green); font-weight: 500; }
   .card-avail::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-
-  .card-cta {
-    width: 100%; padding: 12px; background: var(--blue);
-    color: white; border: none; border-radius: 8px;
-    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-  }
-
+  .card-cta { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .card-cta:hover { background: var(--blue-mid); }
-
-  .card-cta.secondary {
-    background: transparent; color: var(--blue);
-    border: 1.5px solid var(--border);
-  }
-
+  .card-cta.secondary { background: transparent; color: var(--blue); border: 1.5px solid var(--border); }
   .card-cta.secondary:hover { border-color: var(--blue); background: var(--blue-light); }
 
   /* BEST MATCH BANNER */
-  .best-match-banner {
-    position: absolute; top: 0; right: 16px;
-    background: var(--amber-bg); color: var(--amber);
-    font-size: 10px; font-weight: 700; padding: 4px 10px;
-    border-radius: 0 0 8px 8px; letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
+  .best-match-banner { position: absolute; top: 0; right: 16px; background: var(--amber-bg); color: var(--amber); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 0 0 8px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
 
   /* EXPLORE LINK */
-  .explore-link {
-    background: white; border: 1.5px dashed var(--border);
-    border-radius: 16px; padding: 40px 20px;
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; gap: 12px; text-decoration: none;
-    transition: all 0.2s; text-align: center;
-  }
-
+  .explore-link { background: white; border: 1.5px dashed var(--border); border-radius: 16px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-decoration: none; transition: all 0.2s; text-align: center; }
   .explore-link:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
   .explore-link .e-icon { font-size: 28px; }
   .explore-link .e-title { font-size: 15px; font-weight: 600; color: var(--ink); }
   .explore-link .e-sub { font-size: 13px; color: var(--muted); }
 
   /* MODAL */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(13,21,38,0.5); z-index: 200;
-    align-items: center; justify-content: center;
-    padding: 20px;
-  }
-
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(13,21,38,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: white; border-radius: 20px;
-    width: 100%; max-width: 520px;
-    max-height: 90vh; overflow-y: auto;
-    animation: modalIn 0.25s ease;
-  }
-
+  .modal { background: white; border-radius: 20px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.25s ease; }
   @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: none; } }
-
-  .modal-top {
-    background: linear-gradient(135deg, var(--blue), var(--blue-mid));
-    padding: 28px; border-radius: 20px 20px 0 0;
-    position: relative;
-  }
-
-  .modal-close {
-    position: absolute; top: 16px; right: 16px;
-    width: 32px; height: 32px; background: rgba(255,255,255,0.15);
-    border: none; border-radius: 50%; color: white; font-size: 16px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s;
-  }
-
+  .modal-top { background: linear-gradient(135deg, var(--blue), var(--blue-mid)); padding: 28px; border-radius: 20px 20px 0 0; position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; color: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
   .modal-close:hover { background: rgba(255,255,255,0.25); }
-
   .modal-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 12px; border: 2px solid rgba(255,255,255,0.2); }
   .modal-name { font-size: 22px; font-weight: 600; color: white; margin-bottom: 4px; }
   .modal-role { font-size: 14px; color: rgba(255,255,255,0.7); }
-
   .modal-body { padding: 24px; }
   .modal-section { margin-bottom: 20px; }
   .modal-section-title { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
   .modal-section p { font-size: 14px; color: var(--muted); line-height: 1.7; }
-
   .creneaux { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .creneau {
-    padding: 10px 14px; border: 1.5px solid var(--border);
-    border-radius: 8px; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.18s; text-align: center;
-    background: white;
-  }
+  .creneau { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.18s; text-align: center; background: white; }
   .creneau:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-light); }
   .creneau.selected { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
   .creneau .c-date { font-size: 12px; font-weight: 600; }
   .creneau .c-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
   .creneau.selected .c-time { color: var(--blue-mid); }
-
-  .btn-reserver {
-    width: 100%; padding: 15px; background: var(--blue);
-    color: white; border: none; border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; margin-top: 20px;
-  }
+  .btn-reserver { width: 100%; padding: 15px; background: var(--blue); color: white; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 20px; }
   .btn-reserver:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
 
   @media (max-width: 900px) {
-    nav { padding: 0 20px; }
-    .page-header, .profile-recap, .main { padding-left: 20px; padding-right: 20px; }
     .mentors-grid { grid-template-columns: 1fr; }
+    .content { padding: 24px 20px 60px; }
+    .topbar { padding: 0 20px; }
+    .hamburger { display: flex; }
+    .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-close { display: block; }
+    .sidebar-overlay.open { display: block; }
+    .main { margin-left: 0; }
   }
-
-  /* ─── BURGER ─── */
-  .burger-btn { display:flex; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:8px; border-radius:8px; transition:background 0.15s; }
-  .burger-btn:hover { background:var(--blue-pale); }
-  .burger-btn span { display:block; width:22px; height:2px; background:var(--ink); border-radius:2px; transition:all 0.25s; }
-  /* ─── NAV SIDEBAR BLEUE ─── */
-  .nav-sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:200; }
-  .nav-sidebar-overlay.open { display:block; }
-  .nav-sidebar { position:fixed; top:0; left:0; bottom:0; width:240px; background:#1A2E7A; z-index:210; display:flex; flex-direction:column; transform:translateX(-100%); transition:transform 0.3s ease; overflow-y:auto; }
-  .nav-sidebar.open { transform:translateX(0); }
-  .ns-logo-bar { padding:24px 20px 20px; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; align-items:flex-start; justify-content:space-between; }
-  .ns-logo { font-family:'DM Serif Display',serif; font-size:20px; color:white; text-decoration:none; letter-spacing:1px; }
-  .ns-logo-wrap p { font-size:11px; color:rgba(255,255,255,0.5); margin-top:2px; }
-  .ns-close { background:none; border:none; color:rgba(255,255,255,0.5); font-size:20px; cursor:pointer; padding:4px 8px; transition:color 0.2s; line-height:1; }
-  .ns-close:hover { color:white; }
-  .ns-user { padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; gap:10px; }
-  .ns-avatar { width:36px; height:36px; background:rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
-  .ns-name { font-size:13px; font-weight:600; color:white; }
-  .ns-usub { font-size:11px; color:rgba(255,255,255,0.5); margin-top:1px; }
-  .ns-nav { padding:8px 12px; flex:1; }
-  .ns-section-label { font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); letter-spacing:1.5px; text-transform:uppercase; padding:12px 8px 6px; }
-  .ns-item { display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; text-decoration:none; color:rgba(255,255,255,0.8); font-size:13px; font-weight:500; transition:all 0.18s; margin-bottom:2px; }
-  .ns-item:hover { background:rgba(255,255,255,0.08); color:white; }
-  .ns-item.active { background:rgba(255,255,255,0.15); color:white; }
-  .ns-icon { font-size:15px; width:20px; text-align:center; flex-shrink:0; }
-  .ns-footer { padding:16px; border-top:1px solid rgba(255,255,255,0.1); }
-  .ns-footer a { font-size:12px; color:rgba(255,255,255,0.4); text-decoration:none; display:block; padding:4px 0; transition:color 0.2s; }
-  .ns-footer a:hover { color:rgba(255,255,255,0.8); }
-  @media (max-width: 768px) { .nav-right { display:none; } }
 </style>
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
 
-<div class="nav-sidebar-overlay" id="navSidebarOverlay" onclick="closeNavSidebar()"></div>
-<aside class="nav-sidebar" id="navSidebar">
-  <div class="ns-logo-bar">
-    <div class="ns-logo-wrap">
-      <a href="dashboard.html" class="ns-logo">ATERISK</a>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div>
+      <a href="dashboard.html">ATERISK</a>
       <p>Espace étudiant</p>
     </div>
-    <button class="ns-close" onclick="closeNavSidebar()">✕</button>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
   </div>
-  <div class="ns-user">
-    <div class="ns-avatar">👩‍🎓</div>
-    <div>
-      <div class="ns-name">Lola Martin</div>
-      <div class="ns-usub">BTS Commerce · Paris</div>
+  <div class="sidebar-user">
+    <div class="user-avatar">👩‍🎓</div>
+    <div class="user-info">
+      <h4>Lola Martin</h4>
+      <p>BTS Commerce · Paris</p>
     </div>
   </div>
-  <div class="ns-nav">
-    <div class="ns-section-label">Principal</div>
-    <a href="dashboard.html" class="ns-item"><span class="ns-icon">🏠</span><span>Tableau de bord</span></a>
-    <a href="matching.html" class="ns-item"><span class="ns-icon">🎯</span><span>Mes mentors</span></a>
-    <a href="secteurs.html" class="ns-item"><span class="ns-icon">🔍</span><span>Explorer</span></a>
-    <div class="ns-section-label">Mon parcours</div>
-    <a href="dashboard.html#seances" class="ns-item"><span class="ns-icon">📅</span><span>Mes séances</span></a>
-    <a href="dashboard.html#rapports" class="ns-item"><span class="ns-icon">📋</span><span>Mes rapports</span></a>
-    <a href="ressources.html" class="ns-item"><span class="ns-icon">📚</span><span>Ressources</span></a>
-    <a href="tokens.html" class="ns-item"><span class="ns-icon">🪙</span><span>Mes tokens</span></a>
-    <a href="mapping.html" class="ns-item"><span class="ns-icon">🗺️</span><span>Mapping</span></a>
+  <div class="token-balance">
+    <div class="tb-label">Mes tokens</div>
+    <div class="tb-val">3<span style="font-size:16px; opacity:0.5"> tokens</span></div>
+    <div class="tb-sub">= 3 séances junior disponibles</div>
+    <button class="btn-buy-tokens" onclick="window.location.href='tokens.html'">+ Acheter des tokens</button>
   </div>
-  <div class="ns-footer">
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="dashboard.html" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Tableau de bord</span>
+    </a>
+    <a href="matching.html" class="nav-item active">
+      <span class="nav-icon">🎯</span>
+      <span class="nav-label">Mes mentors</span>
+    </a>
+    <a href="secteurs.html" class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Explorer</span>
+    </a>
+    <div class="nav-section">Mon parcours</div>
+    <a href="dashboard.html#seances" class="nav-item">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">Mes séances</span>
+    </a>
+    <a href="dashboard.html#rapports" class="nav-item">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Mes rapports</span>
+    </a>
+    <a href="ressources.html" class="nav-item">
+      <span class="nav-icon">📚</span>
+      <span class="nav-label">Ressources</span>
+    </a>
+    <a href="tokens.html" class="nav-item">
+      <span class="nav-icon">🪙</span>
+      <span class="nav-label">Mes tokens</span>
+    </a>
+    <a href="mapping.html" class="nav-item">
+      <span class="nav-icon">🗺️</span>
+      <span class="nav-label">Mapping</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
     <a href="index.html">← Retour à l'accueil</a>
     <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
   </div>
 </aside>
 
-<nav>
-  <div style="display:flex;align-items:center;gap:10px">
-    <button class="burger-btn" id="burgerBtn" onclick="toggleBurger()" aria-label="Menu"><span></span><span></span><span></span></button>
-    <a href="dashboard.html" class="nav-logo">ATERISK</a>
-  </div>
-  <div class="nav-right">
-    <a href="dashboard.html" class="nav-link">← Mon espace</a>
-    <a href="secteurs.html" class="nav-link">Explorer</a>
-    <a href="ressources.html" class="nav-link">Ressources</a>
-    <a href="secteurs.html" class="nav-cta">Réserver une séance →</a>
-  </div>
-</nav>
-
-<!-- HEADER -->
-<div class="page-header">
-  <div class="match-tag">Matching personnalisé</div>
-  <h1>Voici tes mentors <em>idéaux</em>, Lola.</h1>
-  <p>On a sélectionné ces profils en fonction de ton secteur, de ton niveau de recherche et de tes objectifs. Tu peux aussi explorer librement par secteur.</p>
-</div>
-
-<!-- PROFILE RECAP -->
-<div class="profile-recap">
-  <div class="recap-card">
-    <div class="recap-avatar">👩‍🎓</div>
-    <div class="recap-info">
-      <h3>Lola Martin</h3>
-      <p>BTS Commerce · Paris · En cours de recherche</p>
-    </div>
-    <div class="recap-tags">
-      <span class="recap-tag">📣 Marketing</span>
-      <span class="recap-tag">💼 Commerce</span>
-      <span class="recap-tag">CV · Réseau</span>
-    </div>
-    <a href="inscription.html" class="recap-edit">Modifier →</a>
-  </div>
-</div>
-
 <!-- MAIN -->
 <div class="main">
 
-  <div class="section-header">
-    <div>
-      <h2>3 mentors sélectionnés pour toi</h2>
-      <p>Trié par pertinence — basé sur ton secteur et tes objectifs</p>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <h1>Mes mentors 🎯</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="token-pill">🪙 3 tokens</div>
     </div>
   </div>
 
-  <div class="mentors-grid">
+  <!-- CONTENT -->
+  <div class="content">
 
-    <!-- MENTOR 1 — BEST MATCH -->
-    <div class="mentor-card featured" onclick="openModal('sarah')">
-      <div class="best-match-banner">⭐ Meilleur match</div>
-      <div class="card-top">
-        <div class="card-badge-row">
-          <span class="level-badge junior">Junior</span>
-          <span class="match-score">98% compatible</span>
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="match-tag">Matching personnalisé</div>
+      <h1>Voici tes mentors <em>idéaux</em>, Lola.</h1>
+      <p>On a sélectionné ces profils en fonction de ton secteur, de ton niveau de recherche et de tes objectifs. Tu peux aussi explorer librement par secteur.</p>
+    </div>
+
+    <!-- PROFILE RECAP -->
+    <div class="profile-recap">
+      <div class="recap-card">
+        <div class="recap-avatar">👩‍🎓</div>
+        <div class="recap-info">
+          <h3>Lola Martin</h3>
+          <p>BTS Commerce · Paris · En cours de recherche</p>
         </div>
-        <div class="card-avatar">👩‍💼</div>
-        <div class="card-name">Sarah L.</div>
-        <div class="card-role">Alternante — Marketing Digital · Paris</div>
-      </div>
-      <div class="card-body">
-        <div class="card-tags">
-          <span class="card-tag">LinkedIn</span>
-          <span class="card-tag">CV</span>
-          <span class="card-tag">Candidature</span>
-          <span class="card-tag">Marketing digital</span>
+        <div class="recap-tags">
+          <span class="recap-tag">📣 Marketing</span>
+          <span class="recap-tag">💼 Commerce</span>
+          <span class="recap-tag">CV · Réseau</span>
         </div>
-        <p class="card-bio">En alternance chez une agence parisienne depuis 8 mois. A passé par la même galère que toi — 0 réponse pendant 3 semaines avant de trouver la bonne méthode.</p>
-        <div class="card-meta">
-          <div class="card-meta-item">
-            <span class="card-meta-label">Séance</span>
-            <span class="card-meta-val">14€</span>
-          </div>
-          <div class="card-meta-item">
-            <span class="card-meta-label">Avis</span>
-            <span class="card-meta-val">★ 4.9 (23)</span>
-          </div>
-          <div class="card-meta-item">
-            <span class="card-meta-label">Placés</span>
-            <span class="card-meta-val">12 étudiants</span>
-          </div>
-        </div>
-        <div class="card-avail" style="margin-bottom:12px">Disponible dès demain</div>
-        <button class="card-cta" onclick="openModal('sarah'); event.stopPropagation()">Réserver ma séance →</button>
+        <a href="inscription.html" class="recap-edit">Modifier →</a>
       </div>
     </div>
 
-    <!-- MENTOR 2 -->
-    <div class="mentor-card" onclick="openModal('thomas')">
-      <div class="card-top">
-        <div class="card-badge-row">
-          <span class="level-badge senior">Senior</span>
-          <span class="match-score">91% compatible</span>
-        </div>
-        <div class="card-avatar">👨‍💼</div>
-        <div class="card-name">Thomas R.</div>
-        <div class="card-role">Manager Commercial · Lyon (remote OK)</div>
-      </div>
-      <div class="card-body">
-        <div class="card-tags">
-          <span class="card-tag">Réseau</span>
-          <span class="card-tag">Entretien</span>
-          <span class="card-tag">Stratégie</span>
-          <span class="card-tag">Commerce B2B</span>
-        </div>
-        <p class="card-bio">7 ans en commerce B2B, a recruté et encadré des alternants. Expert du marché caché et de l'approche directe entreprises.</p>
-        <div class="card-meta">
-          <div class="card-meta-item">
-            <span class="card-meta-label">Séance</span>
-            <span class="card-meta-val">22€</span>
-          </div>
-          <div class="card-meta-item">
-            <span class="card-meta-label">Avis</span>
-            <span class="card-meta-val">★ 4.8 (41)</span>
-          </div>
-          <div class="card-meta-item">
-            <span class="card-meta-label">Placés</span>
-            <span class="card-meta-val">28 étudiants</span>
-          </div>
-        </div>
-        <div class="card-avail" style="margin-bottom:12px">Disponible cette semaine</div>
-        <button class="card-cta" onclick="openModal('thomas'); event.stopPropagation()">Réserver ma séance →</button>
+    <div class="section-header">
+      <div>
+        <h2>3 mentors sélectionnés pour toi</h2>
+        <p>Trié par pertinence — basé sur ton secteur et tes objectifs</p>
       </div>
     </div>
 
-    <!-- MENTOR 3 -->
-    <div class="mentor-card" onclick="openModal('ines')">
-      <div class="card-top">
-        <div class="card-badge-row">
-          <span class="level-badge junior">Junior</span>
-          <span class="match-score">86% compatible</span>
+    <div class="mentors-grid">
+
+      <!-- MENTOR 1 — BEST MATCH -->
+      <div class="mentor-card featured" onclick="openModal('sarah')">
+        <div class="best-match-banner">⭐ Meilleur match</div>
+        <div class="card-top">
+          <div class="card-badge-row">
+            <span class="level-badge junior">Junior</span>
+            <span class="match-score">98% compatible</span>
+          </div>
+          <div class="card-avatar">👩‍💼</div>
+          <div class="card-name">Sarah L.</div>
+          <div class="card-role">Alternante — Marketing Digital · Paris</div>
         </div>
-        <div class="card-avatar">👩‍🎨</div>
-        <div class="card-name">Inès M.</div>
-        <div class="card-role">Alternante — Communication · Bordeaux</div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag">LinkedIn</span>
+            <span class="card-tag">CV</span>
+            <span class="card-tag">Candidature</span>
+            <span class="card-tag">Marketing digital</span>
+          </div>
+          <p class="card-bio">En alternance chez une agence parisienne depuis 8 mois. A passé par la même galère que toi — 0 réponse pendant 3 semaines avant de trouver la bonne méthode.</p>
+          <div class="card-meta">
+            <div class="card-meta-item">
+              <span class="card-meta-label">Séance</span>
+              <span class="card-meta-val">14€</span>
+            </div>
+            <div class="card-meta-item">
+              <span class="card-meta-label">Avis</span>
+              <span class="card-meta-val">★ 4.9 (23)</span>
+            </div>
+            <div class="card-meta-item">
+              <span class="card-meta-label">Placés</span>
+              <span class="card-meta-val">12 étudiants</span>
+            </div>
+          </div>
+          <div class="card-avail" style="margin-bottom:12px">Disponible dès demain</div>
+          <button class="card-cta" onclick="openModal('sarah'); event.stopPropagation()">Réserver ma séance →</button>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="card-tags">
-          <span class="card-tag">LM</span>
-          <span class="card-tag">Portfolio</span>
-          <span class="card-tag">Com' événementielle</span>
+
+      <!-- MENTOR 2 -->
+      <div class="mentor-card" onclick="openModal('thomas')">
+        <div class="card-top">
+          <div class="card-badge-row">
+            <span class="level-badge senior">Senior</span>
+            <span class="match-score">91% compatible</span>
+          </div>
+          <div class="card-avatar">👨‍💼</div>
+          <div class="card-name">Thomas R.</div>
+          <div class="card-role">Manager Commercial · Lyon (remote OK)</div>
         </div>
-        <p class="card-bio">Alternante en agence de communication événementielle. Spécialiste de la lettre de motivation percutante et du pitch de 2 minutes.</p>
-        <div class="card-meta">
-          <div class="card-meta-item">
-            <span class="card-meta-label">Séance</span>
-            <span class="card-meta-val">14€</span>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag">Réseau</span>
+            <span class="card-tag">Entretien</span>
+            <span class="card-tag">Stratégie</span>
+            <span class="card-tag">Commerce B2B</span>
           </div>
-          <div class="card-meta-item">
-            <span class="card-meta-label">Avis</span>
-            <span class="card-meta-val">★ 4.7 (17)</span>
+          <p class="card-bio">7 ans en commerce B2B, a recruté et encadré des alternants. Expert du marché caché et de l'approche directe entreprises.</p>
+          <div class="card-meta">
+            <div class="card-meta-item">
+              <span class="card-meta-label">Séance</span>
+              <span class="card-meta-val">22€</span>
+            </div>
+            <div class="card-meta-item">
+              <span class="card-meta-label">Avis</span>
+              <span class="card-meta-val">★ 4.8 (41)</span>
+            </div>
+            <div class="card-meta-item">
+              <span class="card-meta-label">Placés</span>
+              <span class="card-meta-val">28 étudiants</span>
+            </div>
           </div>
-          <div class="card-meta-item">
-            <span class="card-meta-label">Placés</span>
-            <span class="card-meta-val">8 étudiants</span>
-          </div>
+          <div class="card-avail" style="margin-bottom:12px">Disponible cette semaine</div>
+          <button class="card-cta" onclick="openModal('thomas'); event.stopPropagation()">Réserver ma séance →</button>
         </div>
-        <div class="card-avail" style="margin-bottom:12px">Disponible cette semaine</div>
-        <button class="card-cta secondary" onclick="openModal('ines'); event.stopPropagation()">Voir le profil</button>
       </div>
+
+      <!-- MENTOR 3 -->
+      <div class="mentor-card" onclick="openModal('ines')">
+        <div class="card-top">
+          <div class="card-badge-row">
+            <span class="level-badge junior">Junior</span>
+            <span class="match-score">86% compatible</span>
+          </div>
+          <div class="card-avatar">👩‍🎨</div>
+          <div class="card-name">Inès M.</div>
+          <div class="card-role">Alternante — Communication · Bordeaux</div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="card-tag">LM</span>
+            <span class="card-tag">Portfolio</span>
+            <span class="card-tag">Com' événementielle</span>
+          </div>
+          <p class="card-bio">Alternante en agence de communication événementielle. Spécialiste de la lettre de motivation percutante et du pitch de 2 minutes.</p>
+          <div class="card-meta">
+            <div class="card-meta-item">
+              <span class="card-meta-label">Séance</span>
+              <span class="card-meta-val">14€</span>
+            </div>
+            <div class="card-meta-item">
+              <span class="card-meta-label">Avis</span>
+              <span class="card-meta-val">★ 4.7 (17)</span>
+            </div>
+            <div class="card-meta-item">
+              <span class="card-meta-label">Placés</span>
+              <span class="card-meta-val">8 étudiants</span>
+            </div>
+          </div>
+          <div class="card-avail" style="margin-bottom:12px">Disponible cette semaine</div>
+          <button class="card-cta secondary" onclick="openModal('ines'); event.stopPropagation()">Voir le profil</button>
+        </div>
+      </div>
+
     </div>
 
-  </div>
+    <!-- EXPLORER LIEN -->
+    <div style="text-align:center; margin-bottom: 20px;">
+      <p style="font-size:14px; color:var(--muted)">Ces profils ne te conviennent pas ? Tu peux chercher toi-même.</p>
+    </div>
+    <a href="secteurs.html" class="explore-link">
+      <div class="e-icon">🔍</div>
+      <div class="e-title">Explorer tous les mentors par secteur</div>
+      <div class="e-sub">Marketing, Commerce, Tech, RH, Finance et plus encore</div>
+    </a>
 
-  <!-- EXPLORER LIEN -->
-  <div style="text-align:center; margin-bottom: 20px;">
-    <p style="font-size:14px; color:var(--muted)">Ces profils ne te conviennent pas ? Tu peux chercher toi-même.</p>
-  </div>
-  <a href="secteurs.html" class="explore-link">
-    <div class="e-icon">🔍</div>
-    <div class="e-title">Explorer tous les mentors par secteur</div>
-    <div class="e-sub">Marketing, Commerce, Tech, RH, Finance et plus encore</div>
-  </a>
-
-</div>
+  </div><!-- /content -->
+</div><!-- /main -->
 
 <!-- MODAL SARAH -->
 <div class="modal-overlay" id="modal-sarah">
@@ -704,28 +643,34 @@
 </div>
 
 <script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+
   function openModal(id) {
     document.getElementById('modal-' + id).classList.add('open');
     document.body.style.overflow = 'hidden';
   }
-
   function closeModal(id) {
     document.getElementById('modal-' + id).classList.remove('open');
     document.body.style.overflow = '';
   }
-
   function selectCreneau(el) {
     el.closest('.creneaux').querySelectorAll('.creneau').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
   }
-
   function reserver() {
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
     document.body.style.overflow = '';
     window.location.href = 'dashboard.html';
   }
-
-  // Close on overlay click
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) {
@@ -734,17 +679,6 @@
       }
     });
   });
-
-  function toggleBurger() {
-    const open = document.getElementById('navSidebar').classList.toggle('open');
-    document.getElementById('navSidebarOverlay').classList.toggle('open', open);
-  }
-  function closeNavSidebar() {
-    document.getElementById('navSidebar').classList.remove('open');
-    document.getElementById('navSidebarOverlay').classList.remove('open');
-  }
-  // Active nav item
-  (function(){ const p = location.pathname.split('/').pop(); document.querySelectorAll('.ns-item').forEach(a => { if(a.getAttribute('href') === p) a.classList.add('active'); }); })();
 </script>
 <script src="matching-animations.js"></script>
 <script type="module" src="nav.js"></script>

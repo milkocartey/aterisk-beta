@@ -1,7 +1,5 @@
 // motion.js — ATERISK
-// Import STATIQUE (pas de top-level await) pour ne pas bloquer nav.js.
-// nav.js importe depuis ce fichier → il doit s'exécuter dès que le CDN répond,
-// pas être bloqué par un await en attente.
+// Static import (no top-level await) so nav.js is never blocked.
 
 import { animate, inView, scroll } from 'https://cdn.jsdelivr.net/npm/motion@latest/+esm';
 
@@ -9,9 +7,7 @@ const prefersMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').mat
 const isDesktop     = !window.matchMedia('(max-width: 768px)').matches;
 
 // ── Nuclear fallback 1500ms ───────────────────────────────────────────────────
-// JAMAIS annulé. Dernier filet absolu : si un .fade-up a encore opacity:0 en
-// inline style après 1500ms, on le force visible. No-op si l'animation a tourné
-// (l'inline style a été supprimé par removeProperty dans le onComplete).
+// NEVER cleared. Forces visibility if animation stalled for any reason.
 setTimeout(() => {
   document.querySelectorAll('.fade-up').forEach(el => {
     if (el.style.opacity === '0') {
@@ -22,44 +18,41 @@ setTimeout(() => {
 }, 1500);
 
 // ── Animations .fade-up ───────────────────────────────────────────────────────
-// Le CSS ne doit PAS avoir opacity:0 sur .fade-up (source unique = inline JS).
-if (prefersMotion && isDesktop) {
+// Source of truth for opacity/transform is always inline JS (never CSS).
+if (prefersMotion) {
   const _animated = new Set();
 
   document.querySelectorAll('.fade-up').forEach(el => {
-    // Masquage inline (le CDN est déjà chargé ici — static import)
     el.style.opacity   = '0';
-    el.style.transform = 'translateY(32px)';
+    el.style.transform = 'translateY(40px)';
 
     function _animateEl() {
       if (_animated.has(el)) return;
       _animated.add(el);
       animate(
         el,
-        { opacity: 1, y: 0 },
-        { type: 'spring', stiffness: 80, damping: 18 }
+        { opacity: [0, 1], y: [40, 0] },
+        { type: 'spring', stiffness: 60, damping: 15 }
       ).finished.then(() => {
-        // Nettoie les inline styles après animation pour ne pas bloquer
-        // d'autres effets CSS/JS ultérieurs.
         el.style.removeProperty('opacity');
         el.style.removeProperty('transform');
       });
     }
 
-    // Déjà dans le viewport (95% de la hauteur) → animation immédiate
+    // Already visible: animate immediately
     if (el.getBoundingClientRect().top < window.innerHeight * 0.95) {
       _animateEl();
       return;
     }
 
-    // Double filet : inView Motion + IntersectionObserver de secours
+    // Dual safety: inView + IntersectionObserver (100ms grace)
     inView(el, () => _animateEl(), { amount: 0.05 });
 
     const _io = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         _io.disconnect();
-        setTimeout(() => _animateEl(), 100); // 100ms de grâce pour inView
+        setTimeout(() => _animateEl(), 100);
       });
     }, { threshold: 0.05 });
     _io.observe(el);
