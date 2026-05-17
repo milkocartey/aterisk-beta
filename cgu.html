@@ -4,54 +4,114 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — CGU & Mentions légales</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
+:root{
+  --blue:#1A2E7A;--blue-mid:#2A45B0;--blue-light:#E8EEF9;--blue-pale:#F3F6FD;
+  --ink:#0D1526;--muted:#6B7280;--border:#DDE3F0;--white:#FFFFFF;--dark:#030712;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;color:#111827;background:#F9FAFB;}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(221,227,240,0.6);}
-.nav-logo{font-family:'DM Serif Display',serif;font-size:20px;color:#1A2E7A;text-decoration:none;letter-spacing:1px;}
-.nav-back{font-size:13px;color:#6B7280;text-decoration:none;transition:color 0.2s;}
-.nav-back:hover{color:#1A2E7A;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;color:var(--ink);background:#F9FAFB;overflow-x:hidden;}
 
-.layout{max-width:1000px;margin:0 auto;padding:88px 24px 80px;display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start;}
+/* ═══════════════════════════════════════
+   NAV — dark hero transparent → scrolled white
+═══════════════════════════════════════ */
+nav.nav-dark-hero{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;background:transparent;border-bottom:1px solid transparent;transition:background 0.3s ease,border-color 0.3s ease,box-shadow 0.3s ease;}
+nav.nav-dark-hero.nav-scrolled{background:rgba(255,255,255,0.97);border-bottom-color:rgba(221,227,240,0.7);box-shadow:0 1px 32px rgba(26,46,122,0.08);backdrop-filter:blur(20px);}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:20px;color:white;letter-spacing:1px;text-decoration:none;transition:color 0.3s ease;flex-shrink:0;}
+nav.nav-scrolled .nav-logo{color:var(--blue);}
+.nav-links{display:flex;align-items:center;gap:4px;}
+.nav-link{font-size:14px;font-weight:500;color:rgba(255,255,255,0.6);text-decoration:none;padding:8px 14px;border-radius:8px;transition:color 0.15s ease,background 0.15s ease;white-space:nowrap;}
+.nav-link:hover{color:white;background:rgba(255,255,255,0.06);}
+nav.nav-scrolled .nav-link{color:var(--muted);}
+nav.nav-scrolled .nav-link:hover{color:var(--ink);background:var(--blue-pale);}
+.nav-link-connexion{color:rgba(255,255,255,0.9)!important;font-weight:600!important;}
+nav.nav-scrolled .nav-link-connexion{color:var(--blue)!important;}
+.nav-cta{background:rgba(255,255,255,0.12)!important;color:white!important;padding:9px 20px;border-radius:100px;font-weight:700!important;font-size:13px!important;transition:all 0.15s cubic-bezier(0.4,0,0.4,1)!important;border:1px solid rgba(255,255,255,0.18)!important;white-space:nowrap;margin-left:6px;text-decoration:none;}
+.nav-cta:hover{background:rgba(255,255,255,0.2)!important;transform:translateY(-1px);}
+nav.nav-scrolled .nav-cta{background:var(--blue)!important;color:white!important;border-color:transparent!important;}
+nav.nav-scrolled .nav-cta:hover{background:var(--blue-mid)!important;box-shadow:0 4px 18px rgba(26,46,122,0.28)!important;}
+.nav-dropdown{position:relative;}
+.nav-dropdown.dropdown-open .nav-dropdown-panel{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+.nav-dropdown.dropdown-open .nav-chevron{transform:rotate(180deg);opacity:1;}
+nav.nav-scrolled .nav-dropdown.dropdown-open .nav-dropdown-trigger{color:var(--ink);background:var(--blue-pale);}
+.nav-dropdown-trigger{background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;transition:color 0.15s ease,background 0.15s ease;white-space:nowrap;}
+.nav-dropdown:hover .nav-dropdown-trigger,.nav-dropdown-trigger:hover{color:white;background:rgba(255,255,255,0.06);}
+nav.nav-scrolled .nav-dropdown-trigger{color:var(--muted);}
+nav.nav-scrolled .nav-dropdown:hover .nav-dropdown-trigger{color:var(--ink);background:var(--blue-pale);}
+.nav-chevron{display:inline-block;width:10px;height:6px;flex-shrink:0;opacity:0.6;transition:transform 0.2s cubic-bezier(0.4,0,0.2,1),opacity 0.15s;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;background-size:contain;}
+.nav-dropdown:hover .nav-chevron{transform:rotate(180deg);opacity:1;}
+nav.nav-scrolled .nav-chevron{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");}
+nav.nav-scrolled .nav-dropdown:hover .nav-chevron{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230D1526' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");}
+.nav-dropdown-panel{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(-8px);background:white;border:1px solid rgba(221,227,240,0.9);border-radius:18px;padding:8px;box-shadow:0 24px 64px rgba(26,46,122,0.14),0 4px 16px rgba(0,0,0,0.06);opacity:0;pointer-events:none;transition:opacity 0.15s ease,transform 0.2s cubic-bezier(0.4,0,0.2,1);min-width:310px;z-index:300;}
+.nav-dropdown-panel::before{content:'';position:absolute;top:-14px;left:-16px;right:-16px;height:14px;}
+.nav-dropdown:hover .nav-dropdown-panel{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+.ndi{display:flex;align-items:flex-start;gap:14px;padding:11px 12px;border-radius:12px;text-decoration:none;color:var(--ink);transition:background 0.12s ease,transform 0.15s cubic-bezier(0.4,0,0.2,1);cursor:pointer;}
+.ndi:hover{background:var(--blue-pale);transform:translateX(3px);}
+.ndi-icon{width:36px;height:36px;background:var(--blue-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background 0.12s;}
+.ndi-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;line-height:1.25;}
+.ndi-desc{font-size:12px;color:var(--muted);line-height:1.4;}
+.nav-dropdown-sep{height:1px;background:var(--border);margin:6px 0;opacity:0.6;}
+
+/* ═══════════════════════════════════════
+   DARK HERO DOC HEADER
+═══════════════════════════════════════ */
+.doc-hero{background:#030712;padding:120px 48px 64px;text-align:center;position:relative;overflow:hidden;}
+.doc-hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(42,69,176,0.45) 0%,transparent 65%);}
+.doc-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.035) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 100% 85% at center,black 0%,transparent 80%);}
+.doc-hero-inner{position:relative;z-index:1;max-width:600px;margin:0 auto;}
+.doc-hero h1{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,52px);color:white;font-weight:400;margin:16px 0 12px;letter-spacing:-1px;}
+.doc-hero h1 em{font-style:italic;}
+.doc-hero p{font-size:15px;color:rgba(255,255,255,0.45);}
+.hero-tag{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;padding:7px 16px;border-radius:100px;}
+.hero-tag-dot{width:6px;height:6px;background:#60A5FA;border-radius:50%;animation:dotPulse 2.2s ease-in-out infinite;}
+.gradient-text{background:linear-gradient(135deg,#93C5FD 0%,#60A5FA 45%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.layout{max-width:1040px;margin:0 auto;padding:56px 24px 96px;display:grid;grid-template-columns:220px 1fr;gap:52px;align-items:start;}
 
 /* SIDEBAR TOC */
-.toc{position:sticky;top:80px;}
-.toc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#6B7280;margin-bottom:12px;}
+.toc{position:sticky;top:88px;}
+.toc-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:12px;}
 .toc-links{display:flex;flex-direction:column;gap:2px;}
-.toc-link{font-size:13px;color:#6B7280;text-decoration:none;padding:6px 10px;border-radius:6px;transition:all 0.15s;border-left:2px solid transparent;}
-.toc-link:hover{color:#1A2E7A;background:#EEF2FB;}
-.toc-link.active{color:#1A2E7A;font-weight:600;border-left-color:#2A45B0;background:#EEF2FB;}
+.toc-link{font-size:13px;color:var(--muted);text-decoration:none;padding:6px 10px 6px 12px;border-radius:0 6px 6px 0;transition:all 0.15s;border-left:2px solid transparent;}
+.toc-link:hover{color:var(--blue);background:var(--blue-pale);}
+.toc-link.active{color:var(--blue);font-weight:600;border-left:2px solid var(--blue-mid);background:var(--blue-pale);}
 
 /* CONTENT */
-.doc-header{margin-bottom:40px;}
-.doc-header h1{font-family:'DM Serif Display',serif;font-size:36px;font-weight:400;margin-bottom:10px;}
-.doc-header .meta{font-size:13px;color:#6B7280;display:flex;gap:20px;flex-wrap:wrap;}
-.doc-header .meta span{display:flex;align-items:center;gap:5px;}
-
-.section{margin-bottom:40px;scroll-margin-top:80px;}
-.section h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:#1A2E7A;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #E8EEF9;}
-.section h3{font-size:15px;font-weight:600;color:#111827;margin:16px 0 8px;}
-.section p{font-size:14px;color:#374151;line-height:1.75;margin-bottom:10px;}
-.section ul{font-size:14px;color:#374151;line-height:1.75;margin-bottom:10px;padding-left:20px;}
-.section ul li{margin-bottom:5px;}
-.section a{color:#2A45B0;text-decoration:none;}
+.section{margin-bottom:44px;scroll-margin-top:88px;}
+.section h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--blue);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--blue-light);}
+.section h3{font-size:14px;font-weight:600;color:var(--ink);margin:18px 0 8px;letter-spacing:-0.1px;}
+.section p{font-size:14px;color:#374151;line-height:1.8;margin-bottom:10px;}
+.section ul{font-size:14px;color:#374151;line-height:1.8;margin-bottom:10px;padding-left:20px;}
+.section ul li{margin-bottom:6px;}
+.section a{color:var(--blue-mid);text-decoration:none;}
 .section a:hover{text-decoration:underline;}
 
-.highlight-box{background:#EEF2FB;border-left:3px solid #2A45B0;border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13px;color:#374151;line-height:1.6;}
-.warning-box{background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13px;color:#374151;line-height:1.6;}
+.highlight-box{background:var(--blue-pale);border-left:3px solid var(--blue-mid);box-shadow:inset -1px 0 0 rgba(42,69,176,0.08),-2px 0 0 rgba(42,69,176,0.18);border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0;font-size:13px;color:#374151;line-height:1.65;}
+.warning-box{background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0;font-size:13px;color:#374151;line-height:1.65;}
 
-table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;}
-th{background:#F3F4F6;padding:10px 14px;text-align:left;font-weight:600;border:1px solid #E5E7EB;}
-td{padding:10px 14px;border:1px solid #E5E7EB;color:#374151;vertical-align:top;}
-tr:nth-child(even) td{background:#FAFAFA;}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;border-radius:10px;overflow:hidden;}
+th{background:var(--blue-pale);padding:10px 14px;text-align:left;font-weight:600;color:var(--blue);border:1px solid var(--border);}
+td{padding:10px 14px;border:1px solid var(--border);color:#374151;vertical-align:top;}
+tr:nth-child(even) td{background:#FAFBFF;}
 
-.back-top{display:inline-block;margin-top:8px;font-size:12px;color:#6B7280;text-decoration:none;cursor:pointer;}
-.back-top:hover{color:#1A2E7A;}
+.back-top{display:inline-block;margin-top:8px;font-size:12px;color:var(--muted);text-decoration:none;cursor:pointer;}
+.back-top:hover{color:var(--blue);}
+
+/* FOOTER */
+.doc-footer{background:#030712;padding:32px 48px;text-align:center;font-size:12px;color:rgba(255,255,255,0.3);border-top:1px solid rgba(255,255,255,0.06);}
+.doc-footer a{color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.15s;}
+.doc-footer a:hover{color:rgba(255,255,255,0.7);}
 
 @media(max-width:768px){
-  nav{padding:0 20px;}
-  .layout{grid-template-columns:1fr;padding:24px 20px 60px;}
+  nav.nav-dark-hero{padding:0 20px;}
+  .doc-hero{padding:100px 24px 48px;}
+  .layout{grid-template-columns:1fr;padding:32px 20px 60px;}
   .toc{display:none;}
 }
 </style>
@@ -59,13 +119,43 @@ tr:nth-child(even) td{background:#FAFAFA;}
 </head>
 <body>
 
-<nav>
+<nav class="nav-dark-hero">
   <a href="index.html" class="nav-logo">ATERISK</a>
-  <div style="display:flex;align-items:center;gap:16px">
-    <a href="tarifs.html" class="nav-back">Tarifs</a>
-    <a href="index.html" class="nav-back">← Accueil</a>
+  <div class="nav-links">
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger">Étudiants <span class="nav-chevron"></span></button>
+      <div class="nav-dropdown-panel">
+        <a href="inscription.html" class="ndi"><div class="ndi-icon">🎓</div><div><div class="ndi-title">Trouver mon mentor</div><div class="ndi-desc">1ère séance offerte · match personnalisé</div></div></a>
+        <a href="matching.html" class="ndi"><div class="ndi-icon">🔗</div><div><div class="ndi-title">Voir les matchs</div><div class="ndi-desc">Explore les profils disponibles par secteur</div></div></a>
+        <a href="secteurs.html" class="ndi"><div class="ndi-icon">🧭</div><div><div class="ndi-title">Secteurs</div><div class="ndi-desc">Marketing, Tech, Finance, RH, Juridique…</div></div></a>
+        <div class="nav-dropdown-sep"></div>
+        <a href="ressources.html" class="ndi"><div class="ndi-icon">📁</div><div><div class="ndi-title">Ressources</div><div class="ndi-desc">CV, lettre de motivation, guides pratiques</div></div></a>
+        <a href="tarifs.html" class="ndi"><div class="ndi-icon">💶</div><div><div class="ndi-title">Tarifs</div><div class="ndi-desc">19€/mois · commission uniquement à la réussite</div></div></a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger">Mentors <span class="nav-chevron"></span></button>
+      <div class="nav-dropdown-panel" style="min-width:280px">
+        <a href="mentor-inscription.html" class="ndi"><div class="ndi-icon">✨</div><div><div class="ndi-title">Devenir mentor</div><div class="ndi-desc">Partage ton expérience · génère des revenus</div></div></a>
+        <a href="dashboard-mentor.html" class="ndi"><div class="ndi-icon">📊</div><div><div class="ndi-title">Espace mentor</div><div class="ndi-desc">Gérer tes séances, revenus et étudiants</div></div></a>
+      </div>
+    </div>
+    <a href="tarifs.html" class="nav-link">Tarifs</a>
+    <a href="login.html" class="nav-link nav-link-connexion">Connexion</a>
+    <a href="inscription.html" class="nav-cta">S'inscrire →</a>
   </div>
 </nav>
+
+<!-- DARK HERO -->
+<div class="doc-hero">
+  <div class="doc-hero-glow"></div>
+  <div class="doc-hero-grid"></div>
+  <div class="doc-hero-inner">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Documentation légale</div>
+    <h1>CGU & Mentions <em class="gradient-text">légales.</em></h1>
+    <p>Dernière mise à jour : 21 mars 2026 · Version 1.0 · Droit français applicable</p>
+  </div>
+</div>
 
 <div class="layout">
 
@@ -91,14 +181,6 @@ tr:nth-child(even) td{background:#FAFAFA;}
 
   <!-- CONTENT -->
   <main>
-    <div class="doc-header">
-      <h1>CGU & Mentions légales</h1>
-      <div class="meta">
-        <span>📅 Dernière mise à jour : 21 mars 2026</span>
-        <span>🔖 Version 1.0</span>
-        <span>🇫🇷 Droit français applicable</span>
-      </div>
-    </div>
 
     <!-- 1. MENTIONS -->
     <div class="section" id="mentions">
@@ -325,11 +407,35 @@ tr:nth-child(even) td{background:#FAFAFA;}
     </div>
 
   </main>
+</div>
 
-  <footer style="text-align:center;padding:32px 20px;font-size:12px;color:#9CA3AF;border-top:1px solid #DDE3F0;">
-    © 2026 ATERISK SAS — Tous droits réservés · <a href="index.html" style="color:#6B7280">Accueil</a> · <a href="tarifs.html" style="color:#6B7280">Tarifs</a> · <a href="login.html" style="color:#6B7280">Connexion</a>
-  </footer>
+<footer class="doc-footer">
+  © 2026 ATERISK SAS — Tous droits réservés &nbsp;·&nbsp;
+  <a href="index.html">Accueil</a> &nbsp;·&nbsp;
+  <a href="tarifs.html">Tarifs</a> &nbsp;·&nbsp;
+  <a href="login.html">Connexion</a>
+</footer>
 
+<script>
+function setActive(el){
+  document.querySelectorAll('.toc-link').forEach(l=>l.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Scroll spy
+const sections=document.querySelectorAll('.section[id]');
+const tocLinks=document.querySelectorAll('.toc-link');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      tocLinks.forEach(l=>l.classList.remove('active'));
+      const active=document.querySelector('.toc-link[href="#'+e.target.id+'"]');
+      if(active)active.classList.add('active');
+    }
+  });
+},{rootMargin:'-80px 0px -60% 0px'});
+sections.forEach(s=>observer.observe(s));
+</script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
 </body>

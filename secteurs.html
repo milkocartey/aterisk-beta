@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Explorer par secteur</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
-    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF; --dark: #030712;
     --green: #16A34A; --green-bg: #DCFCE7; --amber: #92400E; --amber-bg: #FEF3C7;
     --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
     --sidebar: 240px;
@@ -20,7 +20,12 @@
   /* SIDEBAR */
   .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(13,21,38,0.4); z-index:40; }
   .sidebar-overlay.open { display:block; }
-  .sidebar { width:var(--sidebar); background:var(--blue); position:fixed; top:0; left:0; bottom:0; display:flex; flex-direction:column; z-index:50; overflow-y:auto; }
+  .sidebar {
+    width: var(--sidebar);
+    background: linear-gradient(180deg, #0f1e5c 0%, var(--blue) 15%);
+    position: fixed; top: 0; left: 0; bottom: 0;
+    display: flex; flex-direction: column; z-index: 50; overflow-y: auto;
+  }
   .sidebar-logo { padding:24px 20px 20px; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; align-items:flex-start; justify-content:space-between; }
   .sidebar-logo a { font-family:'DM Serif Display',serif; font-size:20px; color:white; text-decoration:none; letter-spacing:1px; }
   .sidebar-logo p { font-size:11px; color:rgba(255,255,255,0.5); margin-top:2px; }
@@ -32,10 +37,10 @@
   .user-info p { font-size:11px; color:rgba(255,255,255,0.5); margin-top:1px; }
   .token-balance { margin:16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:14px; }
   .token-balance .tb-label { font-size:10px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
-  .token-balance .tb-val { font-family:'DM Serif Display',serif; font-size:28px; color:white; line-height:1; }
-  .token-balance .tb-sub { font-size:11px; color:rgba(255,255,255,0.5); margin-top:4px; }
-  .btn-buy-tokens { width:100%; margin-top:10px; padding:8px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:white; font-size:12px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
-  .btn-buy-tokens:hover { background:rgba(255,255,255,0.2); }
+  .token-balance .tb-val { font-family:'Unbounded', monospace; font-weight:700; font-size:26px; color:white; line-height:1; }
+  .token-balance .tb-sub { font-size:11px; color:rgba(255,255,255,0.5); margin-top:6px; }
+  .btn-buy-tokens { width:100%; margin-top:10px; padding:8px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:100px; color:white; font-size:12px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+  .btn-buy-tokens:hover { background:rgba(255,255,255,0.22); }
   .sidebar-nav { padding:8px 12px; flex:1; }
   .nav-section { font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); letter-spacing:1.5px; text-transform:uppercase; padding:12px 8px 6px; }
   .nav-item { display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; transition:all 0.18s; text-decoration:none; margin-bottom:2px; }
@@ -58,18 +63,34 @@
   .topbar-right { display:flex; align-items:center; gap:12px; }
   .hamburger { background:none; border:none; font-size:20px; cursor:pointer; padding:6px; border-radius:8px; color:var(--ink); transition:background 0.15s; display:none; }
   .hamburger:hover { background:var(--blue-pale); }
-  .token-pill { display:flex; align-items:center; gap:6px; background:var(--blue-pale); border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:13px; font-weight:500; }
-  .nav-cta { font-size: 13px; font-weight: 600; color: white; background: var(--blue); padding: 8px 18px; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
-  .nav-cta:hover { background: var(--blue-mid); }
+  .token-pill { display:flex; align-items:center; gap:6px; background:var(--blue-pale); border:1px solid var(--border); border-radius:100px; padding:6px 14px; font-size:13px; font-weight:500; }
 
-  /* HEADER */
-  .page-header { padding: 32px 48px 24px; max-width: 1100px; margin: 0 auto; }
-  .page-header h1 { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 3.5vw, 40px); font-weight: 400; line-height: 1.15; margin-bottom: 12px; }
-  .page-header h1 em { font-style: italic; color: var(--blue-mid); }
-  .page-header p { font-size: 15px; color: var(--muted); line-height: 1.65; max-width: 520px; }
+  /* CONTENT AREA */
+  .content { padding: 28px 36px 80px; }
+
+  /* PAGE BANNER */
+  .page-banner {
+    background: var(--dark); border-radius: 20px;
+    padding: 32px 36px; margin-bottom: 28px;
+    position: relative; overflow: hidden;
+  }
+  .page-banner-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.30) 0%, transparent 65%);
+  }
+  .page-banner-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .page-banner-inner { position: relative; z-index: 1; }
+  .page-banner h1 { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; font-weight: 400; margin-bottom: 8px; }
+  .page-banner h1 em { font-style: italic; }
+  .page-banner p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 520px; }
 
   /* SEARCH BAR */
-  .search-wrap { max-width: 1100px; margin: 0 auto 32px; padding: 0 48px; }
+  .search-wrap { margin-bottom: 20px; }
   .search-box {
     background: white; border: 1.5px solid var(--border); border-radius: var(--radius);
     padding: 14px 20px; display: flex; align-items: center; gap: 12px;
@@ -83,18 +104,16 @@
 
   /* SECTOR NAV */
   .sectors-nav-wrap {
-    max-width: 1100px; margin: 0 auto 12px; padding: 0 48px;
-    overflow-x: auto;
+    margin-bottom: 12px; overflow-x: auto;
   }
   .sectors-nav-wrap::-webkit-scrollbar { height: 4px; }
   .sectors-nav-wrap::-webkit-scrollbar-track { background: transparent; }
   .sectors-nav-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
   .sectors-nav {
-    display: flex; gap: 8px; padding-bottom: 4px;
-    white-space: nowrap;
+    display: flex; gap: 8px; padding-bottom: 4px; white-space: nowrap;
   }
   .sector-pill {
-    font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 24px;
+    font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: 100px;
     border: 1.5px solid var(--border); background: white; color: var(--muted);
     cursor: pointer; transition: all 0.18s; white-space: nowrap; flex-shrink: 0;
   }
@@ -102,18 +121,15 @@
   .sector-pill.active { background: var(--blue); border-color: var(--blue); color: white; }
 
   /* FILTERS */
-  .filters-wrap { max-width: 1100px; margin: 0 auto 28px; padding: 0 48px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filters-wrap { margin-bottom: 28px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .filter-label { font-size: 12px; color: var(--muted); margin-right: 4px; }
   .filter-chip {
-    font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 500; padding: 6px 16px; border-radius: 100px;
     border: 1.5px solid var(--border); background: white; color: var(--muted);
     cursor: pointer; transition: all 0.18s;
   }
   .filter-chip:hover { border-color: var(--blue-mid); color: var(--blue); }
   .filter-chip.active { background: var(--blue); border-color: var(--blue); color: white; }
-
-  /* MAIN */
-  .main { max-width: 1100px; margin: 0 auto; padding: 0 48px 80px; }
 
   /* SECTOR SECTION */
   .sector-section { margin-bottom: 48px; }
@@ -128,7 +144,7 @@
   /* MENTOR CARDS GRID */
   .mentors-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
-  /* MENTOR CARD — photo pleine carte */
+  /* MENTOR CARD */
   .mentor-card {
     border-radius: var(--radius); overflow: hidden;
     box-shadow: var(--shadow); transition: all 0.22s; cursor: pointer;
@@ -137,7 +153,6 @@
   }
   .mentor-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(26,46,122,0.22); }
 
-  /* Photo de fond pleine carte */
   .card-photo {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
@@ -156,18 +171,16 @@
     );
   }
 
-  /* Header overlay — infos en haut */
   .card-header {
     position: relative; z-index: 2;
     padding: 14px 16px 0;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .level-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .level-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; }
   .level-badge.junior { background: rgba(232,238,249,0.9); color: var(--blue-mid); }
   .level-badge.senior { background: rgba(254,243,199,0.9); color: var(--amber); }
   .avail-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 2px rgba(22,163,74,0.3); }
 
-  /* Footer overlay — infos en bas */
   .card-body {
     position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
     padding: 14px 16px 16px;
@@ -175,12 +188,12 @@
   .card-name { font-size: 17px; font-weight: 700; color: white; margin-bottom: 2px; }
   .card-role { font-size: 12px; color: rgba(255,255,255,0.65); margin-bottom: 10px; line-height: 1.4; }
   .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-  .card-tag { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); backdrop-filter: blur(4px); }
+  .card-tag { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 100px; background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); backdrop-filter: blur(4px); }
   .card-meta { display: flex; gap: 14px; margin-bottom: 12px; }
   .meta-item { display: flex; flex-direction: column; gap: 1px; }
   .meta-label { font-size: 9px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.5px; }
   .meta-val { font-size: 12px; font-weight: 700; color: white; }
-  .btn-card { width: 100%; padding: 10px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); color: white; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-card { width: 100%; padding: 10px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); color: white; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-card:hover { background: white; color: var(--blue); border-color: white; }
 
   /* NO RESULTS */
@@ -188,6 +201,15 @@
   .no-results.visible { display: block; }
   .no-results h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
   .no-results p { font-size: 14px; color: var(--muted); }
+
+  /* COMING SOON PLACEHOLDER */
+  .coming-soon-card {
+    background: white; border: 1.5px dashed var(--border); border-radius: var(--radius);
+    padding: 32px; text-align: center; color: var(--muted);
+  }
+  .coming-soon-card p { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .coming-soon-card small { font-size: 13px; }
+  .coming-soon-card .cs-emoji { font-size: 32px; margin-bottom: 10px; }
 
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(13,21,38,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
@@ -213,11 +235,11 @@
   .creneau .c-time { font-size: 11px; color: var(--muted); margin-top: 1px; }
   .creneau.active .c-time { color: var(--blue-mid); }
   .gift-banner { background: var(--green-bg); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--green); font-weight: 500; display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
-  .btn-reserver { width: 100%; padding: 14px; background: var(--blue); color: white; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-reserver { width: 100%; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-reserver:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
 
   @media (max-width: 900px) {
-    .page-header, .search-wrap, .sectors-nav-wrap, .filters-wrap, .main { padding-left: 20px; padding-right: 20px; }
+    .content { padding: 20px 16px 60px; }
     .mentors-row { grid-template-columns: 1fr; }
     .topbar { padding: 0 20px; }
     .hamburger { display: flex; }
@@ -253,7 +275,7 @@
   </div>
   <div class="token-balance">
     <div class="tb-label">Mes tokens</div>
-    <div class="tb-val">3<span style="font-size:16px;opacity:0.5"> tokens</span></div>
+    <div class="tb-val">3<span style="font-size:14px;opacity:0.5;font-family:'DM Sans',sans-serif;font-weight:400"> tokens</span></div>
     <div class="tb-sub">= 3 séances junior disponibles</div>
     <button class="btn-buy-tokens" onclick="window.location.href='tokens.html'">+ Acheter des tokens</button>
   </div>
@@ -287,339 +309,348 @@
   </div>
 </div>
 
-<div class="page-header">
-  <h1>Explorer tous les mentors <em>par secteur.</em></h1>
-  <p>Tu vises plusieurs secteurs ? Parcours librement, compare les profils et réserve les mentors qui te correspondent — sans restriction.</p>
-</div>
+<div class="content">
 
-<!-- SEARCH -->
-<div class="search-wrap">
-  <div class="search-box">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Rechercher un mentor, une compétence, un secteur..." oninput="filterMentors()" />
-    <span class="search-count" id="searchCount">47 mentors disponibles</span>
-  </div>
-</div>
-
-<!-- SECTOR PILLS -->
-<div class="sectors-nav-wrap">
-  <div class="sectors-nav" id="sectorsNav">
-    <button class="sector-pill active" onclick="scrollToSector('tous', this)">Tous les secteurs</button>
-    <button class="sector-pill" onclick="scrollToSector('marketing', this)">📣 Marketing & Com'</button>
-    <button class="sector-pill" onclick="scrollToSector('commerce', this)">💼 Commerce & Vente</button>
-    <button class="sector-pill" onclick="scrollToSector('tech', this)">💻 Tech & Digital</button>
-    <button class="sector-pill" onclick="scrollToSector('rh', this)">🤝 Ressources Humaines</button>
-    <button class="sector-pill" onclick="scrollToSector('finance', this)">📊 Finance & Gestion</button>
-    <button class="sector-pill" onclick="scrollToSector('juridique', this)">⚖️ Juridique</button>
-    <button class="sector-pill" onclick="scrollToSector('creation', this)">🎨 Création & Design</button>
-  </div>
-</div>
-
-<!-- FILTERS -->
-<div class="filters-wrap">
-  <span class="filter-label">Filtrer :</span>
-  <button class="filter-chip active" onclick="setFilter('tous', this)">Tous</button>
-  <button class="filter-chip" onclick="setFilter('junior', this)">Junior</button>
-  <button class="filter-chip" onclick="setFilter('senior', this)">Senior</button>
-  <button class="filter-chip" onclick="setFilter('dispo', this)">Disponible aujourd'hui</button>
-</div>
-
-<!-- MAIN CONTENT -->
-<div class="main" id="mainContent">
-
-  <!-- MARKETING & COM -->
-  <div class="sector-section" id="marketing" data-sector="marketing">
-    <div class="sector-section-header">
-      <span class="sector-emoji-big">📣</span>
-      <h2>Marketing & Communication</h2>
-      <span class="count">12 mentors</span>
-    </div>
-    <div class="mentors-row">
-      <div class="mentor-card" onclick="openModal('sarah')" data-level="junior" data-dispo="true" data-search="sarah marketing linkedin cv candidature paris">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#4F46E5,#7C3AED)">👩‍💼</div>
-        <div class="card-header">
-          <span class="level-badge junior">Junior</span>
-          <span class="avail-dot" title="Disponible dès demain"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Sarah L.</div>
-          <div class="card-role">Alternante — Marketing Digital · Paris</div>
-          <div class="card-tags"><span class="card-tag">LinkedIn</span><span class="card-tag">CV</span><span class="card-tag">Candidature</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">12</span></div>
-          </div>
-          <button class="btn-card" onclick="openModal('sarah'); event.stopPropagation()">Réserver →</button>
-        </div>
-      </div>
-
-      <div class="mentor-card" onclick="openModal('camille')" data-level="senior" data-dispo="false" data-search="camille marketing digital stratégie contenu lyon senior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#B45309,#D97706)">👩‍💻</div>
-        <div class="card-header">
-          <span class="level-badge senior">Senior</span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Camille D.</div>
-          <div class="card-role">Responsable Marketing · Lyon</div>
-          <div class="card-tags"><span class="card-tag">Stratégie</span><span class="card-tag">Contenu</span><span class="card-tag">Brand</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">19</span></div>
-          </div>
-          <button class="btn-card" onclick="openModal('camille'); event.stopPropagation()">Réserver →</button>
-        </div>
-      </div>
-
-      <div class="mentor-card" onclick="openModal('ines')" data-level="junior" data-dispo="true" data-search="ines communication événementielle portfolio lm bordeaux">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#6D28D9,#A78BFA)">👩‍🎨</div>
-        <div class="card-header">
-          <span class="level-badge junior">Junior</span>
-          <span class="avail-dot" title="Disponible aujourd'hui"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Inès M.</div>
-          <div class="card-role">Alternante — Communication · Bordeaux</div>
-          <div class="card-tags"><span class="card-tag">LM</span><span class="card-tag">Portfolio</span><span class="card-tag">Com' événementielle</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.7</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">8</span></div>
-          </div>
-          <button class="btn-card" onclick="openModal('ines'); event.stopPropagation()">Réserver →</button>
-        </div>
-      </div>
+  <!-- PAGE BANNER -->
+  <div class="page-banner">
+    <div class="page-banner-glow"></div>
+    <div class="page-banner-grid"></div>
+    <div class="page-banner-inner">
+      <h1>Explorer tous les mentors <em>par secteur.</em></h1>
+      <p>Tu vises plusieurs secteurs ? Parcours librement, compare les profils et réserve les mentors qui te correspondent — sans restriction.</p>
     </div>
   </div>
 
-  <!-- COMMERCE & VENTE -->
-  <div class="sector-section" id="commerce" data-sector="commerce">
-    <div class="sector-section-header">
-      <span class="sector-emoji-big">💼</span>
-      <h2>Commerce & Vente</h2>
-      <span class="count">9 mentors</span>
-    </div>
-    <div class="mentors-row">
-      <div class="mentor-card" onclick="openModal('thomas')" data-level="senior" data-dispo="true" data-search="thomas commerce b2b réseau entretien stratégie lyon senior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#166534,#16A34A)">👨‍💼</div>
-        <div class="card-header">
-          <span class="level-badge senior">Senior</span>
-          <span class="avail-dot" title="Disponible aujourd'hui"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Thomas R.</div>
-          <div class="card-role">Manager Commercial · Lyon</div>
-          <div class="card-tags"><span class="card-tag">Réseau</span><span class="card-tag">Entretien</span><span class="card-tag">B2B</span><span class="card-tag">Stratégie</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">28</span></div>
-          </div>
-          <button class="btn-card" onclick="openModal('thomas'); event.stopPropagation()">Réserver →</button>
-        </div>
-      </div>
-
-      <div class="mentor-card" data-level="junior" data-dispo="true" data-search="noah commerce vente retail paris junior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#DC2626,#F87171)">👨‍🎓</div>
-        <div class="card-header">
-          <span class="level-badge junior">Junior</span>
-          <span class="avail-dot"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Noah B.</div>
-          <div class="card-role">Alternant — Commerce Retail · Paris</div>
-          <div class="card-tags"><span class="card-tag">Retail</span><span class="card-tag">Négociation</span><span class="card-tag">CV</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.6</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">6</span></div>
-          </div>
-          <button class="btn-card">Réserver →</button>
-        </div>
-      </div>
-
-      <div class="mentor-card" data-level="senior" data-dispo="false" data-search="marie commerce key account marseille senior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#0369A1,#38BDF8)">👩‍💼</div>
-        <div class="card-header">
-          <span class="level-badge senior">Senior</span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Marie K.</div>
-          <div class="card-role">Key Account Manager · Marseille</div>
-          <div class="card-tags"><span class="card-tag">Grand comptes</span><span class="card-tag">Pitch</span><span class="card-tag">CRM</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">22</span></div>
-          </div>
-          <button class="btn-card">Réserver →</button>
-        </div>
-      </div>
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Rechercher un mentor, une compétence, un secteur..." oninput="filterMentors()" />
+      <span class="search-count" id="searchCount">47 mentors disponibles</span>
     </div>
   </div>
 
-  <!-- TECH & DIGITAL -->
-  <div class="sector-section" id="tech" data-sector="tech">
-    <div class="sector-section-header">
-      <span class="sector-emoji-big">💻</span>
-      <h2>Tech & Digital</h2>
-      <span class="count">7 mentors</span>
-    </div>
-    <div class="mentors-row">
-      <div class="mentor-card" data-level="junior" data-dispo="true" data-search="alex développement web react javascript paris junior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#166534,#4ADE80)">👨‍💻</div>
-        <div class="card-header">
-          <span class="level-badge junior">Junior</span>
-          <span class="avail-dot"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Alex T.</div>
-          <div class="card-role">Alternant — Dev Web · Paris</div>
-          <div class="card-tags"><span class="card-tag">React</span><span class="card-tag">Portfolio</span><span class="card-tag">GitHub</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">9</span></div>
-          </div>
-          <button class="btn-card">Réserver →</button>
-        </div>
-      </div>
-
-      <div class="mentor-card" data-level="senior" data-dispo="true" data-search="julie product manager digital tech nantes senior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#4C1D95,#8B5CF6)">👩‍💻</div>
-        <div class="card-header">
-          <span class="level-badge senior">Senior</span>
-          <span class="avail-dot"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Julie F.</div>
-          <div class="card-role">Product Manager · Nantes</div>
-          <div class="card-tags"><span class="card-tag">Product</span><span class="card-tag">UX</span><span class="card-tag">Agile</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">15</span></div>
-          </div>
-          <button class="btn-card">Réserver →</button>
-        </div>
-      </div>
-
-      <div class="mentor-card" data-level="junior" data-dispo="false" data-search="rayan data analyst python sql bordeaux junior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#C2410C,#FB923C)">👨‍🔬</div>
-        <div class="card-header">
-          <span class="level-badge junior">Junior</span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Rayan A.</div>
-          <div class="card-role">Alternant — Data · Bordeaux</div>
-          <div class="card-tags"><span class="card-tag">Python</span><span class="card-tag">SQL</span><span class="card-tag">Data viz</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.7</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">5</span></div>
-          </div>
-          <button class="btn-card">Réserver →</button>
-        </div>
-      </div>
+  <!-- SECTOR PILLS -->
+  <div class="sectors-nav-wrap">
+    <div class="sectors-nav" id="sectorsNav">
+      <button class="sector-pill active" onclick="scrollToSector('tous', this)">Tous les secteurs</button>
+      <button class="sector-pill" onclick="scrollToSector('marketing', this)">📣 Marketing & Com'</button>
+      <button class="sector-pill" onclick="scrollToSector('commerce', this)">💼 Commerce & Vente</button>
+      <button class="sector-pill" onclick="scrollToSector('tech', this)">💻 Tech & Digital</button>
+      <button class="sector-pill" onclick="scrollToSector('rh', this)">🤝 Ressources Humaines</button>
+      <button class="sector-pill" onclick="scrollToSector('finance', this)">📊 Finance & Gestion</button>
+      <button class="sector-pill" onclick="scrollToSector('juridique', this)">⚖️ Juridique</button>
+      <button class="sector-pill" onclick="scrollToSector('creation', this)">🎨 Création & Design</button>
     </div>
   </div>
 
-  <!-- RH -->
-  <div class="sector-section" id="rh" data-sector="rh">
-    <div class="sector-section-header">
-      <span class="sector-emoji-big">🤝</span>
-      <h2>Ressources Humaines</h2>
-      <span class="count">5 mentors</span>
-    </div>
-    <div class="mentors-row">
-      <div class="mentor-card" data-level="senior" data-dispo="true" data-search="sophie rh recrutement paie droit social paris senior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#86198F,#E879F9)">👩‍💼</div>
-        <div class="card-header">
-          <span class="level-badge senior">Senior</span>
-          <span class="avail-dot"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Sophie M.</div>
-          <div class="card-role">RRH · Paris</div>
-          <div class="card-tags"><span class="card-tag">Recrutement</span><span class="card-tag">Droit social</span><span class="card-tag">Paie</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">14</span></div>
-          </div>
-          <button class="btn-card">Réserver →</button>
-        </div>
-      </div>
+  <!-- FILTERS -->
+  <div class="filters-wrap">
+    <span class="filter-label">Filtrer :</span>
+    <button class="filter-chip active" onclick="setFilter('tous', this)">Tous</button>
+    <button class="filter-chip" onclick="setFilter('junior', this)">Junior</button>
+    <button class="filter-chip" onclick="setFilter('senior', this)">Senior</button>
+    <button class="filter-chip" onclick="setFilter('dispo', this)">Disponible aujourd'hui</button>
+  </div>
 
-      <div class="mentor-card" data-level="junior" data-dispo="true" data-search="lena rh gestion talents marque employeur lille junior">
-        <div class="card-photo" style="--card-bg:linear-gradient(135deg,#9F1239,#FB7185)">👩‍🎓</div>
-        <div class="card-header">
-          <span class="level-badge junior">Junior</span>
-          <span class="avail-dot"></span>
-        </div>
-        <div class="card-body">
-          <div class="card-name">Léna P.</div>
-          <div class="card-role">Alternante — RH · Lille</div>
-          <div class="card-tags"><span class="card-tag">Talents</span><span class="card-tag">Marque employeur</span></div>
-          <div class="card-meta">
-            <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
-            <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.6</span></div>
-            <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">7</span></div>
+  <!-- MAIN CONTENT -->
+  <div id="mainContent">
+
+    <!-- MARKETING & COM -->
+    <div class="sector-section" id="marketing" data-sector="marketing">
+      <div class="sector-section-header">
+        <span class="sector-emoji-big">📣</span>
+        <h2>Marketing & Communication</h2>
+        <span class="count">12 mentors</span>
+      </div>
+      <div class="mentors-row">
+        <div class="mentor-card" onclick="openModal('sarah')" data-level="junior" data-dispo="true" data-search="sarah marketing linkedin cv candidature paris">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#4F46E5,#7C3AED)">👩‍💼</div>
+          <div class="card-header">
+            <span class="level-badge junior">Junior</span>
+            <span class="avail-dot" title="Disponible dès demain"></span>
           </div>
-          <button class="btn-card">Réserver →</button>
+          <div class="card-body">
+            <div class="card-name">Sarah L.</div>
+            <div class="card-role">Alternante — Marketing Digital · Paris</div>
+            <div class="card-tags"><span class="card-tag">LinkedIn</span><span class="card-tag">CV</span><span class="card-tag">Candidature</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">12</span></div>
+            </div>
+            <button class="btn-card" onclick="openModal('sarah'); event.stopPropagation()">Réserver →</button>
+          </div>
+        </div>
+
+        <div class="mentor-card" onclick="openModal('camille')" data-level="senior" data-dispo="false" data-search="camille marketing digital stratégie contenu lyon senior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#B45309,#D97706)">👩‍💻</div>
+          <div class="card-header">
+            <span class="level-badge senior">Senior</span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Camille D.</div>
+            <div class="card-role">Responsable Marketing · Lyon</div>
+            <div class="card-tags"><span class="card-tag">Stratégie</span><span class="card-tag">Contenu</span><span class="card-tag">Brand</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">19</span></div>
+            </div>
+            <button class="btn-card" onclick="openModal('camille'); event.stopPropagation()">Réserver →</button>
+          </div>
+        </div>
+
+        <div class="mentor-card" onclick="openModal('ines')" data-level="junior" data-dispo="true" data-search="ines communication événementielle portfolio lm bordeaux">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#6D28D9,#A78BFA)">👩‍🎨</div>
+          <div class="card-header">
+            <span class="level-badge junior">Junior</span>
+            <span class="avail-dot" title="Disponible aujourd'hui"></span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Inès M.</div>
+            <div class="card-role">Alternante — Communication · Bordeaux</div>
+            <div class="card-tags"><span class="card-tag">LM</span><span class="card-tag">Portfolio</span><span class="card-tag">Com' événementielle</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.7</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">8</span></div>
+            </div>
+            <button class="btn-card" onclick="openModal('ines'); event.stopPropagation()">Réserver →</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="no-results" id="noResults">
-    <div style="font-size:48px; margin-bottom:16px">🔍</div>
-    <h3>Aucun mentor trouvé</h3>
-    <p>Essaie un autre mot-clé ou retire les filtres actifs.</p>
-  </div>
+    <!-- COMMERCE & VENTE -->
+    <div class="sector-section" id="commerce" data-sector="commerce">
+      <div class="sector-section-header">
+        <span class="sector-emoji-big">💼</span>
+        <h2>Commerce & Vente</h2>
+        <span class="count">9 mentors</span>
+      </div>
+      <div class="mentors-row">
+        <div class="mentor-card" onclick="openModal('thomas')" data-level="senior" data-dispo="true" data-search="thomas commerce b2b réseau entretien stratégie lyon senior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#166534,#16A34A)">👨‍💼</div>
+          <div class="card-header">
+            <span class="level-badge senior">Senior</span>
+            <span class="avail-dot" title="Disponible aujourd'hui"></span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Thomas R.</div>
+            <div class="card-role">Manager Commercial · Lyon</div>
+            <div class="card-tags"><span class="card-tag">Réseau</span><span class="card-tag">Entretien</span><span class="card-tag">B2B</span><span class="card-tag">Stratégie</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">28</span></div>
+            </div>
+            <button class="btn-card" onclick="openModal('thomas'); event.stopPropagation()">Réserver →</button>
+          </div>
+        </div>
 
-  <!-- Sections à venir -->
-  <div class="sector-section" id="finance" data-sector="finance">
-    <div class="sector-section-header">
-      <span class="sector-emoji-big">📊</span>
-      <h2>Finance & Gestion</h2>
-      <span class="count" style="margin-left:auto;font-size:13px;color:var(--muted)">Bientôt</span>
-    </div>
-    <div style="background:white;border:1.5px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;color:var(--muted)">
-      <div style="font-size:32px;margin-bottom:10px">🚀</div>
-      <p style="font-size:14px;font-weight:500;margin-bottom:6px">Mentors Finance bientôt disponibles</p>
-      <p style="font-size:13px"><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</p>
-    </div>
-  </div>
+        <div class="mentor-card" data-level="junior" data-dispo="true" data-search="noah commerce vente retail paris junior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#DC2626,#F87171)">👨‍🎓</div>
+          <div class="card-header">
+            <span class="level-badge junior">Junior</span>
+            <span class="avail-dot"></span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Noah B.</div>
+            <div class="card-role">Alternant — Commerce Retail · Paris</div>
+            <div class="card-tags"><span class="card-tag">Retail</span><span class="card-tag">Négociation</span><span class="card-tag">CV</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.6</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">6</span></div>
+            </div>
+            <button class="btn-card">Réserver →</button>
+          </div>
+        </div>
 
-  <div class="sector-section" id="juridique" data-sector="juridique">
-    <div class="sector-section-header">
-      <span class="sector-emoji-big">⚖️</span>
-      <h2>Juridique</h2>
-      <span class="count" style="margin-left:auto;font-size:13px;color:var(--muted)">Bientôt</span>
+        <div class="mentor-card" data-level="senior" data-dispo="false" data-search="marie commerce key account marseille senior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#0369A1,#38BDF8)">👩‍💼</div>
+          <div class="card-header">
+            <span class="level-badge senior">Senior</span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Marie K.</div>
+            <div class="card-role">Key Account Manager · Marseille</div>
+            <div class="card-tags"><span class="card-tag">Grand comptes</span><span class="card-tag">Pitch</span><span class="card-tag">CRM</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">22</span></div>
+            </div>
+            <button class="btn-card">Réserver →</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div style="background:white;border:1.5px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;color:var(--muted)">
-      <div style="font-size:32px;margin-bottom:10px">🚀</div>
-      <p style="font-size:14px;font-weight:500;margin-bottom:6px">Mentors Juridique bientôt disponibles</p>
-      <p style="font-size:13px"><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</p>
-    </div>
-  </div>
 
-  <div class="sector-section" id="creation" data-sector="creation">
-    <div class="sector-section-header">
-      <span class="sector-emoji-big">🎨</span>
-      <h2>Création & Design</h2>
-      <span class="count" style="margin-left:auto;font-size:13px;color:var(--muted)">Bientôt</span>
-    </div>
-    <div style="background:white;border:1.5px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;color:var(--muted)">
-      <div style="font-size:32px;margin-bottom:10px">🚀</div>
-      <p style="font-size:14px;font-weight:500;margin-bottom:6px">Mentors Création bientôt disponibles</p>
-      <p style="font-size:13px"><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</p>
-    </div>
-  </div>
+    <!-- TECH & DIGITAL -->
+    <div class="sector-section" id="tech" data-sector="tech">
+      <div class="sector-section-header">
+        <span class="sector-emoji-big">💻</span>
+        <h2>Tech & Digital</h2>
+        <span class="count">7 mentors</span>
+      </div>
+      <div class="mentors-row">
+        <div class="mentor-card" data-level="junior" data-dispo="true" data-search="alex développement web react javascript paris junior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#166534,#4ADE80)">👨‍💻</div>
+          <div class="card-header">
+            <span class="level-badge junior">Junior</span>
+            <span class="avail-dot"></span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Alex T.</div>
+            <div class="card-role">Alternant — Dev Web · Paris</div>
+            <div class="card-tags"><span class="card-tag">React</span><span class="card-tag">Portfolio</span><span class="card-tag">GitHub</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">9</span></div>
+            </div>
+            <button class="btn-card">Réserver →</button>
+          </div>
+        </div>
 
-</div>
+        <div class="mentor-card" data-level="senior" data-dispo="true" data-search="julie product manager digital tech nantes senior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#4C1D95,#8B5CF6)">👩‍💻</div>
+          <div class="card-header">
+            <span class="level-badge senior">Senior</span>
+            <span class="avail-dot"></span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Julie F.</div>
+            <div class="card-role">Product Manager · Nantes</div>
+            <div class="card-tags"><span class="card-tag">Product</span><span class="card-tag">UX</span><span class="card-tag">Agile</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">15</span></div>
+            </div>
+            <button class="btn-card">Réserver →</button>
+          </div>
+        </div>
+
+        <div class="mentor-card" data-level="junior" data-dispo="false" data-search="rayan data analyst python sql bordeaux junior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#C2410C,#FB923C)">👨‍🔬</div>
+          <div class="card-header">
+            <span class="level-badge junior">Junior</span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Rayan A.</div>
+            <div class="card-role">Alternant — Data · Bordeaux</div>
+            <div class="card-tags"><span class="card-tag">Python</span><span class="card-tag">SQL</span><span class="card-tag">Data viz</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.7</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">5</span></div>
+            </div>
+            <button class="btn-card">Réserver →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RH -->
+    <div class="sector-section" id="rh" data-sector="rh">
+      <div class="sector-section-header">
+        <span class="sector-emoji-big">🤝</span>
+        <h2>Ressources Humaines</h2>
+        <span class="count">5 mentors</span>
+      </div>
+      <div class="mentors-row">
+        <div class="mentor-card" data-level="senior" data-dispo="true" data-search="sophie rh recrutement paie droit social paris senior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#86198F,#E879F9)">👩‍💼</div>
+          <div class="card-header">
+            <span class="level-badge senior">Senior</span>
+            <span class="avail-dot"></span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Sophie M.</div>
+            <div class="card-role">RRH · Paris</div>
+            <div class="card-tags"><span class="card-tag">Recrutement</span><span class="card-tag">Droit social</span><span class="card-tag">Paie</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1,5 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">14</span></div>
+            </div>
+            <button class="btn-card">Réserver →</button>
+          </div>
+        </div>
+
+        <div class="mentor-card" data-level="junior" data-dispo="true" data-search="lena rh gestion talents marque employeur lille junior">
+          <div class="card-photo" style="--card-bg:linear-gradient(135deg,#9F1239,#FB7185)">👩‍🎓</div>
+          <div class="card-header">
+            <span class="level-badge junior">Junior</span>
+            <span class="avail-dot"></span>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Léna P.</div>
+            <div class="card-role">Alternante — RH · Lille</div>
+            <div class="card-tags"><span class="card-tag">Talents</span><span class="card-tag">Marque employeur</span></div>
+            <div class="card-meta">
+              <div class="meta-item"><span class="meta-label">Séance</span><span class="meta-val">1 token</span></div>
+              <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.6</span></div>
+              <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">7</span></div>
+            </div>
+            <button class="btn-card">Réserver →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results" id="noResults">
+      <div style="font-size:48px; margin-bottom:16px">🔍</div>
+      <h3>Aucun mentor trouvé</h3>
+      <p>Essaie un autre mot-clé ou retire les filtres actifs.</p>
+    </div>
+
+    <!-- Sections à venir -->
+    <div class="sector-section" id="finance" data-sector="finance">
+      <div class="sector-section-header">
+        <span class="sector-emoji-big">📊</span>
+        <h2>Finance & Gestion</h2>
+        <span class="count" style="margin-left:auto;font-size:13px;color:var(--muted)">Bientôt</span>
+      </div>
+      <div class="coming-soon-card">
+        <div class="cs-emoji">🚀</div>
+        <p>Mentors Finance bientôt disponibles</p>
+        <small><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</small>
+      </div>
+    </div>
+
+    <div class="sector-section" id="juridique" data-sector="juridique">
+      <div class="sector-section-header">
+        <span class="sector-emoji-big">⚖️</span>
+        <h2>Juridique</h2>
+        <span class="count" style="margin-left:auto;font-size:13px;color:var(--muted)">Bientôt</span>
+      </div>
+      <div class="coming-soon-card">
+        <div class="cs-emoji">🚀</div>
+        <p>Mentors Juridique bientôt disponibles</p>
+        <small><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</small>
+      </div>
+    </div>
+
+    <div class="sector-section" id="creation" data-sector="creation">
+      <div class="sector-section-header">
+        <span class="sector-emoji-big">🎨</span>
+        <h2>Création & Design</h2>
+        <span class="count" style="margin-left:auto;font-size:13px;color:var(--muted)">Bientôt</span>
+      </div>
+      <div class="coming-soon-card">
+        <div class="cs-emoji">🚀</div>
+        <p>Mentors Création bientôt disponibles</p>
+        <small><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</small>
+      </div>
+    </div>
+
+  </div><!-- /mainContent -->
+
+</div><!-- /content -->
 
 <!-- MODAL SARAH -->
 <div class="modal-overlay" id="modal-sarah">
@@ -638,10 +669,10 @@
       <div class="modal-section">
         <div class="modal-section-title">Compétences</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">CV</span>
-          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">LinkedIn</span>
-          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Candidature spontanée</span>
-          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Message de relance</span>
+          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">CV</span>
+          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">LinkedIn</span>
+          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Candidature spontanée</span>
+          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Message de relance</span>
         </div>
       </div>
       <div class="modal-section">
@@ -676,10 +707,10 @@
       <div class="modal-section">
         <div class="modal-section-title">Compétences</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Réseau caché</span>
-          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Entretien</span>
-          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Pitch</span>
-          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Stratégie</span>
+          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Réseau caché</span>
+          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Entretien</span>
+          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Pitch</span>
+          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Stratégie</span>
         </div>
       </div>
       <div class="modal-section">
@@ -714,9 +745,9 @@
       <div class="modal-section">
         <div class="modal-section-title">Compétences</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Stratégie contenu</span>
-          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Brand</span>
-          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">SEO/SEA</span>
+          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Stratégie contenu</span>
+          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Brand</span>
+          <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">SEO/SEA</span>
         </div>
       </div>
       <div class="modal-section">
@@ -749,9 +780,9 @@
       <div class="modal-section">
         <div class="modal-section-title">Compétences</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">LM</span>
-          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Portfolio</span>
-          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">Com' événementielle</span>
+          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">LM</span>
+          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Portfolio</span>
+          <span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">Com' événementielle</span>
         </div>
       </div>
       <div class="modal-section">
@@ -829,7 +860,6 @@
   }
 
   // ── DYNAMIC MENTORS FROM ADMIN CMS ──
-  // Map secteur id to section element
   const SECTEUR_MAP = {
     marketing: document.querySelector('[data-sector="marketing"] .mentors-row'),
     commerce:  document.querySelector('[data-sector="commerce"] .mentors-row'),
@@ -870,11 +900,9 @@
   function loadDynamicMentors(){
     try {
       const data = localStorage.getItem('aterisk_mentors');
-      if(!data) return; // Keep hardcoded cards if no admin data
+      if(!data) return;
       const mentors = JSON.parse(data);
-      // Clear all rows
       Object.values(SECTEUR_MAP).forEach(row => { if(row) row.innerHTML = ''; });
-      // Fill
       mentors.forEach(m => {
         const row = SECTEUR_MAP[m.secteur];
         if(row) row.insertAdjacentHTML('beforeend', buildCard(m));
@@ -883,7 +911,6 @@
   }
   loadDynamicMentors();
 
-  // Dynamic modal for CMS mentors
   function openDynamicModal(m){
     const tokenVal = m.level === 'senior' ? '1,5' : '1';
     const modal = document.createElement('div');
@@ -900,7 +927,7 @@
         <div class="modal-section">
           <div class="modal-section-title">Spécialités</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px">
-            ${m.tags.split(',').map(t=>`<span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px">${t.trim()}</span>`).join('')}
+            ${m.tags.split(',').map(t=>`<span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">${t.trim()}</span>`).join('')}
           </div>
         </div>
         <div class="modal-section">
@@ -920,6 +947,10 @@
     modal.addEventListener('click', e => { if(e.target===modal){modal.remove();document.body.style.overflow='';}});
   }
 
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
 
   function closeModal(id) {
     document.getElementById('modal-' + id).classList.remove('open');
@@ -960,6 +991,12 @@
   }
 </script>
 <script type="module" src="nav.js"></script>
-<script type="module" src="motion.js"></script>
+<script type="module">
+import { animate, scroll } from './motion.js';
+document.querySelectorAll('.mentor-card').forEach((el, i) => {
+  scroll(animate(el, { opacity: [0,1], y: [20,0] }, { duration: 0.4, delay: i * 0.05 }),
+    { target: el, offset: ['start end', 'end end'] });
+});
+</script>
 </body>
 </html>

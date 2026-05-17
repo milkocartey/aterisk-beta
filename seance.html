@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Séance en cours</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue:#1A2E7A; --blue-mid:#2A45B0; --blue-light:#E8EEF9; --blue-pale:#F3F6FD;
@@ -22,15 +22,44 @@
     height: 64px; background:#111827; border-bottom:1px solid rgba(255,255,255,0.08);
     display:flex; align-items:center; padding:0 24px; gap:20px; flex-shrink:0; z-index:10;
   }
-  .tb-logo { font-family:'DM Serif Display',serif; font-size:20px; color:white; letter-spacing:1px; text-decoration:none; }
+  .tb-logo {
+    font-family:'Unbounded', monospace;
+    font-size:16px;
+    font-weight:800;
+    letter-spacing:2px;
+    color:white;
+    text-decoration:none;
+  }
   .tb-sep { width:1px; height:18px; background:rgba(255,255,255,0.12); }
   .tb-session { font-size:13px; color:rgba(255,255,255,0.55); flex:1; }
   .tb-session strong { color:white; }
-  .tb-timer { font-size:14px; font-weight:700; color:white; font-variant-numeric:tabular-nums; background:rgba(255,255,255,0.08); padding:5px 14px; border-radius:20px; min-width:74px; text-align:center; }
+  .tb-timer {
+    font-family:'Unbounded', monospace;
+    font-size:13px;
+    font-weight:700;
+    color:white;
+    font-variant-numeric:tabular-nums;
+    background:rgba(255,255,255,0.08);
+    padding:5px 14px;
+    border-radius:100px;
+    min-width:74px;
+    text-align:center;
+  }
   .tb-timer.warning { background:rgba(180,83,9,0.3); color:#FCD34D; }
   .tb-timer.urgent { background:rgba(220,38,38,0.3); color:#FCA5A5; animation:pulse 1s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-  .tb-end { padding:8px 16px; background:var(--red); color:white; border:none; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s; }
+  .tb-end {
+    padding:8px 18px;
+    background:var(--red);
+    color:white;
+    border:none;
+    border-radius:100px;
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.15s;
+  }
   .tb-end:hover { background:#B91C1C; }
 
   /* ── LAYOUT ── */
@@ -62,7 +91,7 @@
   /* Session info */
   .session-topic { font-size:14px; font-weight:600; color:white; margin-bottom:6px; line-height:1.4; }
   .session-meta { font-size:12px; color:rgba(255,255,255,0.4); line-height:1.7; }
-  .session-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(42,69,176,0.25); color:#93C5FD; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; margin-top:8px; }
+  .session-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(42,69,176,0.25); color:#93C5FD; font-size:11px; font-weight:600; padding:3px 10px; border-radius:100px; margin-top:8px; }
 
   /* Pre-call checklist */
   .checklist { display:flex; flex-direction:column; gap:8px; }
@@ -86,7 +115,21 @@
   /* Post-session actions (hidden during call) */
   .post-actions { display:none; flex-direction:column; gap:8px; }
   .post-actions.visible { display:flex; }
-  .btn-post { width:100%; padding:11px 16px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all 0.15s; display:flex; align-items:center; gap:8px; justify-content:center; }
+  .btn-post {
+    width:100%;
+    padding:11px 16px;
+    border-radius:100px;
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    border:none;
+    transition:all 0.15s;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+  }
   .btn-post.primary { background:var(--blue-mid); color:white; }
   .btn-post.primary:hover { background:var(--blue); }
   .btn-post.ghost { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.12); }
@@ -99,28 +142,59 @@
 
   /* Pre-call screen */
   .precall {
-    position:absolute; inset:0; background:#0D1117;
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(42,69,176,0.15) 0%, transparent 65%), #0D1117;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     z-index:5; padding:40px;
   }
   .precall.hidden { display:none; }
   .precall-inner { max-width:460px; text-align:center; }
   .precall-icon { font-size:52px; margin-bottom:20px; }
-  .precall-title { font-size:24px; font-weight:700; color:white; margin-bottom:8px; }
+  .precall-title {
+    font-family:'DM Serif Display', serif;
+    font-weight:400;
+    font-size:24px;
+    color:white;
+    margin-bottom:8px;
+  }
   .precall-sub { font-size:14px; color:rgba(255,255,255,0.45); margin-bottom:28px; line-height:1.6; }
 
   /* Camera/mic preview row */
   .device-row { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
-  .device-btn { display:flex; align-items:center; gap:7px; padding:9px 18px; border-radius:8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.7); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; }
+  .device-btn {
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:9px 18px;
+    border-radius:100px;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.12);
+    color:rgba(255,255,255,0.7);
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.15s;
+  }
   .device-btn:hover { background:rgba(255,255,255,0.12); }
   .device-btn.off { background:rgba(220,38,38,0.15); border-color:rgba(220,38,38,0.3); color:rgba(255,255,255,0.4); text-decoration:line-through; }
   .device-dot { width:8px; height:8px; border-radius:50%; background:var(--green); }
   .device-btn.off .device-dot { background:var(--red); }
 
   .btn-join {
-    padding:16px 40px; background:var(--green); color:white; border:none;
-    border-radius:12px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700;
-    cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:10px;
+    padding:16px 40px;
+    background:var(--green);
+    color:white;
+    border:none;
+    border-radius:100px;
+    font-family:'DM Sans',sans-serif;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
   }
   .btn-join:hover { background:#15803D; transform:translateY(-2px); box-shadow:0 8px 24px rgba(22,163,74,0.3); }
   .precall-note { font-size:12px; color:rgba(255,255,255,0.25); margin-top:16px; }
@@ -140,7 +214,21 @@
   .endscreen-title { font-size:26px; font-weight:700; color:white; margin-bottom:10px; }
   .endscreen-sub { font-size:14px; color:rgba(255,255,255,0.5); margin-bottom:32px; line-height:1.7; }
   .endscreen-actions { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; margin:0 auto; }
-  .ea-btn { padding:14px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; }
+  .ea-btn {
+    padding:14px;
+    border-radius:100px;
+    font-family:'DM Sans',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    border:none;
+    transition:all 0.2s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-decoration:none;
+  }
   .ea-btn.primary { background:var(--blue-mid); color:white; }
   .ea-btn.primary:hover { background:var(--blue); }
   .ea-btn.ghost { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.12); }
@@ -169,7 +257,16 @@
   .tb-nav-menu a { padding:11px 20px; font-size:14px; font-weight:500; color:rgba(255,255,255,0.55); text-decoration:none; transition:background 0.15s; }
   .tb-nav-menu a:hover { background:rgba(255,255,255,0.06); color:white; }
   .tb-nav-menu .m-sep { height:1px; background:rgba(255,255,255,0.08); margin:4px 0; }
-  .tb-nav-menu .m-cta { margin:6px 12px 10px; padding:11px 16px; background:#2A45B0; color:white !important; border-radius:8px; font-weight:600 !important; text-align:center; display:block; }
+  .tb-nav-menu .m-cta {
+    margin:6px 12px 10px;
+    padding:11px 16px;
+    background:#2A45B0;
+    color:white !important;
+    border-radius:100px;
+    font-weight:600 !important;
+    text-align:center;
+    display:block;
+  }
   @media (max-width:768px) {
     .side { display:none; }
     .side.open { display:flex; flex-direction:column; position:fixed; top:64px; left:0; bottom:0; z-index:50; width:280px; overflow-y:auto; }

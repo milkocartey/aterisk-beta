@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Devenir mentor</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
     --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --dark: #030712;
     --green: #16A34A; --green-bg: #DCFCE7; --amber: #92400E; --amber-bg: #FEF3C7;
     --purple: #4C1D95; --purple-bg: #F5F3FF;
     --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
@@ -16,34 +17,69 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); min-height: 100vh; }
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 0 48px; height: 64px;
-    display: flex; align-items: center; justify-content: space-between;
-    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(221,227,240,0.6);
-  }
-  .nav-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--blue); text-decoration: none; letter-spacing: 1px; }
-  .nav-back { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-  .nav-back:hover { color: var(--blue); }
+  /* ── MEGA NAV ──────────────────────────────────────────────────────────── */
+  nav.nav-dark-hero { position:fixed; top:0; left:0; right:0; z-index:200; padding:0 40px; height:68px; display:flex; align-items:center; justify-content:space-between; background:transparent; border-bottom:1px solid transparent; transition:background 0.3s ease, border-color 0.3s ease; }
+  nav.nav-dark-hero.nav-scrolled { background:rgba(255,255,255,0.97); border-bottom-color:rgba(221,227,240,0.7); box-shadow:0 1px 32px rgba(26,46,122,0.08); backdrop-filter:blur(20px); }
+  .nav-logo { font-family:'DM Serif Display',serif; font-size:20px; color:white; letter-spacing:1px; text-decoration:none; transition:color 0.3s; flex-shrink:0; }
+  nav.nav-scrolled .nav-logo { color:var(--blue); }
+  .nav-links { display:flex; align-items:center; gap:4px; }
+  .nav-link { font-size:14px; font-weight:500; color:rgba(255,255,255,0.6); text-decoration:none; padding:8px 14px; border-radius:8px; transition:color 0.15s, background 0.15s; }
+  .nav-link:hover { color:white; background:rgba(255,255,255,0.06); }
+  nav.nav-scrolled .nav-link { color:var(--muted); }
+  nav.nav-scrolled .nav-link:hover { color:var(--ink); background:var(--blue-pale); }
+  .nav-link-connexion { color:rgba(255,255,255,0.9)!important; font-weight:600!important; }
+  nav.nav-scrolled .nav-link-connexion { color:var(--blue)!important; }
+  .nav-cta { background:rgba(255,255,255,0.12)!important; color:white!important; padding:9px 20px; border-radius:100px; font-weight:700!important; font-size:13px!important; border:1px solid rgba(255,255,255,0.18)!important; margin-left:6px; text-decoration:none; display:inline-block; transition:all 0.2s; }
+  .nav-cta:hover { background:rgba(255,255,255,0.2)!important; transform:translateY(-1px); }
+  nav.nav-scrolled .nav-cta { background:var(--blue)!important; color:white!important; border-color:transparent!important; }
+  .nav-dropdown { position:relative; }
+  .nav-dropdown-trigger { background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; transition:color 0.15s, background 0.15s; }
+  .nav-dropdown:hover .nav-dropdown-trigger, .nav-dropdown-trigger:hover { color:white; background:rgba(255,255,255,0.06); }
+  nav.nav-scrolled .nav-dropdown-trigger { color:var(--muted); }
+  nav.nav-scrolled .nav-dropdown:hover .nav-dropdown-trigger { color:var(--ink); background:var(--blue-pale); }
+  .nav-chevron { display:inline-block; width:10px; height:6px; opacity:0.6; transition:transform 0.2s, opacity 0.15s; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center; background-size:contain; }
+  .nav-dropdown:hover .nav-chevron { transform:rotate(180deg); opacity:1; }
+  nav.nav-scrolled .nav-chevron { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .nav-dropdown-panel { position:absolute; top:calc(100% + 10px); left:50%; transform:translateX(-50%) translateY(-8px); background:white; border:1px solid rgba(221,227,240,0.9); border-radius:18px; padding:8px; box-shadow:0 24px 64px rgba(26,46,122,0.14); opacity:0; pointer-events:none; transition:opacity 0.15s, transform 0.2s; min-width:310px; z-index:300; }
+  .nav-dropdown:hover .nav-dropdown-panel { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+  .nav-dropdown.dropdown-open .nav-dropdown-panel { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+  .nav-dropdown.dropdown-open .nav-chevron { transform:rotate(180deg); opacity:1; }
+  .ndi { display:flex; align-items:flex-start; gap:14px; padding:11px 12px; border-radius:12px; text-decoration:none; color:var(--ink); transition:background 0.12s, transform 0.15s; }
+  .ndi:hover { background:var(--blue-pale); transform:translateX(3px); }
+  .ndi-icon { width:36px; height:36px; background:var(--blue-light); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+  .ndi-title { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:2px; }
+  .ndi-desc { font-size:12px; color:var(--muted); line-height:1.4; }
+  .nav-dropdown-sep { height:1px; background:var(--border); margin:6px 0; opacity:0.6; }
 
-  /* LAYOUT */
-  .page { display: flex; justify-content: center; min-height: 100vh; padding-top: 64px; }
-
-  /* TOGGLE BTN */
-  .toggle-sidebar-btn {
-    position: fixed; top: 76px; right: 20px; z-index: 90;
-    display: flex; align-items: center; gap: 8px;
-    background: white; border: 1.5px solid var(--border);
-    border-radius: 24px; padding: 8px 16px;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-    color: var(--blue-mid); cursor: pointer;
-    box-shadow: var(--shadow); transition: all 0.2s;
+  /* ── HERO ───────────────────────────────────────────────────────────────── */
+  .form-hero {
+    background: var(--dark);
+    padding: 120px 48px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
   }
-  .toggle-sidebar-btn:hover { border-color: var(--blue-mid); background: var(--blue-pale); }
-  .toggle-sidebar-btn .tb-icon { font-size: 14px; transition: transform 0.3s; }
-  .toggle-sidebar-btn.open .tb-icon { transform: rotate(180deg); }
+  .form-hero-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(42,69,176,0.45) 0%, transparent 65%);
+  }
+  .form-hero-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 100% 85% at center, black 0%, transparent 80%);
+  }
+  .form-hero-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+  .form-hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 5vw, 56px); color: white; font-weight: 400; margin: 16px 0 12px; letter-spacing: -1px; }
+  .form-hero h1 em { font-style: italic; }
+  .form-hero p { font-size: 16px; color: rgba(255,255,255,0.5); }
+  .gradient-text { background: linear-gradient(135deg, #93C5FD 0%, #60A5FA 45%, #818CF8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-tag { display:inline-flex; align-items:center; gap:9px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); color:rgba(255,255,255,0.7); font-size:12px; font-weight:600; padding:7px 16px; border-radius:100px; margin-bottom:8px; }
+  .hero-tag-dot { width:6px; height:6px; background:#60A5FA; border-radius:50%; animation:dotPulse 2.2s ease-in-out infinite; }
+  @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+  /* ── LAYOUT ─────────────────────────────────────────────────────────────── */
+  .page { display: flex; justify-content: center; min-height: 100vh; }
 
   /* FORM SIDE */
   .form-side { padding: 56px 48px 80px; width: 100%; max-width: 620px; }
@@ -132,9 +168,9 @@
 
   /* BTNS */
   .step-nav { display: flex; gap: 12px; margin-top: 36px; }
-  .btn-next { flex: 1; background: var(--blue); color: white; border: none; padding: 15px 28px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-next { flex: 1; background: var(--blue); color: white; border: none; padding: 15px 28px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-next:hover { background: var(--blue-mid); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,46,122,0.25); }
-  .btn-prev { padding: 15px 20px; background: white; color: var(--muted); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+  .btn-prev { padding: 15px 20px; background: white; color: var(--muted); border: 1.5px solid var(--border); border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.2s; }
   .btn-prev:hover { border-color: var(--blue); color: var(--blue); }
 
   /* SUCCESS */
@@ -148,41 +184,65 @@
   .next-step-num { width: 28px; height: 28px; background: var(--blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
   .next-step-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
 
-  /* RIGHT SIDE */
+  /* ── RIGHT SIDE — DARK SIDEBAR ──────────────────────────────────────────── */
   .summary-side {
-    position: fixed; top: 64px; right: 0; bottom: 0;
-    width: 400px; background: var(--blue);
-    padding: 48px 40px 40px;
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 400px; background: #030712;
+    padding: 100px 40px 40px;
     display: flex; flex-direction: column; justify-content: flex-start;
     overflow-y: auto; z-index: 80;
     transform: translateX(100%);
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -8px 0 32px rgba(26,46,122,0.2);
+    box-shadow: -8px 0 40px rgba(0,0,0,0.4);
+  }
+  .summary-side::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(42,69,176,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
   }
   .page.with-sidebar .summary-side { transform: translateX(0); }
-  .summary-tag { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
-  .summary-title { font-family: 'DM Serif Display', serif; font-size: 26px; color: white; font-weight: 400; margin-bottom: 8px; line-height: 1.2; }
-  .summary-sub { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 36px; line-height: 1.6; }
+  .summary-tag { position: relative; z-index: 1; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+  .summary-title { position: relative; z-index: 1; font-family: 'DM Serif Display', serif; font-size: 26px; color: white; font-weight: 400; margin-bottom: 8px; line-height: 1.2; }
+  .summary-sub { position: relative; z-index: 1; font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 36px; line-height: 1.6; }
 
   /* AVANTAGES */
-  .avantages { display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+  .avantages { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
   .avantage-item { display: flex; gap: 12px; align-items: flex-start; }
-  .av-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .av-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
   .av-text h4 { font-size: 14px; font-weight: 600; color: white; margin-bottom: 3px; }
-  .av-text p { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .av-text p { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
 
-  .earning-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius); padding: 20px; margin-top: auto; }
-  .earning-card .ec-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+  .earning-card { position: relative; z-index: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); border-radius: 16px; padding: 24px; margin-top: auto; }
+  .earning-card .ec-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
   .earning-card .ec-val { font-family: 'DM Serif Display', serif; font-size: 34px; color: white; }
-  .earning-card .ec-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .earning-card .ec-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; }
   .earning-card .ec-detail { font-size: 12px; color: #86EFAC; font-weight: 500; margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+
+  /* TOGGLE BTN */
+  .toggle-sidebar-btn {
+    position: fixed; top: 80px; right: 20px; z-index: 90;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--dark); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 100px; padding: 9px 18px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    color: rgba(255,255,255,0.8); cursor: pointer;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3); transition: all 0.2s;
+  }
+  .toggle-sidebar-btn:hover { background: rgba(42,69,176,0.6); border-color: rgba(255,255,255,0.2); color: white; }
+  .toggle-sidebar-btn .tb-icon { font-size: 14px; transition: transform 0.3s; }
+  .toggle-sidebar-btn.open .tb-icon { transform: rotate(180deg); }
 
   @media (max-width: 900px) {
     .summary-side { display: none !important; }
     .form-side { padding: 40px 24px 60px; }
-    nav { padding: 0 20px; }
+    nav.nav-dark-hero { padding: 0 20px; }
     .toggle-sidebar-btn { display: none; }
   }
+
   .field input.field-error, textarea.field-error { border-color: #DC2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.08); }
   .step-error-banner {
     display: none; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px;
@@ -196,13 +256,46 @@
 </head>
 <body>
 
-<nav>
+<nav class="nav-dark-hero">
   <a href="index.html" class="nav-logo">ATERISK</a>
-  <div style="display:flex;align-items:center;gap:16px">
-    <a href="login.html" class="nav-back">Connexion</a>
-    <a href="index.html" class="nav-back">← Accueil</a>
+  <div class="nav-links">
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger">Étudiants <span class="nav-chevron"></span></button>
+      <div class="nav-dropdown-panel">
+        <a href="inscription.html" class="ndi"><div class="ndi-icon">🎓</div><div><div class="ndi-title">Trouver mon mentor</div><div class="ndi-desc">1ère séance offerte · match personnalisé</div></div></a>
+        <a href="matching.html" class="ndi"><div class="ndi-icon">🔗</div><div><div class="ndi-title">Voir les matchs</div><div class="ndi-desc">Explore les profils disponibles par secteur</div></div></a>
+        <a href="secteurs.html" class="ndi"><div class="ndi-icon">🧭</div><div><div class="ndi-title">Secteurs</div><div class="ndi-desc">Marketing, Tech, Finance, RH, Juridique…</div></div></a>
+        <div class="nav-dropdown-sep"></div>
+        <a href="ressources.html" class="ndi"><div class="ndi-icon">📁</div><div><div class="ndi-title">Ressources</div><div class="ndi-desc">CV, lettre de motivation, guides pratiques</div></div></a>
+        <a href="mapping.html" class="ndi"><div class="ndi-icon">🗺️</div><div><div class="ndi-title">Mapping entreprises</div><div class="ndi-desc">Carte interactive des opportunités en France</div></div></a>
+        <a href="tarifs.html" class="ndi"><div class="ndi-icon">💶</div><div><div class="ndi-title">Tarifs</div><div class="ndi-desc">19€/mois · commission uniquement à la réussite</div></div></a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-trigger">Mentors <span class="nav-chevron"></span></button>
+      <div class="nav-dropdown-panel" style="min-width:280px">
+        <a href="mentor-inscription.html" class="ndi"><div class="ndi-icon">✨</div><div><div class="ndi-title">Devenir mentor</div><div class="ndi-desc">Partage ton expérience · génère des revenus</div></div></a>
+        <a href="dashboard-mentor.html" class="ndi"><div class="ndi-icon">📊</div><div><div class="ndi-title">Espace mentor</div><div class="ndi-desc">Gérer tes séances, revenus et étudiants</div></div></a>
+        <div class="nav-dropdown-sep"></div>
+        <a href="seance.html" class="ndi"><div class="ndi-icon">🗓️</div><div><div class="ndi-title">Comment se passent les séances ?</div><div class="ndi-desc">30 min · rapport automatique · 70% pour toi</div></div></a>
+      </div>
+    </div>
+    <a href="tarifs.html" class="nav-link">Tarifs</a>
+    <a href="login.html" class="nav-link nav-link-connexion">Connexion</a>
+    <a href="inscription.html" class="nav-cta">S'inscrire →</a>
   </div>
 </nav>
+
+<!-- HERO -->
+<div class="form-hero">
+  <div class="form-hero-glow"></div>
+  <div class="form-hero-grid"></div>
+  <div class="form-hero-inner">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Candidature mentor</div>
+    <h1>Deviens mentor <em class="gradient-text">ATERISK.</em></h1>
+    <p>Partage ton expérience. Génère des revenus. Aide des étudiants à trouver leur voie.</p>
+  </div>
+</div>
 
 <button class="toggle-sidebar-btn" id="toggleBtn" onclick="toggleSidebar()">
   <span>Pourquoi devenir mentor ?</span>
@@ -376,7 +469,7 @@
 
       <div class="step-nav">
         <button class="btn-prev" onclick="goTo(3)">←</button>
-        <button class="btn-next" onclick="submit()" style="background:var(--green)">
+        <button class="btn-next" onclick="submit()" style="background:var(--green); border-radius:100px;">
           Soumettre ma candidature ✓
         </button>
       </div>
@@ -401,7 +494,7 @@
           <div class="next-step-text"><strong>Ensuite</strong> — Ton profil est publié, les étudiants peuvent te réserver. Les tokens arrivent à chaque séance.</div>
         </div>
       </div>
-      <a href="login.html?redirect=dashboard-mentor.html" style="display:inline-block; background:var(--blue); color:white; padding:14px 32px; border-radius:10px; text-decoration:none; font-weight:600; font-size:15px;">Accéder à mon espace →</a>
+      <a href="login.html?redirect=dashboard-mentor.html" style="display:inline-block; background:var(--blue); color:white; padding:14px 32px; border-radius:100px; text-decoration:none; font-weight:600; font-size:15px;">Accéder à mon espace →</a>
     </div>
 
   </div>

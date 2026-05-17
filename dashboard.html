@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Mon espace</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
-    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF;
+    --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #FFFFFF; --dark: #030712;
     --green: #16A34A; --green-bg: #DCFCE7; --amber: #92400E; --amber-bg: #FEF3C7;
     --red: #DC2626; --red-bg: #FEF2F2;
     --radius: 12px; --shadow: 0 4px 24px rgba(26,46,122,0.08);
@@ -19,7 +19,9 @@
 
   /* SIDEBAR */
   .sidebar {
-    width: var(--sidebar); background: var(--blue); position: fixed;
+    width: var(--sidebar);
+    background: linear-gradient(180deg, #0f1e5c 0%, var(--blue) 15%);
+    position: fixed;
     top: 0; left: 0; bottom: 0; display: flex; flex-direction: column;
     z-index: 50; overflow-y: auto;
   }
@@ -47,11 +49,12 @@
     border-radius: 10px; padding: 14px;
   }
   .token-balance .tb-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .token-balance .tb-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; line-height: 1; }
+  .token-balance .tb-val { font-family: 'Unbounded', monospace; font-size: 28px; font-weight: 700; color: white; line-height: 1; }
+  .token-balance .tb-val span { font-family: 'DM Sans', sans-serif; font-size: 16px; opacity: 0.5; }
   .token-balance .tb-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
   .btn-buy-tokens {
     width: 100%; margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
     color: white; font-size: 12px; font-weight: 600; cursor: pointer;
     font-family: 'DM Sans', sans-serif; transition: all 0.2s;
   }
@@ -81,7 +84,9 @@
 
   /* TOP BAR */
   .topbar {
-    background: white; border-bottom: 1px solid var(--border);
+    background: white;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(26,46,122,0.06);
     padding: 0 36px; height: 64px;
     display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 40;
@@ -90,7 +95,7 @@
   .topbar-right { display: flex; align-items: center; gap: 12px; }
   .notif-btn { width: 36px; height: 36px; background: var(--blue-pale); border: none; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; position: relative; }
   .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; background: var(--red); border-radius: 50%; border: 1.5px solid white; }
-  .btn-mentor { background: var(--blue); color: white; border: none; padding: 8px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+  .btn-mentor { background: var(--blue); color: white; border: none; padding: 8px 20px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
   .btn-mentor:hover { background: var(--blue-mid); }
 
   /* CONTENT */
@@ -98,30 +103,51 @@
 
   /* WELCOME BANNER */
   .welcome-banner {
-    background: var(--blue); border-radius: 16px; padding: 24px 28px;
+    background: #030712;
+    border-radius: 20px; padding: 32px 36px;
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 28px; overflow: hidden; position: relative;
   }
-  .welcome-banner::before {
-    content: ''; position: absolute; top: -40px; right: -40px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
-    border-radius: 50%;
+  .welcome-banner .wb-glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.35) 0%, transparent 65%);
+    animation: glowPulse 8s ease-in-out infinite alternate;
   }
-  .welcome-text h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; font-weight: 400; margin-bottom: 6px; }
-  .welcome-text p { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.5; }
-  .welcome-progress { text-align: right; }
+  .welcome-banner .wb-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  @keyframes glowPulse {
+    from {
+      background:
+        radial-gradient(ellipse 70% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.35) 0%, transparent 65%);
+    }
+    to {
+      background:
+        radial-gradient(ellipse 60% 70% at 75% 40%, rgba(42,69,176,0.45) 0%, transparent 65%),
+        radial-gradient(ellipse 65% 75% at 20% 60%, rgba(26,46,122,0.30) 0%, transparent 65%);
+    }
+  }
+  .welcome-text { position: relative; z-index: 1; }
+  .welcome-text h2 { font-family: 'DM Serif Display', serif; font-size: 26px; color: white; font-weight: 400; margin-bottom: 8px; }
+  .welcome-text h2 em { font-style: italic; }
+  .welcome-text p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+  .welcome-progress { position: relative; z-index: 1; text-align: right; }
   .progress-ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
   .progress-ring-wrap svg { transform: rotate(-90deg); }
   .progress-ring-label { position: absolute; text-align: center; }
-  .progress-ring-label .pct { font-size: 20px; font-weight: 700; color: white; line-height: 1; }
+  .progress-ring-label .pct { font-family: 'Unbounded', monospace; font-size: 22px; font-weight: 700; color: white; line-height: 1; }
   .progress-ring-label .pct-sub { font-size: 10px; color: rgba(255,255,255,0.5); }
 
   /* STATS ROW */
   .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
   .stat-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow); }
   .stat-card .s-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .stat-card .s-val { font-size: 26px; font-weight: 600; color: var(--ink); line-height: 1; }
+  .stat-card .s-val { font-family: 'Unbounded', monospace; font-size: 24px; font-weight: 700; color: var(--ink); line-height: 1; }
   .stat-card .s-sub { font-size: 12px; margin-top: 4px; }
   .s-up { color: var(--green); } .s-neutral { color: var(--muted); }
 
@@ -175,7 +201,7 @@
   .rapport-info h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
   .rapport-info p { font-size: 11px; color: var(--muted); }
   .rapport-actions { display: flex; gap: 8px; align-items: center; }
-  .btn-rapport { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 6px; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .btn-rapport { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 100px; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
   .btn-dl { background: var(--blue-light); color: var(--blue-mid); }
   .btn-dl:hover { background: var(--blue); color: white; }
 
@@ -246,6 +272,8 @@
     .kanbans { grid-template-columns: 1fr; }
     .ressources-grid { grid-template-columns: 1fr; }
     .topbar { padding: 0 20px; }
+    .welcome-banner { padding: 24px 22px; flex-direction: column; align-items: flex-start; gap: 20px; }
+    .welcome-text h2 { font-size: 20px; }
   }
 </style>
 <style>body{opacity:0;transition:none}</style>
@@ -274,7 +302,7 @@
 
   <div class="token-balance">
     <div class="tb-label">Mes tokens</div>
-    <div class="tb-val">3<span style="font-size:16px; opacity:0.5"> tokens</span></div>
+    <div class="tb-val">3<span> tokens</span></div>
     <div class="tb-sub">= 3 séances junior disponibles</div>
     <button class="btn-buy-tokens" onclick="window.location.href='tokens.html'">+ Acheter des tokens</button>
   </div>
@@ -344,8 +372,10 @@
 
     <!-- WELCOME BANNER -->
     <div class="welcome-banner">
+      <div class="wb-glow"></div>
+      <div class="wb-grid"></div>
       <div class="welcome-text">
-        <h2>Ta recherche avance, continue !</h2>
+        <h2>Ta recherche avance, <em>continue !</em></h2>
         <p>Tu as eu 2 séances de mentoring ce mois.<br>Ta prochaine séance est lundi 23 mars à 10h00.</p>
       </div>
       <div class="welcome-progress">
@@ -404,7 +434,7 @@
             <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
               <span class="seance-badge badge-upcoming">À venir</span>
               <a href="seance.html?room=aterisk-sarah-lola-20260323-1000&mentor=Sarah+L.&student=Lola+M.&topic=Stratégie+LinkedIn+%26+CV&role=etudiant&tokens=1"
-                 style="background:var(--green);color:white;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;transition:all 0.15s;"
+                 style="background:var(--green);color:white;padding:7px 14px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;transition:all 0.15s;"
                  onmouseover="this.style.background='#15803D'" onmouseout="this.style.background='var(--green)'">
                 📹 Rejoindre
               </a>
@@ -444,7 +474,7 @@
                 <div class="action-info"><h4>Voir mon matching</h4><p>3 mentors sélectionnés pour toi</p></div>
                 <span class="action-arrow">→</span>
               </a>
-              <a href="tokens.html" class="action-item" href="inscription.html">
+              <a href="tokens.html" class="action-item">
                 <span class="action-icon">🪙</span>
                 <div class="action-info"><h4>Acheter des tokens</h4><p>14 € / séance junior — disponibles immédiatement</p></div>
                 <span class="action-arrow">→</span>

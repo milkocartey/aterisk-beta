@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Espace Mentor</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue:#1A2E7A; --blue-mid:#2A45B0; --blue-light:#E8EEF9; --blue-pale:#F3F6FD;
-    --ink:#0D1526; --muted:#6B7280; --border:#DDE3F0; --white:#FFFFFF;
+    --ink:#0D1526; --muted:#6B7280; --border:#DDE3F0; --white:#FFFFFF; --dark:#030712;
     --green:#16A34A; --green-bg:#DCFCE7; --amber:#92400E; --amber-bg:#FEF3C7;
     --red:#DC2626; --red-bg:#FEF2F2; --purple:#4C1D95; --purple-bg:#F5F3FF;
     --radius:12px; --shadow:0 4px 24px rgba(26,46,122,0.08);
@@ -18,7 +18,11 @@
   body{font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--blue-pale);display:flex;min-height:100vh;}
 
   /* SIDEBAR */
-  .sidebar{width:var(--sidebar);background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;overflow-y:auto;}
+  .sidebar{
+    width:var(--sidebar);
+    background:linear-gradient(180deg, #0f1e5c 0%, var(--blue) 15%);
+    position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;overflow-y:auto;
+  }
   .sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:flex-start;justify-content:space-between;}
   .sb-logo a{font-family:'DM Serif Display',serif;font-size:20px;color:white;text-decoration:none;letter-spacing:1px;}
   .sb-logo p{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;}
@@ -33,7 +37,8 @@
   /* EARNINGS CARD */
   .sb-earnings{margin:14px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:14px;}
   .sb-earnings .el{font-size:10px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-  .sb-earnings .ev{font-family:'DM Serif Display',serif;font-size:26px;color:white;line-height:1;}
+  .sb-earnings .ev{font-family:'Unbounded',monospace;font-size:26px;font-weight:700;color:white;line-height:1;}
+  .sb-earnings .ev span{font-family:'DM Sans',sans-serif;font-size:16px;opacity:0.5;font-weight:400;}
   .sb-earnings .es{font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;}
   .sb-earnings .eprog{margin-top:10px;background:rgba(255,255,255,0.12);border-radius:4px;height:5px;}
   .sb-earnings .eprog-fill{height:5px;border-radius:4px;background:#86EFAC;width:62%;}
@@ -58,27 +63,62 @@
 
   /* MAIN */
   .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
-  .topbar{background:white;border-bottom:1px solid var(--border);padding:0 36px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:0 1px 8px rgba(0,0,0,0.04);}
+  .topbar{
+    background:white;
+    border-bottom:1px solid var(--border);
+    box-shadow:0 1px 0 rgba(26,46,122,0.06);
+    padding:0 36px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;
+  }
   .topbar h1{font-size:16px;font-weight:600;}
   .topbar-right{display:flex;align-items:center;gap:12px;}
-  .status-pill{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all 0.2s;border:none;font-family:'DM Sans',sans-serif;}
+  .status-pill{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;cursor:pointer;transition:all 0.2s;border:none;font-family:'DM Sans',sans-serif;}
   .status-pill.online{background:var(--green-bg);color:var(--green);}
   .status-pill.offline{background:#F3F4F6;color:var(--muted);}
   .status-dot{width:7px;height:7px;border-radius:50%;}
   .status-pill.online .status-dot{background:var(--green);}
   .status-pill.offline .status-dot{background:#D1D5DB;}
-  .btn-rapport{background:var(--blue);color:white;border:none;padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+  .btn-rapport{background:var(--blue);color:white;border:none;padding:8px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
   .btn-rapport:hover{background:var(--blue-mid);}
 
   /* CONTENT */
   .content{padding:28px 36px 60px;}
 
-  /* BANNER */
-  .welcome-banner{background:linear-gradient(135deg,var(--blue),var(--blue-mid));border-radius:16px;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;overflow:hidden;position:relative;}
-  .welcome-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%);border-radius:50%;}
-  .wb-text h2{font-family:'DM Serif Display',serif;font-size:20px;color:white;font-weight:400;margin-bottom:5px;}
-  .wb-text p{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.5;}
-  .wb-next{background:rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;text-align:right;flex-shrink:0;min-width:180px;}
+  /* WELCOME BANNER */
+  .welcome-banner{
+    background:#030712;
+    border-radius:20px;padding:32px 36px;
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;overflow:hidden;position:relative;
+  }
+  .welcome-banner .wb-glow{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 70% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.35) 0%, transparent 65%);
+    animation:glowPulse 8s ease-in-out infinite alternate;
+  }
+  .welcome-banner .wb-grid{
+    position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size:48px 48px;
+  }
+  @keyframes glowPulse {
+    from {
+      background:
+        radial-gradient(ellipse 70% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.35) 0%, transparent 65%);
+    }
+    to {
+      background:
+        radial-gradient(ellipse 60% 70% at 75% 40%, rgba(42,69,176,0.45) 0%, transparent 65%),
+        radial-gradient(ellipse 65% 75% at 20% 60%, rgba(26,46,122,0.30) 0%, transparent 65%);
+    }
+  }
+  .wb-text{position:relative;z-index:1;}
+  .wb-text h2{font-family:'DM Serif Display',serif;font-size:26px;color:white;font-weight:400;margin-bottom:8px;}
+  .wb-text h2 em{font-style:italic;}
+  .wb-text p{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;}
+  .wb-next{position:relative;z-index:1;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px 18px;text-align:right;flex-shrink:0;min-width:190px;}
   .wb-next .wn-label{font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
   .wb-next .wn-val{font-size:14px;font-weight:600;color:white;}
   .wb-next .wn-sub{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
@@ -87,7 +127,7 @@
   .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
   .stat-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
   .stat-card .sl{font-size:12px;color:var(--muted);margin-bottom:5px;}
-  .stat-card .sv{font-size:24px;font-weight:700;line-height:1;}
+  .stat-card .sv{font-family:'Unbounded',monospace;font-size:22px;font-weight:700;line-height:1;color:var(--ink);}
   .stat-card .ss{font-size:12px;margin-top:4px;}
   .up{color:var(--green);} .neu{color:var(--muted);}
 
@@ -119,7 +159,7 @@
   .badge.red{background:var(--red-bg);color:var(--red);}
   .badge.purple{background:var(--purple-bg);color:var(--purple);}
   .badge.gray{background:#F3F4F6;color:var(--muted);}
-  .abtn{font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+  .abtn{font-size:11px;padding:5px 12px;border-radius:100px;border:1px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
   .abtn:hover{border-color:var(--blue-mid);color:var(--blue);}
   .abtn.primary{background:var(--blue);color:white;border-color:var(--blue);}
   .abtn.primary:hover{background:var(--blue-mid);}
@@ -161,7 +201,7 @@
   .earn-val{font-size:9px;font-weight:600;color:var(--ink);}
   .earn-total{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);margin-top:4px;}
   .earn-total-lbl{font-size:12px;color:var(--muted);}
-  .earn-total-val{font-size:18px;font-weight:700;color:var(--green);}
+  .earn-total-val{font-family:'Unbounded',monospace;font-size:18px;font-weight:700;color:var(--green);}
 
   /* RATINGS */
   .rating-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
@@ -200,7 +240,7 @@
   .action-check{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;background:var(--blue-pale);border-radius:8px;margin-bottom:7px;}
   .action-num{width:22px;height:22px;background:var(--blue);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
   .action-text{font-size:13px;color:var(--ink);line-height:1.5;font-weight:500;}
-  .btn-modal{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:14px;}
+  .btn-modal{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:14px;}
   .btn-modal:hover{background:var(--blue-mid);}
   .btn-modal.green{background:var(--green);}
   .btn-modal.green:hover{background:#15803D;}
@@ -218,10 +258,26 @@
   .notif-btn{width:36px;height:36px;background:var(--blue-pale);border:none;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;position:relative;}
   .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white;}
 
+  /* SECTION VISIBILITY */
+  .section{display:none;}
+  .section.active{display:block;}
+
   @media(max-width:1024px){.two-col{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
   .hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;padding:6px;color:var(--ink);}
   .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:40;}
-  @media(max-width:768px){.hamburger{display:block;}.sidebar-close{display:block;}.sidebar{transform:translateX(-100%);transition:transform 0.3s ease;}.sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.main{margin-left:0;}.content{padding:20px;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:768px){
+    .hamburger{display:block;}
+    .sidebar-close{display:block;}
+    .sidebar{transform:translateX(-100%);transition:transform 0.3s ease;}
+    .sidebar.open{transform:translateX(0);}
+    .sidebar-overlay.open{display:block;}
+    .main{margin-left:0;}
+    .content{padding:20px;}
+    .stats-row{grid-template-columns:repeat(2,1fr);}
+    .welcome-banner{flex-direction:column;align-items:flex-start;gap:20px;padding:24px 22px;}
+    .wb-text h2{font-size:20px;}
+    .wb-next{width:100%;text-align:left;}
+  }
 </style>
 <style>body{opacity:0;transition:none}</style>
 </head>
@@ -250,7 +306,7 @@
 
   <div class="sb-earnings">
     <div class="el">Gains ce mois</div>
-    <div class="ev">277 <span style="font-size:16px;opacity:0.5">€</span></div>
+    <div class="ev">277 <span>€</span></div>
     <div class="es">18 séances · objectif 250 €</div>
     <div class="eprog"><div class="eprog-fill" style="width:100%"></div></div>
     <div class="eprog-lbl">111% de l'objectif — dépassé ✓</div>
@@ -316,8 +372,10 @@
     <div class="section active" id="sec-overview">
 
       <div class="welcome-banner">
+        <div class="wb-glow"></div>
+        <div class="wb-grid"></div>
         <div class="wb-text">
-          <h2>Bonne semaine, Thomas !</h2>
+          <h2>Bonne semaine, <em>Thomas !</em></h2>
           <p>5 séances à venir · 2 rapports en attente · Note moyenne ★ 4.9</p>
         </div>
         <div class="wb-next">
@@ -330,8 +388,8 @@
       <div class="stats-row">
         <div class="stat-card"><div class="sl">Séances ce mois</div><div class="sv">18</div><div class="ss up">↑ +3 vs mois dernier</div></div>
         <div class="stat-card"><div class="sl">Étudiants accompagnés</div><div class="sv">12</div><div class="ss up">↑ +2 nouveaux</div></div>
-        <div class="stat-card"><div class="sl">Note moyenne</div><div class="sv">★ 4.9</div><div class="ss up">Sur 47 avis</div></div>
-        <div class="stat-card"><div class="sl">Gains ce mois</div><div class="sv">277 €</div><div class="ss up">↑ +88 €</div></div>
+        <div class="stat-card"><div class="sl">Note moyenne</div><div class="sv" style="font-size:18px">★ 4.9</div><div class="ss up">Sur 47 avis</div></div>
+        <div class="stat-card"><div class="sl">Gains ce mois</div><div class="sv" style="font-size:18px">277 €</div><div class="ss up">↑ +88 €</div></div>
       </div>
 
       <div class="two-col">
@@ -501,7 +559,7 @@
         <div class="stat-card"><div class="sl">Total accompagnés</div><div class="sv">12</div><div class="ss up">+2 ce mois</div></div>
         <div class="stat-card"><div class="sl">Actifs</div><div class="sv">8</div><div class="ss neu">En recherche</div></div>
         <div class="stat-card"><div class="sl">Placés</div><div class="sv">4</div><div class="ss up">↑ taux 47%</div></div>
-        <div class="stat-card"><div class="sl">Satisfaction moyenne</div><div class="sv">★ 4.9</div><div class="ss up">47 avis</div></div>
+        <div class="stat-card"><div class="sl">Satisfaction moyenne</div><div class="sv" style="font-size:18px">★ 4.9</div><div class="ss up">47 avis</div></div>
       </div>
       <div class="card">
         <div class="card-head"><h3>Mes étudiants actifs</h3></div>
@@ -587,10 +645,10 @@
     <!-- ── GAINS ── -->
     <div class="section" id="sec-gains">
       <div class="stats-row">
-        <div class="stat-card"><div class="sl">Gains mars</div><div class="sv">277 €</div><div class="ss up">↑ +88 €</div></div>
-        <div class="stat-card"><div class="sl">Total depuis début</div><div class="sv">847 €</div><div class="ss up">47 séances</div></div>
-        <div class="stat-card"><div class="sl">À virer ce mois</div><div class="sv">194 €</div><div class="ss neu">Fin de mois</div></div>
-        <div class="stat-card"><div class="sl">Objectif mensuel</div><div class="sv">250 €</div><div class="ss up">111% atteint ✓</div></div>
+        <div class="stat-card"><div class="sl">Gains mars</div><div class="sv" style="font-size:18px">277 €</div><div class="ss up">↑ +88 €</div></div>
+        <div class="stat-card"><div class="sl">Total depuis début</div><div class="sv" style="font-size:18px">847 €</div><div class="ss up">47 séances</div></div>
+        <div class="stat-card"><div class="sl">À virer ce mois</div><div class="sv" style="font-size:18px">194 €</div><div class="ss neu">Fin de mois</div></div>
+        <div class="stat-card"><div class="sl">Objectif mensuel</div><div class="sv" style="font-size:18px">250 €</div><div class="ss up">111% atteint ✓</div></div>
       </div>
 
       <div class="two-col">
@@ -725,7 +783,7 @@
 
         <div style="display:flex;flex-direction:column;gap:16px">
           <div class="card">
-            <div class="card-head"><h3>Mes avis</h3><span style="font-size:18px;font-weight:700;color:var(--amber)">★ 4.9</span></div>
+            <div class="card-head"><h3>Mes avis</h3><span style="font-family:'Unbounded',monospace;font-size:18px;font-weight:700;color:var(--amber)">★ 4.9</span></div>
             <div style="padding:14px 20px">
               <div class="rating-row"><span class="rating-stars">★★★★★</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:85%"></div></div><span class="rating-count">40</span></div>
               <div class="rating-row"><span class="rating-stars">★★★★☆</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:12%"></div></div><span class="rating-count">6</span></div>
@@ -839,7 +897,7 @@
         <span class="badge green" style="margin-left:auto">Actif</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-        <div style="background:#F9FAFB;border-radius:8px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:3px">TOKENS RESTANTS</div><div style="font-size:20px;font-weight:700">3</div></div>
+        <div style="background:#F9FAFB;border-radius:8px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:3px">TOKENS RESTANTS</div><div style="font-family:'Unbounded',monospace;font-size:20px;font-weight:700">3</div></div>
         <div style="background:#F9FAFB;border-radius:8px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:3px">NOTE MOYENNE</div><div style="font-size:20px;font-weight:700">★ 4.9</div></div>
       </div>
       <div class="modal-section">
@@ -920,7 +978,7 @@ function saveProfil(btn) {
 // Toast
 function toast(msg) {
   const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
   t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3000);

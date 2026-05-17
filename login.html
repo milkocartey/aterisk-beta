@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Connexion</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue: #1A2E7A;
@@ -24,44 +24,61 @@
     color: var(--ink);
     min-height: 100vh;
     display: flex;
-    background: var(--blue-pale);
+    background: white;
   }
 
   /* ── LEFT PANEL ── */
   .left {
     width: 420px;
     flex-shrink: 0;
-    background: var(--blue);
+    background: #030712;
     display: flex;
     flex-direction: column;
     padding: 48px 44px;
     position: relative;
     overflow: hidden;
   }
-  .left::before {
-    content: '';
-    position: absolute;
-    width: 400px; height: 400px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 50%;
-    top: -100px; right: -150px;
+  .left-glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 20%, rgba(42,69,176,0.50) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(26,46,122,0.35) 0%, transparent 65%);
+    animation: glowPulse 10s ease-in-out infinite alternate;
   }
-  .left::after {
-    content: '';
-    position: absolute;
-    width: 300px; height: 300px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 50%;
-    bottom: -80px; left: -80px;
+  .left-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 100% 100% at center, black 0%, transparent 80%);
   }
+  .left-noise {
+    position: absolute; inset: -50%; width: 200%; height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.03; pointer-events: none;
+    animation: noiseShift 0.5s steps(2) infinite;
+  }
+  @keyframes glowPulse {
+    from { background: radial-gradient(ellipse 80% 60% at 20% 20%, rgba(42,69,176,0.50) 0%, transparent 65%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(26,46,122,0.35) 0%, transparent 65%); }
+    to { background: radial-gradient(ellipse 70% 55% at 70% 30%, rgba(42,69,176,0.45) 0%, transparent 65%), radial-gradient(ellipse 65% 55% at 15% 75%, rgba(26,46,122,0.30) 0%, transparent 65%); }
+  }
+  @keyframes noiseShift {
+    0% { transform: translate(0,0); } 25% { transform: translate(-1%,-1%); }
+    50% { transform: translate(1%,0%); } 75% { transform: translate(-1%,1%); }
+    100% { transform: translate(0%,-1%); }
+  }
+
   .logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 26px;
+    font-family: 'Unbounded', monospace;
+    font-size: 18px;
+    font-weight: 800;
     color: white;
-    letter-spacing: -0.5px;
+    letter-spacing: 2px;
     position: relative; z-index: 1;
   }
-  .logo span { color: rgba(255,255,255,0.45); font-style: italic; }
+  .logo span { color: rgba(255,255,255,0.35); }
+
   .left-body {
     flex: 1;
     display: flex;
@@ -70,16 +87,17 @@
     position: relative; z-index: 1;
   }
   .left-title {
-    font-size: 30px;
-    font-weight: 300;
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    font-weight: 400;
     color: white;
-    line-height: 1.3;
-    margin-bottom: 20px;
+    line-height: 1.2;
+    margin-bottom: 16px;
   }
-  .left-title strong { font-weight: 700; display: block; }
+  .left-title em { font-style: italic; }
   .left-sub {
     font-size: 14px;
-    color: rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.45);
     line-height: 1.6;
     margin-bottom: 36px;
   }
@@ -88,25 +106,25 @@
   .roles { display: flex; flex-direction: column; gap: 10px; }
   .role-pill {
     display: flex; align-items: center; gap: 12px;
-    padding: 13px 16px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
     cursor: pointer;
     transition: all 0.2s;
   }
-  .role-pill:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.2); }
-  .role-pill.active { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.35); }
+  .role-pill:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
+  .role-pill.active { background: rgba(42,69,176,0.30); border-color: rgba(96,165,250,0.40); box-shadow: 0 0 20px rgba(42,69,176,0.2); }
+  .role-pill.active .role-check { background: #60A5FA; border-color: #60A5FA; color: #030712; }
   .role-icon { font-size: 20px; width: 36px; text-align: center; }
   .role-info { flex: 1; }
   .role-name { font-size: 13px; font-weight: 600; color: white; margin-bottom: 1px; }
   .role-hint { font-size: 11px; color: rgba(255,255,255,0.45); }
   .role-check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.2s; }
-  .role-pill.active .role-check { background: white; border-color: white; color: var(--blue); }
 
   .left-footer {
     font-size: 12px;
-    color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.25);
     position: relative; z-index: 1;
   }
 
@@ -117,10 +135,16 @@
     align-items: center;
     justify-content: center;
     padding: 40px;
+    background: white;
   }
   .form-card {
     width: 100%;
     max-width: 420px;
+    animation: cardAppear 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes cardAppear {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .form-header { margin-bottom: 32px; }
   .form-back {
@@ -201,7 +225,7 @@
     background: var(--blue);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 100px;
     font-family: 'DM Sans', sans-serif;
     font-size: 15px; font-weight: 700;
     cursor: pointer;
@@ -236,7 +260,7 @@
     background: white;
     color: var(--ink);
     border: 1.5px solid var(--border);
-    border-radius: 10px;
+    border-radius: 100px;
     font-family: 'DM Sans', sans-serif;
     font-size: 14px; font-weight: 600;
     cursor: pointer;
@@ -283,11 +307,14 @@
 
 <!-- LEFT PANEL -->
 <div class="left">
+  <div class="left-glow"></div>
+  <div class="left-grid"></div>
+  <div class="left-noise"></div>
   <div class="logo">ATERISK <span>*</span></div>
   <div class="left-body">
     <div class="left-title">
       Bienvenue.<br>
-      <strong>À qui avons-nous<br>l'honneur ?</strong>
+      <em>À qui avons-nous<br>l'honneur ?</em>
     </div>
     <p class="left-sub">Choisis ton profil pour accéder à ton espace personnel.</p>
     <div class="roles">
