@@ -240,7 +240,7 @@ tr:hover td{background:#FAFAFA;}
     <a href="admin.html">ATERISK</a>
     <p>Espace Admin</p>
   </div>
-  <nav class="sb-nav">
+  <nav class="sb-nav sidebar-nav">
     <div class="sb-section">Principal</div>
     <button class="sb-item active" onclick="show('overview',this)"><span class="sb-icon">📊</span><span class="sb-label">Vue d'ensemble</span></button>
     <button class="sb-item" onclick="show('students',this)"><span class="sb-icon">👩‍🎓</span><span class="sb-label">Étudiants</span><span class="sb-badge green">142</span></button>
@@ -376,14 +376,14 @@ tr:hover td{background:#FAFAFA;}
     </div>
     <table id="st">
       <tr><th>Étudiant</th><th>Formation</th><th>Secteur</th><th>Tokens</th><th>Séances</th><th>Statut</th><th>Actions</th></tr>
-      <tr><td><span class="td-av" style="background:#EEF2FF">👩</span><b>Lola Martin</b></td><td>BTS Commerce · Paris</td><td>📣 Marketing</td><td>3</td><td>2</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
-      <tr><td><span class="td-av" style="background:#F0FDF4">👨</span><b>Nabil Oussama</b></td><td>Licence Pro · Lyon</td><td>💼 Commerce</td><td>5</td><td>3</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
-      <tr><td><span class="td-av" style="background:#FFF7ED">👩</span><b>Camille Dupont</b></td><td>BUT Info · Bordeaux</td><td>💻 Tech</td><td>1</td><td>0</td><td><span class="badge amber">En attente</span></td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗ Refuser</button></td></tr>
-      <tr><td><span class="td-av" style="background:#FDF4FF">👨</span><b>Adam Benali</b></td><td>Bachelor RH · Lille</td><td>🤝 RH</td><td>2</td><td>1</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
-      <tr><td><span class="td-av" style="background:#F0FDF4">👩</span><b>Sara Leblanc</b></td><td>BTS Banque · Paris</td><td>💳 Finance</td><td>4</td><td>2</td><td><span class="badge blue">École</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#EEF2FF">👩</span><b>Lola Martin</b></td><td>BTS Commerce · Paris</td><td>📣 Marketing</td><td>3</td><td>2</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger" onclick="bloquerUser(this)">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#F0FDF4">👨</span><b>Nabil Oussama</b></td><td>Licence Pro · Lyon</td><td>💼 Commerce</td><td>5</td><td>3</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger" onclick="bloquerUser(this)">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FFF7ED">👩</span><b>Camille Dupont</b></td><td>BUT Info · Bordeaux</td><td>💻 Tech</td><td>1</td><td>0</td><td><span class="badge amber">En attente</span></td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger" onclick="refuserUser(this)">✗ Refuser</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FDF4FF">👨</span><b>Adam Benali</b></td><td>Bachelor RH · Lille</td><td>🤝 RH</td><td>2</td><td>1</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger" onclick="bloquerUser(this)">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#F0FDF4">👩</span><b>Sara Leblanc</b></td><td>BTS Banque · Paris</td><td>💳 Finance</td><td>4</td><td>2</td><td><span class="badge blue">École</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger" onclick="bloquerUser(this)">Bloquer</button></td></tr>
       <tr><td><span class="td-av" style="background:#F0FDF4">👩</span><b>Inès Marchand</b></td><td>M1 Marketing · Toulouse</td><td>📣 Marketing</td><td>0</td><td>5</td><td><span class="badge purple">Placé ✓</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button></td></tr>
-      <tr><td><span class="td-av" style="background:#FFF1F2">👨</span><b>Yanis Ferhat</b></td><td>BTS Commerce · Nice</td><td>💼 Commerce</td><td>2</td><td>1</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
-      <tr><td><span class="td-av" style="background:#EDE9FE">👩</span><b>Léa Fontaine</b></td><td>Mastère Data · Paris</td><td>💻 Tech</td><td>6</td><td>4</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FFF1F2">👨</span><b>Yanis Ferhat</b></td><td>BTS Commerce · Nice</td><td>💼 Commerce</td><td>2</td><td>1</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger" onclick="bloquerUser(this)">Bloquer</button></td></tr>
+      <tr><td><span class="td-av" style="background:#EDE9FE">👩</span><b>Léa Fontaine</b></td><td>Mastère Data · Paris</td><td>💻 Tech</td><td>6</td><td>4</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger" onclick="bloquerUser(this)">Bloquer</button></td></tr>
     </table>
   </div>
 </div>
@@ -400,9 +400,9 @@ tr:hover td{background:#FAFAFA;}
     <div class="card">
       <div class="card-head"><h3>Candidatures à valider</h3><span class="badge amber">6 en attente</span></div>
       <table><tr><th>Candidat</th><th>Niveau</th><th>Secteur</th><th>Date</th><th>Actions</th></tr>
-        <tr><td><b>Julien Renard</b><br><small style="color:var(--muted)">Manager Commerce · Lyon</small></td><td><span class="badge amber">Senior</span></td><td>Commerce</td><td>21 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗</button></td></tr>
-        <tr><td><b>Amina Bellouki</b><br><small style="color:var(--muted)">Alternante Mktg · Paris</small></td><td><span class="badge blue">Junior</span></td><td>Marketing</td><td>20 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗</button></td></tr>
-        <tr><td><b>Pierre Collet</b><br><small style="color:var(--muted)">Dev Frontend · Nantes</small></td><td><span class="badge blue">Junior</span></td><td>Tech</td><td>19 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger">✗</button></td></tr>
+        <tr><td><b>Julien Renard</b><br><small style="color:var(--muted)">Manager Commerce · Lyon</small></td><td><span class="badge amber">Senior</span></td><td>Commerce</td><td>21 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger" onclick="refuserUser(this)">✗</button></td></tr>
+        <tr><td><b>Amina Bellouki</b><br><small style="color:var(--muted)">Alternante Mktg · Paris</small></td><td><span class="badge blue">Junior</span></td><td>Marketing</td><td>20 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger" onclick="refuserUser(this)">✗</button></td></tr>
+        <tr><td><b>Pierre Collet</b><br><small style="color:var(--muted)">Dev Frontend · Nantes</small></td><td><span class="badge blue">Junior</span></td><td>Tech</td><td>19 mars</td><td><button class="abtn ok" onclick="valider(this)">✓ Valider</button> <button class="abtn danger" onclick="refuserUser(this)">✗</button></td></tr>
       </table>
     </div>
     <div class="card">
@@ -416,14 +416,14 @@ tr:hover td{background:#FAFAFA;}
     </div>
   </div>
   <div class="card">
-    <div class="card-head"><h3>Tous les mentors actifs</h3><button class="tb-btn ghost">+ Inviter un mentor</button></div>
+    <div class="card-head"><h3>Tous les mentors actifs</h3><button class="tb-btn ghost" onclick="openModal('add-mentor')">+ Inviter un mentor</button></div>
     <div class="search-bar"><input class="si" placeholder="Rechercher un mentor..."><select class="sel"><option>Tous niveaux</option><option>Junior</option><option>Senior</option></select></div>
     <table><tr><th>Mentor</th><th>Poste</th><th>Secteur</th><th>Niveau</th><th>Séances tot.</th><th>Note</th><th>Statut</th><th></th></tr>
-      <tr><td><span class="td-av" style="background:#DCFCE7">👨</span><b>Thomas R.</b></td><td>Manager Commercial</td><td>Commerce</td><td><span class="badge amber">Senior</span></td><td>47</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
-      <tr><td><span class="td-av" style="background:#EEF2FF">👩</span><b>Sarah L.</b></td><td>Alternante Mktg</td><td>Marketing</td><td><span class="badge blue">Junior</span></td><td>31</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
-      <tr><td><span class="td-av" style="background:#FEF3C7">👩</span><b>Camille D.</b></td><td>Resp. Marketing</td><td>Marketing</td><td><span class="badge amber">Senior</span></td><td>28</td><td>★ 4.8</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
-      <tr><td><span class="td-av" style="background:#EDE9FE">👩</span><b>Julie F.</b></td><td>Product Manager</td><td>Tech</td><td><span class="badge amber">Senior</span></td><td>22</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
-      <tr><td><span class="td-av" style="background:#FFF1F2">👩</span><b>Sophie M.</b></td><td>RRH</td><td>RH</td><td><span class="badge amber">Senior</span></td><td>19</td><td>★ 4.8</td><td><span class="badge green">Actif</span></td><td><button class="abtn">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#DCFCE7">👨</span><b>Thomas R.</b></td><td>Manager Commercial</td><td>Commerce</td><td><span class="badge amber">Senior</span></td><td>47</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="viewMentorProfile(this)">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#EEF2FF">👩</span><b>Sarah L.</b></td><td>Alternante Mktg</td><td>Marketing</td><td><span class="badge blue">Junior</span></td><td>31</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="viewMentorProfile(this)">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FEF3C7">👩</span><b>Camille D.</b></td><td>Resp. Marketing</td><td>Marketing</td><td><span class="badge amber">Senior</span></td><td>28</td><td>★ 4.8</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="viewMentorProfile(this)">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#EDE9FE">👩</span><b>Julie F.</b></td><td>Product Manager</td><td>Tech</td><td><span class="badge amber">Senior</span></td><td>22</td><td>★ 4.9</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="viewMentorProfile(this)">Profil</button></td></tr>
+      <tr><td><span class="td-av" style="background:#FFF1F2">👩</span><b>Sophie M.</b></td><td>RRH</td><td>RH</td><td><span class="badge amber">Senior</span></td><td>19</td><td>★ 4.8</td><td><span class="badge green">Actif</span></td><td><button class="abtn" onclick="viewMentorProfile(this)">Profil</button></td></tr>
     </table>
   </div>
 </div>
@@ -439,11 +439,11 @@ tr:hover td{background:#FAFAFA;}
   <div class="card">
     <div class="card-head"><h3>Séances à venir</h3><span class="badge amber">5 planifiées</span></div>
     <table><tr><th>Date & Heure</th><th>Étudiant</th><th>Mentor</th><th>Type</th><th>Tokens</th><th>Statut</th><th></th></tr>
-      <tr><td><b>Lun 23/03</b> 10h00</td><td>Lola Martin</td><td>Sarah L.</td><td>LinkedIn & CV</td><td>1</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
-      <tr><td><b>Lun 23/03</b> 14h00</td><td>Adam Benali</td><td>Sophie M.</td><td>Entretien</td><td>1,5</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
-      <tr><td><b>Mar 24/03</b> 11h00</td><td>Léa Fontaine</td><td>Julie F.</td><td>Product</td><td>1,5</td><td><span class="badge amber">En attente</span></td><td><button class="abtn">Détails</button></td></tr>
-      <tr><td><b>Mer 25/03</b> 09h00</td><td>Yanis Ferhat</td><td>Thomas R.</td><td>Réseau caché</td><td>1,5</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
-      <tr><td><b>Jeu 26/03</b> 16h00</td><td>Sara Leblanc</td><td>Thomas R.</td><td>Candidature</td><td>1</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn">Détails</button></td></tr>
+      <tr><td><b>Lun 23/03</b> 10h00</td><td>Lola Martin</td><td>Sarah L.</td><td>LinkedIn & CV</td><td>1</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn" onclick="viewSeanceDetails(this)">Détails</button></td></tr>
+      <tr><td><b>Lun 23/03</b> 14h00</td><td>Adam Benali</td><td>Sophie M.</td><td>Entretien</td><td>1,5</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn" onclick="viewSeanceDetails(this)">Détails</button></td></tr>
+      <tr><td><b>Mar 24/03</b> 11h00</td><td>Léa Fontaine</td><td>Julie F.</td><td>Product</td><td>1,5</td><td><span class="badge amber">En attente</span></td><td><button class="abtn" onclick="viewSeanceDetails(this)">Détails</button></td></tr>
+      <tr><td><b>Mer 25/03</b> 09h00</td><td>Yanis Ferhat</td><td>Thomas R.</td><td>Réseau caché</td><td>1,5</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn" onclick="viewSeanceDetails(this)">Détails</button></td></tr>
+      <tr><td><b>Jeu 26/03</b> 16h00</td><td>Sara Leblanc</td><td>Thomas R.</td><td>Candidature</td><td>1</td><td><span class="badge blue">Confirmée</span></td><td><button class="abtn" onclick="viewSeanceDetails(this)">Détails</button></td></tr>
     </table>
   </div>
   <div class="card">
@@ -503,18 +503,18 @@ tr:hover td{background:#FAFAFA;}
   <div class="card">
     <div class="card-head"><h3>Écoles partenaires actives</h3><button class="tb-btn ghost" onclick="openModal('add-school')">+ Ajouter une école</button></div>
     <div>
-      <div class="school-card"><div class="school-logo">🎓</div><div class="school-info"><div class="school-name">ESCP Business School</div><div class="school-meta">Paris · 45 étudiants · Forfait + Pack Standard</div></div><div class="school-stats"><div class="school-stat"><b>45</b>étudiants</div><div class="school-stat"><b>50</b>tokens</div><div class="school-stat"><b style="color:var(--green)">1 625 €</b>/mois</div></div><button class="abtn" style="margin-left:16px">Gérer</button></div>
-      <div class="school-card"><div class="school-logo">📚</div><div class="school-info"><div class="school-name">ICD Paris</div><div class="school-meta">Paris · 28 étudiants · Forfait + Pack Standard</div></div><div class="school-stats"><div class="school-stat"><b>28</b>étudiants</div><div class="school-stat"><b>50</b>tokens</div><div class="school-stat"><b style="color:var(--green)">1 168 €</b>/mois</div></div><button class="abtn" style="margin-left:16px">Gérer</button></div>
-      <div class="school-card"><div class="school-logo">🏛️</div><div class="school-info"><div class="school-name">IFAG Lyon</div><div class="school-meta">Lyon · 18 étudiants · Accès ressources seul</div></div><div class="school-stats"><div class="school-stat"><b>18</b>étudiants</div><div class="school-stat"><b>—</b>tokens</div><div class="school-stat"><b style="color:var(--muted)">108 €</b>/mois</div></div><button class="abtn" style="margin-left:16px">Gérer</button></div>
-      <div class="school-card"><div class="school-logo">🎯</div><div class="school-info"><div class="school-name">Pigier Bordeaux</div><div class="school-meta">Bordeaux · En cours de signature</div></div><div class="school-stats"><div class="school-stat"><b>12</b>étudiants est.</div><div class="school-stat"><b>20</b>tokens prévu</div><div class="school-stat"><b style="color:var(--amber)">En cours</b></div></div><button class="abtn ok" style="margin-left:16px">Finaliser</button></div>
+      <div class="school-card"><div class="school-logo">🎓</div><div class="school-info"><div class="school-name">ESCP Business School</div><div class="school-meta">Paris · 45 étudiants · Forfait + Pack Standard</div></div><div class="school-stats"><div class="school-stat"><b>45</b>étudiants</div><div class="school-stat"><b>50</b>tokens</div><div class="school-stat"><b style="color:var(--green)">1 625 €</b>/mois</div></div><button class="abtn" style="margin-left:16px" onclick="gererEcole(this)">Gérer</button></div>
+      <div class="school-card"><div class="school-logo">📚</div><div class="school-info"><div class="school-name">ICD Paris</div><div class="school-meta">Paris · 28 étudiants · Forfait + Pack Standard</div></div><div class="school-stats"><div class="school-stat"><b>28</b>étudiants</div><div class="school-stat"><b>50</b>tokens</div><div class="school-stat"><b style="color:var(--green)">1 168 €</b>/mois</div></div><button class="abtn" style="margin-left:16px" onclick="gererEcole(this)">Gérer</button></div>
+      <div class="school-card"><div class="school-logo">🏛️</div><div class="school-info"><div class="school-name">IFAG Lyon</div><div class="school-meta">Lyon · 18 étudiants · Accès ressources seul</div></div><div class="school-stats"><div class="school-stat"><b>18</b>étudiants</div><div class="school-stat"><b>—</b>tokens</div><div class="school-stat"><b style="color:var(--muted)">108 €</b>/mois</div></div><button class="abtn" style="margin-left:16px" onclick="gererEcole(this)">Gérer</button></div>
+      <div class="school-card"><div class="school-logo">🎯</div><div class="school-info"><div class="school-name">Pigier Bordeaux</div><div class="school-meta">Bordeaux · En cours de signature</div></div><div class="school-stats"><div class="school-stat"><b>12</b>étudiants est.</div><div class="school-stat"><b>20</b>tokens prévu</div><div class="school-stat"><b style="color:var(--amber)">En cours</b></div></div><button class="abtn ok" style="margin-left:16px" onclick="openModal('add-school')">Finaliser</button></div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><h3>Rapports trimestriels disponibles</h3></div>
     <table><tr><th>École</th><th>Période</th><th>Placement déclaré</th><th>Séances</th><th>Satisfaction</th><th>Action</th></tr>
-      <tr><td><b>ESCP Business School</b></td><td>T1 2026</td><td>68%</td><td>87</td><td>★ 4.8</td><td><button class="abtn">📄 Télécharger</button></td></tr>
-      <tr><td><b>ICD Paris</b></td><td>T1 2026</td><td>52%</td><td>43</td><td>★ 4.7</td><td><button class="abtn">📄 Télécharger</button></td></tr>
-      <tr><td><b>IFAG Lyon</b></td><td>T1 2026</td><td>—</td><td>12</td><td>★ 4.6</td><td><button class="abtn">📄 Télécharger</button></td></tr>
+      <tr><td><b>ESCP Business School</b></td><td>T1 2026</td><td>68%</td><td>87</td><td>★ 4.8</td><td><button class="abtn" onclick="downloadReport(this)">📄 Télécharger</button></td></tr>
+      <tr><td><b>ICD Paris</b></td><td>T1 2026</td><td>52%</td><td>43</td><td>★ 4.7</td><td><button class="abtn" onclick="downloadReport(this)">📄 Télécharger</button></td></tr>
+      <tr><td><b>IFAG Lyon</b></td><td>T1 2026</td><td>—</td><td>12</td><td>★ 4.6</td><td><button class="abtn" onclick="downloadReport(this)">📄 Télécharger</button></td></tr>
     </table>
   </div>
 </div>
@@ -595,11 +595,11 @@ tr:hover td{background:#FAFAFA;}
     <div class="card">
       <div class="card-head"><h3>📁 Rapports récents</h3></div>
       <table><tr><th>Rapport</th><th>Date</th><th>Format</th><th></th></tr>
-        <tr><td><b>Vue globale Mars 2026</b></td><td>20/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
-        <tr><td><b>ESCP T1 2026</b></td><td>01/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
-        <tr><td><b>Export étudiants</b></td><td>28/02</td><td>CSV</td><td><button class="abtn">↓</button></td></tr>
-        <tr><td><b>Reversements Fév</b></td><td>01/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
-        <tr><td><b>Vue globale Fév 2026</b></td><td>01/03</td><td>PDF</td><td><button class="abtn">↓</button></td></tr>
+        <tr><td><b>Vue globale Mars 2026</b></td><td>20/03</td><td>PDF</td><td><button class="abtn" onclick="downloadReport(this)">↓</button></td></tr>
+        <tr><td><b>ESCP T1 2026</b></td><td>01/03</td><td>PDF</td><td><button class="abtn" onclick="downloadReport(this)">↓</button></td></tr>
+        <tr><td><b>Export étudiants</b></td><td>28/02</td><td>CSV</td><td><button class="abtn" onclick="downloadReport(this)">↓</button></td></tr>
+        <tr><td><b>Reversements Fév</b></td><td>01/03</td><td>PDF</td><td><button class="abtn" onclick="downloadReport(this)">↓</button></td></tr>
+        <tr><td><b>Vue globale Fév 2026</b></td><td>01/03</td><td>PDF</td><td><button class="abtn" onclick="downloadReport(this)">↓</button></td></tr>
       </table>
     </div>
   </div>
@@ -830,8 +830,8 @@ tr:hover td{background:#FAFAFA;}
     </div>
     <div class="modal-foot">
       <button class="btn-m g" onclick="closeModal('view-student')">Fermer</button>
-      <button class="btn-m" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)">+ Tokens</button>
-      <button class="btn-m p">Enregistrer</button>
+      <button class="btn-m" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)" onclick="addTokensAdmin(this)">+ Tokens</button>
+      <button class="btn-m p" onclick="saveStudentNote(this)">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1310,6 +1310,107 @@ window.show = function(id, btn){
   const badge = document.getElementById('badge-candidatures');
   if(badge && pending){ badge.textContent=pending; badge.style.display=''; }
 })();
+
+// ─── BOUTONS MANQUANTS ────────────────────────────────────────────────────────
+
+function bloquerUser(btn) {
+  const tr = btn.closest('tr');
+  const name = tr ? tr.querySelector('b')?.textContent : 'cet utilisateur';
+  if(!confirm(`Bloquer ${name} ? L'accès sera suspendu immédiatement.`)) return;
+  btn.textContent = '🔒 Bloqué';
+  btn.style.cssText = 'background:var(--red-bg);color:var(--red);border:1px solid var(--red);font-size:11px;padding:4px 10px;border-radius:5px;cursor:default;font-family:inherit';
+  btn.disabled = true;
+  const badge = tr?.querySelector('.badge');
+  if(badge) { badge.className = 'badge red'; badge.textContent = 'Bloqué'; }
+  const voir = btn.previousElementSibling;
+  if(voir) voir.style.display = 'none';
+  toast(`🔒 ${name} a été bloqué.`);
+}
+
+function refuserUser(btn) {
+  const tr = btn.closest('tr');
+  const name = tr ? tr.querySelector('b')?.textContent : 'cette entrée';
+  if(!confirm(`Refuser ${name} ?`)) return;
+  btn.textContent = '✗ Refusé';
+  btn.style.cssText = 'background:var(--red-bg);color:var(--red);border:1px solid var(--red);font-size:11px;padding:4px 10px;border-radius:5px;cursor:default;font-family:inherit';
+  btn.disabled = true;
+  const badge = tr?.querySelector('.badge');
+  if(badge) { badge.className = 'badge red'; badge.textContent = 'Refusé'; }
+  const okBtn = btn.previousElementSibling;
+  if(okBtn) okBtn.style.display = 'none';
+  toast(`✗ ${name} a été refusé.`);
+}
+
+function viewMentorProfile(btn) {
+  const tr = btn.closest('tr');
+  const cells = tr ? tr.querySelectorAll('td') : [];
+  const name = cells[0]?.querySelector('b')?.textContent || 'Mentor';
+  const poste = cells[1]?.textContent || '';
+  const secteur = cells[2]?.textContent || '';
+  const level = cells[3]?.querySelector('.badge')?.textContent || '';
+  const seances = cells[4]?.textContent || '';
+  const note = cells[5]?.textContent || '';
+
+  const modalBody = document.querySelector('#modal-view-student .modal-body');
+  if(modalBody) {
+    modalBody.querySelector('div div:first-child')?.setAttribute('style', 'font-size:15px;font-weight:700');
+    const nameEl = modalBody.querySelector('div div:first-child');
+    if(nameEl) nameEl.textContent = name;
+    const metaEl = modalBody.querySelector('div div:nth-child(2)');
+    if(metaEl) metaEl.textContent = `${poste} · ${secteur}`;
+  }
+  document.querySelector('#modal-view-student .modal-head h3').textContent = 'Profil mentor — ' + name;
+  openModal('view-student');
+}
+
+function viewSeanceDetails(btn) {
+  const tr = btn.closest('tr');
+  const cells = tr ? [...tr.querySelectorAll('td')] : [];
+  const date = cells[0]?.textContent || '';
+  const etudiant = cells[1]?.textContent || '';
+  const mentor = cells[2]?.textContent || '';
+  const sujet = cells[3]?.textContent || '';
+  toast(`📅 Séance ${date} · ${etudiant} ↔ ${mentor} · Sujet : ${sujet}`);
+}
+
+function gererEcole(btn) {
+  const card = btn.closest('.school-card');
+  const name = card?.querySelector('.school-name')?.textContent || 'école';
+  // Pre-fill the school modal with existing data
+  const inp = document.querySelector('#modal-add-school input');
+  if(inp) inp.value = name;
+  document.querySelector('#modal-add-school .modal-head h3').textContent = 'Gérer — ' + name;
+  openModal('add-school');
+}
+
+function downloadReport(btn) {
+  const tr = btn.closest('tr');
+  const name = tr ? tr.querySelector('td:first-child b')?.textContent || tr.querySelector('td:first-child')?.textContent?.trim() : 'Rapport';
+  btn.textContent = '⏳';
+  btn.disabled = true;
+  setTimeout(() => {
+    toast(`✓ Rapport "${name}" téléchargé`);
+    btn.textContent = btn.textContent.includes('📄') ? '📄 Télécharger' : '↓';
+    btn.disabled = false;
+  }, 900);
+}
+
+function addTokensAdmin(btn) {
+  const n = prompt('Combien de tokens ajouter ?', '5');
+  if(!n || isNaN(n) || n <= 0) return;
+  const valEl = document.querySelector('#modal-view-student .ff-row div:first-child div:nth-child(2)');
+  if(valEl) {
+    const current = parseInt(valEl.textContent) || 0;
+    valEl.textContent = current + parseInt(n);
+  }
+  toast(`✓ ${n} token(s) ajouté(s) au profil.`);
+}
+
+function saveStudentNote(btn) {
+  const txt = document.querySelector('#modal-view-student textarea')?.value || '';
+  toast(txt ? '✓ Note enregistrée.' : '✓ Profil mis à jour.');
+  closeModal('view-student');
+}
 </script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
