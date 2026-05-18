@@ -854,13 +854,17 @@
     const typeIcon  = TYPE_ICONS[r.type] || '📄';
     const badgeHtml = r.badge ? `<span class="rc-badge badge-${r.badge}">${BADGE_LABELS[r.badge]||r.badge}</span>` : '<span></span>';
     const ext = r.type==='video'?'Vidéo':r.type==='template'?'Word':'PDF';
-    const preview = r.preview ? r.preview.replace(/\n/g,'<br>') : '';
     const dataAttr = `data-res='${JSON.stringify(r).replace(/'/g,"&#39;")}'`;
+    const fileNameHtml = r.file_name ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;margin-bottom:10px">📎 ${r.file_name}</div>` : '';
+    const dlBtn = r.file_url
+      ? `<button class="rc-dl" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--blue-mid);padding:0" onclick="event.preventDefault();downloadResource('${r.id}')">📄 Télécharger</button>`
+      : `<span style="font-size:12px;color:var(--muted)">Bientôt disponible</span>`;
     return `<a href="#" class="resource-card" onclick="openDynModal(this);return false;" ${dataAttr}>
       <div class="rc-type"><div class="rc-type-icon ${typeClass}">${r.emoji||typeIcon}</div><span class="rc-type-label ${typeClass}">${r.type.charAt(0).toUpperCase()+r.type.slice(1)}</span></div>
       <div class="rc-title">${r.title}</div>
       <div class="rc-desc">${r.desc}</div>
-      <div class="rc-footer">${badgeHtml}<span class="rc-dl">↓ ${ext}</span></div>
+      ${fileNameHtml}
+      <div class="rc-footer">${badgeHtml}${dlBtn}</div>
     </a>`;
   }
 
@@ -889,7 +893,10 @@
         <p style="font-size:13px;color:var(--muted);margin-top:12px">${r.desc}</p>
       </div>
       <div class="modal-actions">
-        <button class="btn-dl" onclick="startDownload(this,'dyn-res-modal')">↓ Télécharger gratuitement</button>
+        ${r.file_url
+          ? '<button class="btn-download" onclick="downloadResource(\'' + r.id + '\');document.getElementById(\'dyn-res-modal\').remove();document.body.style.overflow=\'\'">📄 Télécharger le fichier</button>'
+          : '<button class="btn-download" onclick="startDownload(this,\'dyn-res-modal\')">↓ Télécharger gratuitement</button>'
+        }
       </div>
     </div>`;
     document.body.appendChild(m);
@@ -903,6 +910,38 @@
       const el = sec.querySelector('.section-count');
       if(el) el.textContent = count + ' ressource' + (count>1?'s':'');
     });
+  }
+
+  function getRessources(){
+    try { const d = localStorage.getItem('aterisk_ressources'); return d ? JSON.parse(d) : []; } catch { return []; }
+  }
+
+  function downloadResource(id) {
+    const resources = getRessources();
+    const res = resources.find(r => r.id === id);
+    if(!res || !res.file_url) { toast('📬 Fichier bientôt disponible'); return; }
+
+    // Track download
+    const key = 'aterisk_downloads_' + id;
+    localStorage.setItem(key, (parseInt(localStorage.getItem(key) || 0) + 1).toString());
+
+    // Open/download
+    const a = document.createElement('a');
+    a.href = res.file_url;
+    a.download = res.file_name || res.title + '.pdf';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast('📥 Téléchargement démarré');
+  }
+
+  function toast(msg){
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
   }
 
   function loadDynamicRessources(){

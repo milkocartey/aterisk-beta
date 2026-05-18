@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /tarifs.html
+Allow: /inscription.html
+Allow: /mentor-inscription.html
+Allow: /cgu.html
+Allow: /secteurs.html
+Allow: /ressources.html
+Allow: /mapping.html
+
+# Bloque les bots sur les espaces privés
+Disallow: /dashboard.html
+Disallow: /dashboard-mentor.html
+Disallow: /admin.html
+Disallow: /admin-ecole.html
+Disallow: /seance.html
+Disallow: /matching.html
+Disallow: /tokens.html
+Disallow: /aterisk_rapport_mentor.html
+
+Sitemap: https://aterisk.fr/sitemap.xml

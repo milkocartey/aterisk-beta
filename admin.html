@@ -133,6 +133,34 @@ tr:hover td{background:#FAFAFA;}
 .btn-m.p:hover{background:var(--blue-mid);}
 .btn-m.g{background:white;color:var(--muted);border:1px solid var(--border);}
 .btn-m.g:hover{border-color:var(--blue-mid);color:var(--blue);}
+/* ── PDF UPLOAD ZONE ─────────────────────────────────────────────────────── */
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: 12px;
+  padding: 28px 20px; text-align: center; cursor: pointer;
+  transition: all 0.2s; background: var(--blue-pale);
+  position: relative;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--blue-mid); background: var(--blue-light);
+}
+.upload-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-text { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.upload-link { color: var(--blue-mid); text-decoration: underline; cursor: pointer; }
+.upload-hint { font-size: 12px; color: var(--muted); }
+.upload-preview {
+  margin-top: 12px; padding: 10px 14px;
+  background: white; border: 1px solid var(--border); border-radius: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+.upload-filename { font-size: 13px; font-weight: 600; color: var(--ink); flex: 1; text-align: left; }
+.upload-size { font-size: 11px; color: var(--muted); }
+.upload-preview button { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; padding: 2px; }
+.upload-progress { margin-top: 8px; }
+.progress-bar-inner {
+  height: 4px; border-radius: 2px; background: var(--blue-mid);
+  width: 0; transition: width 0.3s;
+}
+#progress-text { font-size: 11px; color: var(--muted); display: block; margin-top: 4px; }
 /* CMS */
 .cms-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;}
 .cms-tab{padding:10px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;}
@@ -574,7 +602,7 @@ tr:hover td{background:#FAFAFA;}
         <option value="">Tous les types</option>
         <option>Guide PDF</option><option>Modèle</option><option>Webinaire</option><option>Checklist</option><option>Autre</option>
       </select>
-      <button class="tb-btn primary" onclick="openCmsModal('ressource',null)">+ Ajouter une ressource</button>
+      <button class="tb-btn primary" onclick="openModal('add-ressource')">📄 Importer une ressource</button>
     </div>
     <div class="res-list" id="cms-res-list"></div>
   </div>
@@ -722,6 +750,24 @@ tr:hover td{background:#FAFAFA;}
     </div>
     <div class="modal-body">
       <input type="hidden" id="res-edit-id">
+      <div class="ff">
+        <label>Fichier PDF</label>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('pdf-input').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
+          <input type="file" id="pdf-input" accept=".pdf,.doc,.docx" style="display:none" onchange="handleFileSelect(this)">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Glisse ton PDF ici ou <span class="upload-link">parcourir</span></div>
+          <div class="upload-hint">PDF, DOC · max 10 MB</div>
+          <div class="upload-preview" id="upload-preview" style="display:none">
+            <span class="upload-filename" id="upload-filename"></span>
+            <span class="upload-size" id="upload-size"></span>
+            <button type="button" onclick="clearFile(event)">✕</button>
+          </div>
+        </div>
+        <div class="upload-progress" id="upload-progress" style="display:none">
+          <div class="progress-bar-inner" id="progress-bar-inner"></div>
+          <span id="progress-text">Téléchargement…</span>
+        </div>
+      </div>
       <div class="ff-row">
         <div class="ff"><label>Titre</label><input id="r-title" placeholder="Template CV ATS optimisé"></div>
         <div class="ff"><label>Emoji</label><input id="r-emoji" placeholder="📄" value="📄"></div>
@@ -776,7 +822,7 @@ tr:hover td{background:#FAFAFA;}
     </div>
     <div class="modal-foot">
       <button class="btn-m g" onclick="closeModal('add-ressource')">Annuler</button>
-      <button class="btn-m p" onclick="saveRessource()">Enregistrer</button>
+      <button class="btn-m p" id="btn-save-ressource">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1075,6 +1121,8 @@ function editRessource(id){
 
 function saveRessource(){
   const editId=document.getElementById('res-edit-id').value;
+  const fileUrlInput=document.getElementById('r-file-url');
+  const fileNameInput=document.getElementById('r-file-name');
   const res={
     id:editId||'r_'+Date.now(),
     title:document.getElementById('r-title').value.trim(),
@@ -1086,12 +1134,16 @@ function saveRessource(){
     badge:document.getElementById('r-badge').value,
     color:document.getElementById('r-color').value,
   };
+  if(fileUrlInput?.value){res.file_url=fileUrlInput.value;fileUrlInput.value='';}
+  if(fileNameInput?.value){res.file_name=fileNameInput.value;fileNameInput.value='';}
   if(!res.title){toast('⚠️ Le titre est obligatoire');return;}
   let ressources=getRessources();
-  if(editId){ressources=ressources.map(r=>r.id===editId?res:r);}
+  if(editId){ressources=ressources.map(r=>r.id===editId?{...r,...res}:r);}
   else{ressources.push(res);}
   setRessources(ressources);
   closeModal('add-ressource');
+  // Reset file upload state
+  clearFile({stopPropagation:()=>{}});
   document.getElementById('res-edit-id').value='';
   document.getElementById('res-modal-title').textContent='Ajouter une ressource';
   renderRessources();
@@ -1411,6 +1463,111 @@ function saveStudentNote(btn) {
   toast(txt ? '✓ Note enregistrée.' : '✓ Profil mis à jour.');
   closeModal('view-student');
 }
+
+// ─── MISSING STUBS ────────────────────────────────────────────────────────────
+function cmsTab(tab, btn){
+  document.querySelectorAll('.cms-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.cms-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cms-'+tab).classList.add('active');
+  if(tab==='mentors') renderMentors();
+  if(tab==='ressources') renderRessources();
+}
+function cmsFilter(type, val){
+  if(type==='mentors') renderMentors(val||document.querySelector('#cms-mentors .cms-search')?.value||'');
+  if(type==='ressources') renderRessources(val||document.querySelector('#cms-ressources .cms-search')?.value||'');
+}
+function openCmsModal(type, id){
+  if(type==='mentor') { if(id) editMentor(id); else openModal('add-mentor'); }
+  if(type==='ressource') { if(id) editRessource(id); else openModal('add-ressource'); }
+}
+function saveMentorsData(arr){ setMentors(arr); }
+
+// ─── PDF UPLOAD ───────────────────────────────────────────────────────────────
+let currentFile = null;
+
+function handleFileSelect(input) {
+  const file = input.files[0];
+  if(file) setUploadFile(file);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.add('drag-over');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) setUploadFile(file);
+}
+
+function setUploadFile(file) {
+  if(file.size > 10 * 1024 * 1024) { toast('⚠️ Fichier trop lourd (max 10 MB)'); return; }
+  currentFile = file;
+  document.getElementById('upload-preview').style.display = 'flex';
+  document.getElementById('upload-filename').textContent = file.name;
+  document.getElementById('upload-size').textContent = (file.size / 1024).toFixed(0) + ' KB';
+  document.getElementById('upload-zone').style.border = '2px solid var(--blue-mid)';
+  // Auto-fill title from filename
+  const titleInput = document.getElementById('r-title');
+  if(titleInput && !titleInput.value) {
+    titleInput.value = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+  }
+}
+
+function clearFile(e) {
+  if(e && e.stopPropagation) e.stopPropagation();
+  currentFile = null;
+  const preview = document.getElementById('upload-preview');
+  const pdfInput = document.getElementById('pdf-input');
+  const zone = document.getElementById('upload-zone');
+  const prog = document.getElementById('upload-progress');
+  if(preview) preview.style.display = 'none';
+  if(pdfInput) pdfInput.value = '';
+  if(zone) zone.style.border = '';
+  if(prog) prog.style.display = 'none';
+}
+
+function simulateUpload(callback) {
+  const bar = document.getElementById('progress-bar-inner');
+  const txt = document.getElementById('progress-text');
+  const prog = document.getElementById('upload-progress');
+  prog.style.display = 'block';
+  let pct = 0;
+  const iv = setInterval(() => {
+    pct += Math.random() * 20 + 5;
+    if(pct >= 100) {
+      pct = 100;
+      clearInterval(iv);
+      setTimeout(() => { prog.style.display = 'none'; bar.style.width = '0'; callback(); }, 400);
+    }
+    bar.style.width = pct + '%';
+    txt.textContent = Math.round(pct) + '% téléchargé…';
+  }, 150);
+}
+
+// Save button — handles file upload if a file is selected, else saves directly
+document.getElementById('btn-save-ressource').addEventListener('click', function() {
+  if(!currentFile) { saveRessource(); return; }
+  simulateUpload(() => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const blob = new Blob([ev.target.result], { type: currentFile.type });
+      const url = URL.createObjectURL(blob);
+      let urlInput = document.getElementById('r-file-url');
+      if(!urlInput) { urlInput = document.createElement('input'); urlInput.id = 'r-file-url'; urlInput.type = 'hidden'; document.body.appendChild(urlInput); }
+      let nameInput = document.getElementById('r-file-name');
+      if(!nameInput) { nameInput = document.createElement('input'); nameInput.id = 'r-file-name'; nameInput.type = 'hidden'; document.body.appendChild(nameInput); }
+      urlInput.value = url;
+      nameInput.value = currentFile.name;
+      currentFile = null;
+      saveRessource();
+    };
+    reader.readAsArrayBuffer(currentFile);
+  });
+});
 </script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>

@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATERISK — Espace École</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #1A2E7A; --blue-mid: #2A45B0; --blue-light: #E8EEF9; --blue-pale: #F3F6FD;
+  --ink: #0D1526; --muted: #6B7280; --border: #DDE3F0; --white: #fff; --dark: #030712;
+  --green: #16A34A; --green-bg: #DCFCE7;
+  --amber: #92400E; --amber-bg: #FEF3C7;
+  --red: #DC2626; --red-bg: #FEF2F2;
+  --purple: #6D28D9; --purple-bg: #F5F3FF;
+  --teal: #0F766E; --teal-bg: #F0FDFA;
+  --sidebar: 220px;
+  --shadow: 0 4px 24px rgba(26,46,122,0.08);
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--blue-pale); display: flex; min-height: 100vh; }
+
+/* ─── SIDEBAR ─────────────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar);
+  background: linear-gradient(180deg, #0a1640 0%, #1A2E7A 10%);
+  position: fixed; top: 0; left: 0; bottom: 0;
+  display: flex; flex-direction: column; z-index: 50; overflow-y: auto;
+}
+.sb-school {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sb-school-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); margin-bottom: 8px;
+}
+.sb-school-dot { width: 5px; height: 5px; background: #60A5FA; border-radius: 50%; }
+.sb-school-name {
+  font-family: 'DM Serif Display', serif; font-size: 16px; color: white;
+  line-height: 1.3; font-weight: 400;
+}
+.sb-school-sub { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.8px; }
+
+.sb-user {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.sb-avatar {
+  width: 34px; height: 34px; background: rgba(255,255,255,0.14);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.sb-user-info h4 { font-size: 12px; font-weight: 600; color: white; }
+.sb-user-info p { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 1px; }
+
+.sb-nav { padding: 8px 10px; flex: 1; }
+.sb-section {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); padding: 12px 8px 5px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  transition: all 0.15s; margin-bottom: 1px;
+  border: none; background: transparent; width: 100%; text-align: left;
+  text-decoration: none;
+}
+.nav-item:hover { background: rgba(255,255,255,0.08); }
+.nav-item.active { background: rgba(255,255,255,0.14); }
+.nav-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); }
+.nav-item.active .nav-label { color: white; }
+.nav-badge {
+  margin-left: auto; background: var(--green); color: white;
+  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+}
+.nav-badge.amber { background: var(--amber); }
+
+.sb-footer {
+  padding: 12px 14px; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.sb-footer a {
+  font-size: 11px; color: rgba(255,255,255,0.35); text-decoration: none;
+  display: block; padding: 4px 0; transition: color 0.15s;
+}
+.sb-footer a:hover { color: rgba(255,255,255,0.75); }
+.sb-footer .logout {
+  margin-top: 6px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.5); cursor: pointer;
+}
+.sb-footer .logout:hover { color: #FCA5A5; }
+
+/* ─── MAIN ─────────────────────────────────────────────────────────────── */
+.main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* TOPBAR */
+.topbar {
+  background: white; border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(26,46,122,0.05);
+  padding: 0 28px; height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 40;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-crumb {
+  font-size: 11px; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.topbar-crumb span { color: var(--ink); font-weight: 600; font-size: 14px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-avatar {
+  width: 32px; height: 32px; background: var(--blue-light); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer;
+}
+.tb-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: 100px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.15s;
+}
+.tb-btn.primary { background: var(--blue); color: white; }
+.tb-btn.primary:hover { background: var(--blue-mid); }
+.tb-btn.ghost { background: white; color: var(--muted); border: 1px solid var(--border); }
+.tb-btn.ghost:hover { border-color: var(--blue-mid); color: var(--blue); }
+
+/* CONTENT */
+.content { padding: 24px 28px 64px; flex: 1; }
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+/* ─── WELCOME BANNER ───────────────────────────────────────────────────── */
+.welcome-banner {
+  background: #030712; border-radius: 18px;
+  padding: 28px 32px; margin-bottom: 22px;
+  position: relative; overflow: hidden;
+}
+.wb-glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 75% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.30) 0%, transparent 65%);
+  animation: glowPulse 8s ease-in-out infinite alternate;
+}
+.wb-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+@keyframes glowPulse {
+  from {
+    background:
+      radial-gradient(ellipse 75% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.30) 0%, transparent 65%);
+  }
+  to {
+    background:
+      radial-gradient(ellipse 65% 70% at 75% 40%, rgba(42,69,176,0.45) 0%, transparent 65%),
+      radial-gradient(ellipse 65% 75% at 20% 60%, rgba(26,46,122,0.30) 0%, transparent 65%);
+  }
+}
+.wb-inner { position: relative; z-index: 1; }
+.wb-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.45);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+}
+.wb-dot { width: 6px; height: 6px; background: #60A5FA; border-radius: 50%; animation: dotPulse 2.2s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+.wb-title { font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; color: white; margin-bottom: 5px; }
+.wb-title em { font-style: italic; }
+.wb-sub { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+/* ─── KPI ROW ──────────────────────────────────────────────────────────── */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+.kpi {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow); position: relative;
+}
+.kpi-icon { position: absolute; top: 16px; right: 16px; font-size: 20px; opacity: 0.15; }
+.kpi-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+.kpi-val { font-family: 'Unbounded', monospace; font-size: 26px; font-weight: 700; color: var(--ink); line-height: 1; }
+.kpi-sub { font-size: 11px; margin-top: 5px; }
+.up { color: var(--green); } .dn { color: var(--red); } .neu { color: var(--muted); }
+
+/* ─── CARDS ────────────────────────────────────────────────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.card { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+.card-head {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-head h3 { font-size: 14px; font-weight: 600; }
+.card-head-right { display: flex; align-items: center; gap: 8px; }
+
+/* ─── BADGES ────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 600;
+  padding: 2px 9px; border-radius: 20px; white-space: nowrap;
+}
+.badge.green { background: var(--green-bg); color: var(--green); }
+.badge.amber { background: var(--amber-bg); color: var(--amber); }
+.badge.blue { background: var(--blue-light); color: var(--blue-mid); }
+.badge.red { background: var(--red-bg); color: var(--red); }
+.badge.gray { background: #F3F4F6; color: var(--muted); }
+.badge.purple { background: var(--purple-bg); color: var(--purple); }
+.badge.teal { background: var(--teal-bg); color: var(--teal); }
+
+/* ─── TABLE ─────────────────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; }
+th {
+  font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.7px; padding: 10px 16px; text-align: left;
+  background: #FAFBFD; border-bottom: 1px solid var(--border);
+}
+td { font-size: 13px; padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--ink); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #FAFBFF; }
+.td-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; margin-right: 8px; vertical-align: middle;
+}
+
+/* ─── BUTTONS ───────────────────────────────────────────────────────────── */
+.btn {
+  padding: 9px 20px; border-radius: 100px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn.primary { background: var(--blue); color: white; }
+.btn.primary:hover { background: var(--blue-mid); }
+.btn.ghost { background: white; color: var(--muted); border: 1px solid var(--border); }
+.btn.ghost:hover { border-color: var(--blue-mid); color: var(--blue); }
+.btn.sm { font-size: 11px; padding: 5px 12px; }
+.btn.green-btn { background: var(--green); color: white; }
+.btn.green-btn:hover { background: #15803D; }
+
+/* ─── SEARCH / FILTERS ──────────────────────────────────────────────────── */
+.toolbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.si {
+  flex: 1; min-width: 200px; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: 100px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+  background: var(--blue-pale);
+}
+.si:focus { border-color: var(--blue-mid); background: white; }
+.sel {
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: 100px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; outline: none;
+  background: white; cursor: pointer; color: var(--muted);
+}
+.sel:focus { border-color: var(--blue-mid); }
+
+/* ─── TIMELINE / ACTIVITY ───────────────────────────────────────────────── */
+.activity-list { padding: 6px 0; }
+.act-item { display: flex; gap: 12px; padding: 11px 18px; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.act-item:last-child { border-bottom: none; }
+.act-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.act-text { flex: 1; font-size: 12px; color: var(--ink); line-height: 1.5; }
+.act-text strong { font-weight: 600; }
+.act-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ─── BAR CHART ─────────────────────────────────────────────────────────── */
+.bar-chart-wrap { padding: 16px 18px; }
+.bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 110px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.bar-bg { width: 100%; border-radius: 5px 5px 0 0; transition: height 0.6s ease; }
+.bar-lbl { font-size: 9px; color: var(--muted); text-align: center; white-space: nowrap; }
+.bar-val { font-size: 10px; font-weight: 700; color: var(--ink); }
+.bar-chart-legend { display: flex; align-items: center; gap: 16px; margin-top: 14px; }
+.bcl-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.bcl-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ─── DONUT CHART (CSS) ──────────────────────────────────────────────────── */
+.donut-wrap { display: flex; align-items: center; gap: 24px; padding: 20px 18px; }
+.donut { width: 120px; height: 120px; border-radius: 50%; flex-shrink: 0; position: relative; }
+.donut-center {
+  position: absolute; inset: 20px; background: white;
+  border-radius: 50%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.donut-pct { font-family: 'Unbounded', monospace; font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1; }
+.donut-pct-sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+.donut-legend { flex: 1; }
+.dl-item { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; }
+.dl-swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.dl-label { flex: 1; color: var(--ink); }
+.dl-val { font-weight: 600; }
+
+/* ─── PROGRESS BAR ───────────────────────────────────────────────────────── */
+.prog-row { margin-bottom: 14px; }
+.prog-lbl { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+.prog-lbl span:last-child { font-weight: 600; }
+.prog-w { background: #F1F5F9; border-radius: 6px; height: 8px; overflow: hidden; }
+.prog-b { height: 8px; border-radius: 6px; transition: width 0.8s ease; }
+
+/* ─── RESOURCE CARDS ─────────────────────────────────────────────────────── */
+.res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 18px; }
+.res-card {
+  border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden;
+  transition: all 0.18s; background: white;
+}
+.res-card:hover { border-color: var(--blue-mid); box-shadow: var(--shadow); }
+.res-card-top {
+  height: 80px; display: flex; align-items: center; justify-content: center;
+  font-size: 36px; position: relative;
+}
+.res-card-body { padding: 12px 14px; }
+.res-card-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; color: var(--ink); }
+.res-card-meta { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.res-card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.res-card-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: var(--blue-light); color: var(--blue-mid); }
+.res-readonly-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--blue-pale), #EEF4FF);
+  border: 1px solid var(--blue-light); border-radius: 10px;
+  padding: 14px 18px; margin-bottom: 20px;
+}
+.res-readonly-icon { font-size: 24px; flex-shrink: 0; }
+.res-readonly-text h4 { font-size: 13px; font-weight: 600; color: var(--blue); margin-bottom: 2px; }
+.res-readonly-text p { font-size: 12px; color: var(--muted); }
+
+/* ─── TOKEN CARD ─────────────────────────────────────────────────────────── */
+.token-pack-card {
+  background: linear-gradient(135deg, #0a1640 0%, var(--blue) 100%);
+  border-radius: var(--radius); padding: 24px 28px; color: white;
+  position: relative; overflow: hidden; margin-bottom: 20px;
+}
+.token-pack-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 80% 30%, rgba(255,255,255,0.08) 0%, transparent 65%);
+}
+.token-pack-inner { position: relative; z-index: 1; }
+.tp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+.tp-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; margin-bottom: 4px; }
+.tp-date { font-size: 12px; color: rgba(255,255,255,0.5); }
+.tp-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+.tp-stat { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; }
+.tp-stat-val { font-family: 'Unbounded', monospace; font-size: 22px; font-weight: 700; color: white; line-height: 1; margin-bottom: 3px; }
+.tp-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.5); }
+
+/* ─── CONTACT ────────────────────────────────────────────────────────────── */
+.contact-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 28px;
+  margin-bottom: 20px;
+}
+.contact-channels { display: flex; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+.channel-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: var(--blue-pale);
+  cursor: pointer; transition: all 0.18s; text-decoration: none; flex: 1;
+}
+.channel-btn:hover { border-color: var(--blue-mid); background: white; box-shadow: var(--shadow); }
+.channel-icon { font-size: 22px; }
+.channel-info h4 { font-size: 13px; font-weight: 600; color: var(--ink); }
+.channel-info p { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+.contact-form { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 28px; margin-bottom: 20px; }
+.contact-form h3 { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
+.ff { margin-bottom: 14px; }
+.ff label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ff input, .ff select, .ff textarea {
+  width: 100%; padding: 9px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+  transition: border-color 0.2s; background: white;
+}
+.ff input:focus, .ff select:focus, .ff textarea:focus { border-color: var(--blue-mid); }
+.ff textarea { resize: none; min-height: 90px; }
+.ff-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.faq-list { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  padding: 16px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.15s;
+}
+.faq-q:hover { background: var(--blue-pale); }
+.faq-arrow { font-size: 12px; color: var(--muted); transition: transform 0.25s; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-a { display: none; padding: 0 20px 18px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+.faq-item.open .faq-a { display: block; }
+
+/* ─── PLACEMENT TABLE ───────────────────────────────────────────────────── */
+.placement-table-wrap { overflow-x: auto; }
+
+/* ─── MODALS ─────────────────────────────────────────────────────────────── */
+.modal-ov {
+  display: none; position: fixed; inset: 0;
+  background: rgba(13,21,38,0.5); z-index: 200;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-ov.open { display: flex; animation: fadeIn 0.2s ease; }
+.modal { background: white; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+.modal-head {
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-head h3 { font-size: 15px; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--muted); padding: 4px 6px; border-radius: 6px; line-height: 1; }
+.modal-close:hover { background: var(--border); }
+.modal-body { padding: 20px 22px; }
+.modal-foot {
+  padding: 14px 22px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.btn-m { padding: 9px 18px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-m.p { background: var(--blue); color: white; }
+.btn-m.p:hover { background: var(--blue-mid); }
+.btn-m.g { background: white; color: var(--muted); border: 1px solid var(--border); }
+.btn-m.g:hover { border-color: var(--blue-mid); color: var(--blue); }
+
+/* student profile modal special header */
+.modal-profile-header {
+  background: linear-gradient(135deg, #0a1640, var(--blue));
+  padding: 22px 24px; border-radius: 16px 16px 0 0;
+  position: relative;
+}
+.mph-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 28px; height: 28px; background: rgba(255,255,255,0.15);
+  border: none; border-radius: 50%; color: white; font-size: 12px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.mph-close:hover { background: rgba(255,255,255,0.25); }
+.mph-av { width: 48px; height: 48px; background: rgba(255,255,255,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 10px; }
+.mph-name { font-family: 'DM Serif Display', serif; font-size: 18px; color: white; }
+.mph-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.modal-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.ms-stat { background: var(--blue-pale); border-radius: 8px; padding: 12px; text-align: center; }
+.ms-stat-val { font-family: 'Unbounded', monospace; font-size: 20px; font-weight: 700; color: var(--blue); }
+.ms-stat-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ─── TOAST ──────────────────────────────────────────────────────────────── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+
+/* ─── SECTION TITLE ─────────────────────────────────────────────────────── */
+#section-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+
+/* ─── OVERVIEW ACTIVITY ITEM ─────────────────────────────────────────────── */
+.act-dot.green { background: var(--green); }
+.act-dot.blue { background: var(--blue-mid); }
+.act-dot.amber { background: #F59E0B; }
+.act-dot.red { background: var(--red); }
+.act-dot.purple { background: var(--purple); }
+
+/* ─── PLACEMENT STATUS TIMELINE ─────────────────────────────────────────── */
+.pl-steps { display: flex; align-items: center; gap: 0; margin: 12px 0 6px; }
+.pl-step { flex: 1; text-align: center; position: relative; }
+.pl-step::before { content: ''; display: block; height: 2px; background: var(--border); position: absolute; top: 12px; left: 0; right: 0; z-index: 0; }
+.pl-step:first-child::before { left: 50%; }
+.pl-step:last-child::before { right: 50%; }
+.pl-step-dot { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; position: relative; z-index: 1; border: 2px solid var(--border); background: white; }
+.pl-step.done .pl-step-dot { background: var(--green); border-color: var(--green); color: white; }
+.pl-step.active .pl-step-dot { background: var(--blue); border-color: var(--blue); color: white; }
+.pl-step::before { background: var(--border); }
+.pl-step.done::before { background: var(--green); }
+.pl-step-lbl { font-size: 9px; color: var(--muted); }
+.pl-step.done .pl-step-lbl { color: var(--green); font-weight: 600; }
+.pl-step.active .pl-step-lbl { color: var(--blue); font-weight: 600; }
+
+/* ─── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } .res-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .content { padding: 16px; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .res-grid { grid-template-columns: 1fr; }
+  .tp-row { grid-template-columns: 1fr; }
+  .ff-row { grid-template-columns: 1fr; }
+  .contact-channels { flex-direction: column; }
+  .modal-stats-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+<style>body{opacity:0;transition:none}</style>
+</head>
+<body>
+
+<!-- AUTH GUARD -->
+<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=admin-ecole.html');return;}var r=JSON.parse(u).role;if(r!=='admin-ecole'){location.replace('login.html');}})();</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-school">
+    <div class="sb-school-badge"><span class="sb-school-dot"></span>École partenaire</div>
+    <div class="sb-school-name">ESCP<br>Business School</div>
+    <div class="sb-school-sub">Partenaire depuis 2025</div>
+  </div>
+
+  <div class="sb-user">
+    <div class="sb-avatar">👩‍💼</div>
+    <div class="sb-user-info">
+      <h4>Marie Dupont</h4>
+      <p>Responsable Relations</p>
+    </div>
+  </div>
+
+  <nav class="sb-nav sidebar-nav">
+    <div class="sb-section">Navigation</div>
+    <button class="nav-item active" onclick="show('overview', this)">
+      <span class="nav-icon">📊</span><span class="nav-label">Tableau de bord</span>
+    </button>
+    <button class="nav-item" onclick="show('students', this)">
+      <span class="nav-icon">👩‍🎓</span><span class="nav-label">Mes étudiants</span>
+      <span class="nav-badge">28</span>
+    </button>
+    <button class="nav-item" onclick="show('placements', this)">
+      <span class="nav-icon">📈</span><span class="nav-label">Suivi des placements</span>
+    </button>
+    <button class="nav-item" onclick="show('tokens', this)">
+      <span class="nav-icon">🪙</span><span class="nav-label">Tokens & Abonnement</span>
+    </button>
+    <button class="nav-item" onclick="show('ressources', this)">
+      <span class="nav-icon">📚</span><span class="nav-label">Ressources</span>
+    </button>
+    <button class="nav-item" onclick="show('contact', this)">
+      <span class="nav-icon">📧</span><span class="nav-label">Contacter ATERISK</span>
+    </button>
+  </nav>
+
+  <div class="sb-footer">
+    <a href="index.html" target="_blank">← Site public ATERISK</a>
+    <a href="login.html" class="logout" onclick="doLogout(event)">Se déconnecter</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main" id="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-crumb">
+        ATERISK &rsaquo; <span id="section-title">Tableau de bord</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="tb-btn ghost" onclick="show('contact', document.querySelectorAll('.nav-item')[5])">📧 Contacter ATERISK</button>
+      <button class="tb-btn primary" onclick="openModal('declare-placement')">+ Déclarer un placement</button>
+      <div class="topbar-avatar">👩‍💼</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SECTION 1 — OVERVIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="section active" id="sec-overview">
+
+      <div class="welcome-banner">
+        <div class="wb-glow"></div>
+        <div class="wb-grid"></div>
+        <div class="wb-inner">
+          <div class="wb-tag"><span class="wb-dot"></span>Espace École · Mai 2026</div>
+          <h2 class="wb-title">Bonjour, <em>ESCP Business School</em> 👋</h2>
+          <p class="wb-sub">Voici l'activité de vos étudiants ce mois.</p>
+        </div>
+      </div>
+
+      <!-- KPI -->
+      <div class="kpi-row">
+        <div class="kpi">
+          <span class="kpi-icon">👩‍🎓</span>
+          <div class="kpi-label">Étudiants actifs</div>
+          <div class="kpi-val">28</div>
+          <div class="kpi-sub up">↑ +3 ce mois</div>
+        </div>
+        <div class="kpi">
+          <span class="kpi-icon">📅</span>
+          <div class="kpi-label">Séances ce mois</div>
+          <div class="kpi-val">43</div>
+          <div class="kpi-sub up">↑ +8 vs avril</div>
+        </div>
+        <div class="kpi">
+          <span class="kpi-icon">🎯</span>
+          <div class="kpi-label">Taux de placement</div>
+          <div class="kpi-val">68%</div>
+          <div class="kpi-sub up">↑ +5 pts ce semestre</div>
+        </div>
+        <div class="kpi">
+          <span class="kpi-icon">🪙</span>
+          <div class="kpi-label">Tokens restants</div>
+          <div class="kpi-val">24</div>
+          <div class="kpi-sub neu">Sur 50 du pack Standard</div>
+        </div>
+      </div>
+
+      <!-- 2-COL: Bar chart + Activity feed -->
+      <div class="two-col">
+        <!-- BAR CHART -->
+        <div class="card">
+          <div class="card-head">
+            <h3>Avancement par secteur</h3>
+            <span class="badge blue">Mai 2026</span>
+          </div>
+          <div class="bar-chart-wrap">
+            <div class="bar-chart">
+              <div class="bar-col">
+                <div class="bar-val">7</div>
+                <div class="bar-bg" style="height:64%;background:var(--blue-mid);border-radius:5px 5px 0 0;"></div>
+                <div class="bar-lbl">Marketing</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-val">5</div>
+                <div class="bar-bg" style="height:45%;background:var(--blue-mid);border-radius:5px 5px 0 0;opacity:0.8"></div>
+                <div class="bar-lbl">Commerce</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-val">4</div>
+                <div class="bar-bg" style="height:36%;background:var(--green);border-radius:5px 5px 0 0;"></div>
+                <div class="bar-lbl">Finance</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-val">3</div>
+                <div class="bar-bg" style="height:27%;background:var(--purple);border-radius:5px 5px 0 0;"></div>
+                <div class="bar-lbl">RH</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-val">3</div>
+                <div class="bar-bg" style="height:27%;background:var(--teal);border-radius:5px 5px 0 0;"></div>
+                <div class="bar-lbl">Tech</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-val">6</div>
+                <div class="bar-bg" style="height:55%;background:#F59E0B;border-radius:5px 5px 0 0;"></div>
+                <div class="bar-lbl">Autre</div>
+              </div>
+            </div>
+            <div class="bar-chart-legend">
+              <div class="bcl-item"><div class="bcl-dot" style="background:var(--blue-mid)"></div>En recherche</div>
+              <div class="bcl-item"><div class="bcl-dot" style="background:var(--green)"></div>Placé</div>
+              <div class="bcl-item"><div class="bcl-dot" style="background:#F59E0B"></div>Multi-secteur</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVITY FEED -->
+        <div class="card">
+          <div class="card-head">
+            <h3>Activité récente</h3>
+            <button class="btn ghost sm" onclick="show('students', document.querySelectorAll('.nav-item')[1])">Voir tout</button>
+          </div>
+          <div class="activity-list">
+            <div class="act-item">
+              <div class="act-dot green"></div>
+              <div>
+                <div class="act-text"><strong>Lola Martin</strong> a terminé une séance avec Sarah L. (Marketing)</div>
+                <div class="act-time">Il y a 2h · Séance découverte</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-dot blue"></div>
+              <div>
+                <div class="act-text"><strong>Hugo Bertin</strong> a réservé une séance senior pour le 20 mai</div>
+                <div class="act-time">Il y a 5h · Mentor Thomas R.</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-dot green"></div>
+              <div>
+                <div class="act-text"><strong>Camille Faure</strong> a déclaré une alternance chez LVMH — Finance</div>
+                <div class="act-time">Il y a 1j · Placement confirmé</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-dot amber"></div>
+              <div>
+                <div class="act-text"><strong>Axel Morin</strong> a acheté 2 tokens supplémentaires</div>
+                <div class="act-time">Il y a 2j · Pack +2 tokens</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-dot purple"></div>
+              <div>
+                <div class="act-text"><strong>Inès Souchard</strong> s'est inscrite via votre code école</div>
+                <div class="act-time">Il y a 3j · Nouvel étudiant</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT STUDENTS TABLE -->
+      <div class="card">
+        <div class="card-head">
+          <h3>Étudiants récents</h3>
+          <button class="btn ghost sm" onclick="show('students', document.querySelectorAll('.nav-item')[1])">Voir tous les étudiants →</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Étudiant</th>
+                <th>Secteur</th>
+                <th>Séances</th>
+                <th>Dernier mentor</th>
+                <th>Statut</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="td-av" style="background:#EDE9FE">👩</span><strong>Lola Martin</strong></td>
+                <td>📣 Marketing</td>
+                <td><strong>2</strong></td>
+                <td>Sarah L.</td>
+                <td><span class="badge green">Actif</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Lola Martin','Marketing','BTS Management','Sarah L., Thomas R.','2','3')">Voir</button></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#D1FAE5">👨</span><strong>Hugo Bertin</strong></td>
+                <td>💼 Commerce</td>
+                <td><strong>4</strong></td>
+                <td>Julien P.</td>
+                <td><span class="badge green">Actif</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Hugo Bertin','Commerce','Bachelor Commerce','Julien P.','4','2')">Voir</button></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#FEF3C7">👩</span><strong>Camille Faure</strong></td>
+                <td>💰 Finance</td>
+                <td><strong>6</strong></td>
+                <td>Emma S.</td>
+                <td><span class="badge teal">Placée</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Camille Faure','Finance','Master Finance','Emma S.','6','0')">Voir</button></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#FCE7F3">👨</span><strong>Axel Morin</strong></td>
+                <td>💻 Tech</td>
+                <td><strong>1</strong></td>
+                <td>Nina K.</td>
+                <td><span class="badge amber">1 token restant</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Axel Morin','Tech','BUT Informatique','Nina K.','1','1')">Voir</button></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#E0E7FF">👩</span><strong>Inès Souchard</strong></td>
+                <td>👥 RH</td>
+                <td><strong>0</strong></td>
+                <td>—</td>
+                <td><span class="badge blue">Nouvelle</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Inès Souchard','RH','Licence RH','—','0','1')">Voir</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /sec-overview -->
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SECTION 2 — MES ÉTUDIANTS
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="section" id="sec-students">
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Tous mes étudiants <span style="font-weight:400;color:var(--muted);font-size:13px">(28)</span></h3>
+          <div class="card-head-right">
+            <span class="badge green">28 actifs</span>
+            <span class="badge teal">8 placés</span>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input class="si" type="search" placeholder="Rechercher un étudiant…" oninput="filterStudents(this.value)">
+          <select class="sel" onchange="filterStudentSector(this.value)">
+            <option value="">Tous secteurs</option>
+            <option>Marketing</option>
+            <option>Commerce</option>
+            <option>Finance</option>
+            <option>Tech</option>
+            <option>RH</option>
+            <option>Autre</option>
+          </select>
+          <select class="sel" onchange="filterStudentStatus(this.value)">
+            <option value="">Tous statuts</option>
+            <option>Actif</option>
+            <option>Placé</option>
+            <option>Inactif</option>
+            <option>Nouveau</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="students-table">
+            <thead>
+              <tr>
+                <th>Étudiant</th>
+                <th>Formation</th>
+                <th>Secteur</th>
+                <th>Tokens</th>
+                <th>Séances</th>
+                <th>Dernier mentor</th>
+                <th>Statut</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-sector="Marketing" data-status="Actif">
+                <td><span class="td-av" style="background:#EDE9FE">👩</span><strong>Lola Martin</strong><br><span style="font-size:11px;color:var(--muted)">lola.martin@escp.eu</span></td>
+                <td>BTS Management</td>
+                <td><span class="badge blue">📣 Marketing</span></td>
+                <td><strong>3</strong> / 5</td>
+                <td>2</td>
+                <td>Sarah L.</td>
+                <td><span class="badge green">Actif</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Lola Martin','Marketing','BTS Management','Sarah L., Thomas R.','2','3')">Voir détail</button></td>
+              </tr>
+              <tr data-sector="Commerce" data-status="Actif">
+                <td><span class="td-av" style="background:#D1FAE5">👨</span><strong>Hugo Bertin</strong><br><span style="font-size:11px;color:var(--muted)">h.bertin@escp.eu</span></td>
+                <td>Bachelor Commerce</td>
+                <td><span class="badge amber">💼 Commerce</span></td>
+                <td><strong>2</strong> / 5</td>
+                <td>4</td>
+                <td>Julien P.</td>
+                <td><span class="badge green">Actif</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Hugo Bertin','Commerce','Bachelor Commerce','Julien P.','4','2')">Voir détail</button></td>
+              </tr>
+              <tr data-sector="Finance" data-status="Placé">
+                <td><span class="td-av" style="background:#FEF3C7">👩</span><strong>Camille Faure</strong><br><span style="font-size:11px;color:var(--muted)">c.faure@escp.eu</span></td>
+                <td>Master Finance</td>
+                <td><span class="badge green">💰 Finance</span></td>
+                <td><strong>0</strong> / 5</td>
+                <td>6</td>
+                <td>Emma S.</td>
+                <td><span class="badge teal">Placée</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Camille Faure','Finance','Master Finance','Emma S.','6','0')">Voir détail</button></td>
+              </tr>
+              <tr data-sector="Tech" data-status="Actif">
+                <td><span class="td-av" style="background:#FCE7F3">👨</span><strong>Axel Morin</strong><br><span style="font-size:11px;color:var(--muted)">a.morin@escp.eu</span></td>
+                <td>BUT Informatique</td>
+                <td><span class="badge purple">💻 Tech</span></td>
+                <td><strong>1</strong> / 5</td>
+                <td>1</td>
+                <td>Nina K.</td>
+                <td><span class="badge amber">Faible tokens</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Axel Morin','Tech','BUT Informatique','Nina K.','1','1')">Voir détail</button></td>
+              </tr>
+              <tr data-sector="RH" data-status="Nouveau">
+                <td><span class="td-av" style="background:#E0E7FF">👩</span><strong>Inès Souchard</strong><br><span style="font-size:11px;color:var(--muted)">i.souchard@escp.eu</span></td>
+                <td>Licence RH</td>
+                <td><span class="badge gray">👥 RH</span></td>
+                <td><strong>1</strong> / 5</td>
+                <td>0</td>
+                <td>—</td>
+                <td><span class="badge blue">Nouvelle</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Inès Souchard','RH','Licence RH','—','0','1')">Voir détail</button></td>
+              </tr>
+              <tr data-sector="Marketing" data-status="Actif">
+                <td><span class="td-av" style="background:#FEE2E2">👨</span><strong>Raphaël Costa</strong><br><span style="font-size:11px;color:var(--muted)">r.costa@escp.eu</span></td>
+                <td>BTS Communication</td>
+                <td><span class="badge blue">📣 Marketing</span></td>
+                <td><strong>4</strong> / 5</td>
+                <td>3</td>
+                <td>Inès M.</td>
+                <td><span class="badge green">Actif</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Raphaël Costa','Marketing','BTS Communication','Inès M.','3','4')">Voir détail</button></td>
+              </tr>
+              <tr data-sector="Finance" data-status="Actif">
+                <td><span class="td-av" style="background:#D1FAE5">👩</span><strong>Juliette Blanc</strong><br><span style="font-size:11px;color:var(--muted)">j.blanc@escp.eu</span></td>
+                <td>Master Banque & Finance</td>
+                <td><span class="badge green">💰 Finance</span></td>
+                <td><strong>2</strong> / 5</td>
+                <td>2</td>
+                <td>Emma S.</td>
+                <td><span class="badge green">Actif</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Juliette Blanc','Finance','Master Banque & Finance','Emma S.','2','2')">Voir détail</button></td>
+              </tr>
+              <tr data-sector="Commerce" data-status="Placé">
+                <td><span class="td-av" style="background:#FEF3C7">👨</span><strong>Thomas Girard</strong><br><span style="font-size:11px;color:var(--muted)">t.girard@escp.eu</span></td>
+                <td>Master Commerce International</td>
+                <td><span class="badge amber">💼 Commerce</span></td>
+                <td><strong>0</strong> / 5</td>
+                <td>7</td>
+                <td>Julien P.</td>
+                <td><span class="badge teal">Placé</span></td>
+                <td><button class="btn ghost sm" onclick="openStudentModal('Thomas Girard','Commerce','Master Commerce International','Julien P.','7','0')">Voir détail</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:12px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)">
+          Affichage 8 / 28 étudiants — <span style="color:var(--blue-mid);cursor:pointer" onclick="toast('Chargement de tous les étudiants…')">Charger plus</span>
+        </div>
+      </div>
+    </div><!-- /sec-students -->
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SECTION 3 — SUIVI DES PLACEMENTS
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="section" id="sec-placements">
+
+      <!-- Donut + summary -->
+      <div class="two-col" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-head"><h3>Bilan placements — Mai 2026</h3></div>
+          <div class="donut-wrap">
+            <div class="donut" style="background:conic-gradient(var(--green) 0% 68%, var(--blue-light) 68% 100%)">
+              <div class="donut-center">
+                <div class="donut-pct">68%</div>
+                <div class="donut-pct-sub">Placés</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="dl-item">
+                <div class="dl-swatch" style="background:var(--green)"></div>
+                <div class="dl-label">Placés</div>
+                <div class="dl-val">8 étudiants</div>
+              </div>
+              <div class="dl-item">
+                <div class="dl-swatch" style="background:#F59E0B"></div>
+                <div class="dl-label">En cours d'entretien</div>
+                <div class="dl-val">6 étudiants</div>
+              </div>
+              <div class="dl-item">
+                <div class="dl-swatch" style="background:var(--blue-light)"></div>
+                <div class="dl-label">En recherche active</div>
+                <div class="dl-val">14 étudiants</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:0 18px 16px">
+            <div class="prog-row">
+              <div class="prog-lbl"><span>Marketing & Com'</span><span>3 / 7 placés</span></div>
+              <div class="prog-w"><div class="prog-b" style="width:43%;background:var(--blue-mid)"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prog-lbl"><span>Finance</span><span>3 / 4 placés</span></div>
+              <div class="prog-w"><div class="prog-b" style="width:75%;background:var(--green)"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prog-lbl"><span>Commerce</span><span>2 / 5 placés</span></div>
+              <div class="prog-w"><div class="prog-b" style="width:40%;background:var(--amber)"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prog-lbl"><span>Tech</span><span>0 / 3 placés</span></div>
+              <div class="prog-w"><div class="prog-b" style="width:0%;background:var(--red)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Commission ATERISK</h3><span class="badge amber">Informations</span></div>
+          <div style="padding:16px 18px">
+            <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px">
+              ATERISK perçoit une commission de <strong style="color:var(--ink)">4% du salaire brut × 4 mois</strong> uniquement lors d'un placement confirmé.
+              En tant qu'école partenaire, cette commission est intégralement gérée entre l'étudiant et ATERISK — vous n'avez aucune démarche à effectuer.
+            </p>
+            <div style="background:var(--blue-pale);border-radius:8px;padding:14px;margin-bottom:14px">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:6px">Commissions générées ce semestre</div>
+              <div style="font-family:'Unbounded',monospace;font-size:24px;font-weight:700;color:var(--blue)">3 placements</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px">LVMH · Decathlon · BNP Paribas</div>
+            </div>
+            <button class="btn primary" style="width:100%;justify-content:center" onclick="openModal('declare-placement')">
+              + Déclarer un nouveau placement
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placement table -->
+      <div class="card">
+        <div class="card-head">
+          <h3>Placements déclarés</h3>
+          <button class="btn primary sm" onclick="openModal('declare-placement')">+ Déclarer un placement</button>
+        </div>
+        <div class="placement-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Étudiant</th>
+                <th>Secteur</th>
+                <th>Entreprise</th>
+                <th>Type de contrat</th>
+                <th>Date</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="td-av" style="background:#FEF3C7">👩</span><strong>Camille Faure</strong></td>
+                <td>💰 Finance</td>
+                <td><strong>LVMH</strong> — Direction Financière</td>
+                <td>Alternance 2 ans</td>
+                <td>1 mai 2026</td>
+                <td><span class="badge teal">Confirmé</span></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#FEF3C7">👨</span><strong>Thomas Girard</strong></td>
+                <td>💼 Commerce</td>
+                <td><strong>Decathlon</strong> — Business Dev</td>
+                <td>Alternance 1 an</td>
+                <td>15 avril 2026</td>
+                <td><span class="badge teal">Confirmé</span></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#D1FAE5">👩</span><strong>Sara El Amrani</strong></td>
+                <td>💰 Finance</td>
+                <td><strong>BNP Paribas</strong> — Audit</td>
+                <td>Alternance 2 ans</td>
+                <td>3 mars 2026</td>
+                <td><span class="badge teal">Confirmé</span></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#EDE9FE">👩</span><strong>Manon Roux</strong></td>
+                <td>📣 Marketing</td>
+                <td><strong>Sephora</strong> — Marketing Digital</td>
+                <td>Alternance 1 an</td>
+                <td>20 mai 2026</td>
+                <td><span class="badge amber">En attente validation</span></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#FCE7F3">👨</span><strong>Kévin Dumas</strong></td>
+                <td>💼 Commerce</td>
+                <td><strong>L'Oréal</strong> — Sales Graduate</td>
+                <td>VIE 12 mois</td>
+                <td>1 juin 2026</td>
+                <td><span class="badge blue">Démarrage prévu</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /sec-placements -->
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SECTION 4 — TOKENS & ABONNEMENT
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="section" id="sec-tokens">
+
+      <div class="token-pack-card">
+        <div class="token-pack-glow"></div>
+        <div class="token-pack-inner">
+          <div class="tp-label">Pack actuel</div>
+          <div class="tp-name">Standard — 50 Tokens</div>
+          <div class="tp-date">Renouvellement le 1er juin 2026</div>
+          <div class="tp-row">
+            <div class="tp-stat">
+              <div class="tp-stat-val">50</div>
+              <div class="tp-stat-lbl">Tokens du pack</div>
+            </div>
+            <div class="tp-stat">
+              <div class="tp-stat-val">26</div>
+              <div class="tp-stat-lbl">Consommés ce mois</div>
+            </div>
+            <div class="tp-stat">
+              <div class="tp-stat-val">24</div>
+              <div class="tp-stat-lbl">Tokens restants</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Consommation -->
+        <div class="card">
+          <div class="card-head"><h3>Consommation tokens</h3><span class="badge amber">26 / 50 utilisés</span></div>
+          <div style="padding:18px">
+            <div style="margin-bottom:18px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px">
+                <span>Tokens utilisés ce mois</span>
+                <strong>26 / 50</strong>
+              </div>
+              <div class="prog-w" style="height:12px">
+                <div class="prog-b" style="width:52%;background:linear-gradient(90deg,var(--blue),var(--blue-mid));height:12px"></div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);margin-top:6px">52% de votre pack mensuel consommé</div>
+            </div>
+            <div class="prog-row">
+              <div class="prog-lbl"><span>Séances Junior (30min)</span><span>18 tokens</span></div>
+              <div class="prog-w"><div class="prog-b" style="width:69%;background:var(--blue-mid)"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prog-lbl"><span>Séances Senior (30min)</span><span>8 tokens</span></div>
+              <div class="prog-w"><div class="prog-b" style="width:31%;background:var(--purple)"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prog-lbl"><span>Séances découverte</span><span>0 token</span></div>
+              <div class="prog-w"><div class="prog-b" style="width:0%;background:var(--green)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Facturation -->
+        <div class="card">
+          <div class="card-head"><h3>Facturation mensuelle</h3><span class="badge green">Actif</span></div>
+          <div style="padding:18px">
+            <div style="background:var(--blue-pale);border-radius:10px;padding:16px;margin-bottom:14px">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Détail de votre forfait</div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+                <span>Forfait partenaire école</span><strong>650 €</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+                <span>28 étudiants × 9 €/mois</span><strong>252 €</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--blue)">
+                <span>Total mensuel</span><span>902 €</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:14px">
+              Facturation mensuelle par virement · Prochaine échéance : <strong style="color:var(--ink)">1er juin 2026</strong>
+            </div>
+            <button class="btn primary" style="width:100%;justify-content:center" onclick="openModal('buy-tokens')">
+              🪙 Acheter des tokens supplémentaires
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top consumers -->
+      <div class="card">
+        <div class="card-head"><h3>Étudiants les plus actifs ce mois</h3></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr><th>Étudiant</th><th>Tokens utilisés</th><th>Séances</th><th>Dernier mentor</th><th>Progression</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="td-av" style="background:#FEF3C7">👩</span><strong>Camille Faure</strong></td>
+                <td><strong>5</strong> tokens</td>
+                <td>6 séances</td>
+                <td>Emma S.</td>
+                <td><div class="prog-w" style="width:120px"><div class="prog-b" style="width:100%;background:var(--green)"></div></div></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#FEF3C7">👨</span><strong>Thomas Girard</strong></td>
+                <td><strong>5</strong> tokens</td>
+                <td>7 séances</td>
+                <td>Julien P.</td>
+                <td><div class="prog-w" style="width:120px"><div class="prog-b" style="width:100%;background:var(--green)"></div></div></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#EDE9FE">👩</span><strong>Lola Martin</strong></td>
+                <td><strong>2</strong> tokens</td>
+                <td>2 séances</td>
+                <td>Sarah L.</td>
+                <td><div class="prog-w" style="width:120px"><div class="prog-b" style="width:40%;background:var(--blue-mid)"></div></div></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#D1FAE5">👨</span><strong>Hugo Bertin</strong></td>
+                <td><strong>4</strong> tokens</td>
+                <td>4 séances</td>
+                <td>Julien P.</td>
+                <td><div class="prog-w" style="width:120px"><div class="prog-b" style="width:80%;background:var(--blue-mid)"></div></div></td>
+              </tr>
+              <tr>
+                <td><span class="td-av" style="background:#FEE2E2">👨</span><strong>Raphaël Costa</strong></td>
+                <td><strong>3</strong> tokens</td>
+                <td>3 séances</td>
+                <td>Inès M.</td>
+                <td><div class="prog-w" style="width:120px"><div class="prog-b" style="width:60%;background:var(--amber)"></div></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /sec-tokens -->
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SECTION 5 — RESSOURCES (READ-ONLY)
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="section" id="sec-ressources">
+
+      <div class="res-readonly-banner">
+        <div class="res-readonly-icon">🎓</div>
+        <div class="res-readonly-text">
+          <h4>Accès premium inclus dans votre partenariat</h4>
+          <p>Vos 28 étudiants ont accès à toutes les ressources premium ATERISK — CV, LM, guides sectoriels et ateliers sans restriction ni coût supplémentaire.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><h3>Ressources disponibles</h3><span class="badge green">Accès total · 28 étudiants</span></div>
+        <div class="res-grid">
+          <div class="res-card">
+            <div class="res-card-top" style="background:linear-gradient(135deg,#EDE9FE,#C4B5FD)">📄</div>
+            <div class="res-card-body">
+              <div class="res-card-name">Modèle CV ATS-Friendly 2026</div>
+              <div class="res-card-meta">PDF · Mis à jour mars 2026 · Très téléchargé</div>
+              <div class="res-card-tags">
+                <span class="res-card-tag">CV</span>
+                <span class="res-card-tag">ATS</span>
+                <span class="res-card-tag">Marketing</span>
+              </div>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="res-card-top" style="background:linear-gradient(135deg,#D1FAE5,#6EE7B7)">✉️</div>
+            <div class="res-card-body">
+              <div class="res-card-name">Guide Lettre de Motivation 2026</div>
+              <div class="res-card-meta">PDF · 24 pages · Exemples inclus</div>
+              <div class="res-card-tags">
+                <span class="res-card-tag">LM</span>
+                <span class="res-card-tag">Rédaction</span>
+                <span class="res-card-tag">All sectors</span>
+              </div>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="res-card-top" style="background:linear-gradient(135deg,#FEF3C7,#FCD34D)">💼</div>
+            <div class="res-card-body">
+              <div class="res-card-name">Préparer son entretien RH</div>
+              <div class="res-card-meta">Vidéo + PDF · 45 min · Top 2026</div>
+              <div class="res-card-tags">
+                <span class="res-card-tag">Entretien</span>
+                <span class="res-card-tag">RH</span>
+                <span class="res-card-tag">Soft skills</span>
+              </div>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="res-card-top" style="background:linear-gradient(135deg,#E0E7FF,#A5B4FC)">📣</div>
+            <div class="res-card-body">
+              <div class="res-card-name">Secteur Marketing — Guide complet</div>
+              <div class="res-card-meta">PDF · 32 pages · Entreprises top</div>
+              <div class="res-card-tags">
+                <span class="res-card-tag">Marketing</span>
+                <span class="res-card-tag">Secteur</span>
+                <span class="res-card-tag">Entreprises</span>
+              </div>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="res-card-top" style="background:linear-gradient(135deg,#F0FDFA,#5EEAD4)">💰</div>
+            <div class="res-card-body">
+              <div class="res-card-name">Finance & Banque — Alternance 2026</div>
+              <div class="res-card-meta">PDF · 28 pages · Classement banques</div>
+              <div class="res-card-tags">
+                <span class="res-card-tag">Finance</span>
+                <span class="res-card-tag">Banque</span>
+                <span class="res-card-tag">Classement</span>
+              </div>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="res-card-top" style="background:linear-gradient(135deg,#FCE7F3,#F9A8D4)">🔗</div>
+            <div class="res-card-body">
+              <div class="res-card-name">LinkedIn pour alternants — Masterclass</div>
+              <div class="res-card-meta">Vidéo · 60 min · Profil + Réseau</div>
+              <div class="res-card-tags">
+                <span class="res-card-tag">LinkedIn</span>
+                <span class="res-card-tag">Réseau</span>
+                <span class="res-card-tag">Profil</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:10px 18px 16px;text-align:center;border-top:1px solid var(--border)">
+          <span style="font-size:12px;color:var(--muted)">+ 24 autres ressources disponibles pour vos étudiants depuis leur espace personnel</span>
+        </div>
+      </div>
+
+      <!-- Stats accès ressources -->
+      <div class="card">
+        <div class="card-head"><h3>Utilisation des ressources ce mois</h3></div>
+        <div style="padding:18px">
+          <div class="prog-row">
+            <div class="prog-lbl"><span>Guide CV & LM</span><span>21 / 28 étudiants</span></div>
+            <div class="prog-w"><div class="prog-b" style="width:75%;background:var(--blue-mid)"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-lbl"><span>Guides sectoriels</span><span>16 / 28 étudiants</span></div>
+            <div class="prog-w"><div class="prog-b" style="width:57%;background:var(--purple)"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-lbl"><span>Prép. entretien</span><span>14 / 28 étudiants</span></div>
+            <div class="prog-w"><div class="prog-b" style="width:50%;background:var(--green)"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-lbl"><span>Masterclass LinkedIn</span><span>9 / 28 étudiants</span></div>
+            <div class="prog-w"><div class="prog-b" style="width:32%;background:#F59E0B)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /sec-ressources -->
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SECTION 6 — CONTACTER ATERISK
+    ══════════════════════════════════════════════════════════════════════ -->
+    <div class="section" id="sec-contact">
+
+      <div class="contact-card">
+        <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;margin-bottom:4px">Nous sommes là pour vous</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:0">Votre interlocuteur ATERISK répond en moins de 24h aux jours ouvrés.</p>
+        <div class="contact-channels">
+          <a class="channel-btn" href="mailto:contact@aterisk.fr">
+            <div class="channel-icon">📧</div>
+            <div class="channel-info">
+              <h4>Email</h4>
+              <p>contact@aterisk.fr</p>
+            </div>
+          </a>
+          <a class="channel-btn" href="https://wa.me/33600000000" target="_blank">
+            <div class="channel-icon">💬</div>
+            <div class="channel-info">
+              <h4>WhatsApp</h4>
+              <p>+33 6 00 00 00 00</p>
+            </div>
+          </a>
+          <a class="channel-btn" href="https://cal.com/aterisk" target="_blank">
+            <div class="channel-icon">📅</div>
+            <div class="channel-info">
+              <h4>Prendre RDV</h4>
+              <p>Réunion bilan 30 min</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h3>Envoyer un message</h3>
+        <div class="ff-row">
+          <div class="ff">
+            <label>Votre nom</label>
+            <input type="text" value="Marie Dupont" readonly style="background:var(--blue-pale)">
+          </div>
+          <div class="ff">
+            <label>École</label>
+            <input type="text" value="ESCP Business School" readonly style="background:var(--blue-pale)">
+          </div>
+        </div>
+        <div class="ff">
+          <label>Sujet</label>
+          <select>
+            <option>Question sur les tokens</option>
+            <option>Problème avec un étudiant</option>
+            <option>Renouvellement / changement de pack</option>
+            <option>Demande de rapport</option>
+            <option>Facturation</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Message</label>
+          <textarea placeholder="Décrivez votre demande en détail…"></textarea>
+        </div>
+        <button class="btn primary" onclick="sendContact(this)">📧 Envoyer le message</button>
+      </div>
+
+      <!-- FAQ -->
+      <div style="margin-bottom:10px">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:14px">Questions fréquentes</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              Comment ajouter un étudiant à mon école sur ATERISK ?
+              <span class="faq-arrow">▾</span>
+            </div>
+            <div class="faq-a">
+              Chaque étudiant doit s'inscrire sur <strong>inscription.html</strong> et utiliser votre code école partenaire <strong>ESCP2026</strong>. Son profil sera automatiquement rattaché à votre école et apparaîtra dans votre tableau de bord dans les 24h. Vous pouvez également contacter ATERISK pour importer une liste en masse via fichier CSV.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              Comment fonctionne le système de tokens pour les séances ?
+              <span class="faq-arrow">▾</span>
+            </div>
+            <div class="faq-a">
+              Votre pack mensuel (<strong>50 tokens Standard</strong>) est partagé entre tous vos étudiants. 1 token = 1 séance Junior 30min. Une séance Senior coûte 1,5 token. Les tokens non utilisés en fin de mois sont perdus (non reportés). Vous pouvez acheter des tokens supplémentaires à tout moment depuis la section <em>Tokens & Abonnement</em>. La séance découverte (offerte à chaque étudiant) ne consomme pas vos tokens.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              Qu'est-ce que la commission de placement ATERISK et est-ce que cela me concerne ?
+              <span class="faq-arrow">▾</span>
+            </div>
+            <div class="faq-a">
+              La commission de placement (4% du salaire brut × 4 mois) est un accord direct entre l'étudiant et ATERISK. En tant qu'école partenaire, vous n'avez aucune démarche ni paiement à effectuer à ce titre. Votre seul engagement financier est le forfait mensuel (650 €) + 9 € par étudiant actif. Il vous est simplement demandé de déclarer les placements dans votre tableau de bord pour que nous puissions suivre les statistiques de réussite de votre école.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /sec-contact -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL — VIEW STUDENT
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="modal-view-student">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-profile-header">
+      <button class="mph-close" onclick="closeModal('view-student')">✕</button>
+      <div class="mph-av" id="ms-av">👩</div>
+      <div class="mph-name" id="ms-name">Lola Martin</div>
+      <div class="mph-sub" id="ms-sub">BTS Management · ESCP Business School</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-stats-row">
+        <div class="ms-stat">
+          <div class="ms-stat-val" id="ms-seances">2</div>
+          <div class="ms-stat-lbl">Séances</div>
+        </div>
+        <div class="ms-stat">
+          <div class="ms-stat-val" id="ms-tokens">3</div>
+          <div class="ms-stat-lbl">Tokens restants</div>
+        </div>
+        <div class="ms-stat">
+          <div class="ms-stat-val" id="ms-mentors">1</div>
+          <div class="ms-stat-lbl">Mentor(s)</div>
+        </div>
+      </div>
+      <div class="ff">
+        <label>Secteur cible</label>
+        <div style="padding:6px 0"><span class="badge blue" id="ms-sector">📣 Marketing</span></div>
+      </div>
+      <div class="ff">
+        <label>Mentors ayant accompagné</label>
+        <div style="font-size:13px;padding:6px 0;color:var(--ink)" id="ms-mentors-list">Sarah L. · Thomas R.</div>
+      </div>
+      <div class="ff">
+        <label>Avancement</label>
+        <div class="pl-steps">
+          <div class="pl-step done"><div class="pl-step-dot">✓</div><div class="pl-step-lbl">Inscrit</div></div>
+          <div class="pl-step done"><div class="pl-step-dot">✓</div><div class="pl-step-lbl">1ère séance</div></div>
+          <div class="pl-step active"><div class="pl-step-dot">→</div><div class="pl-step-lbl">En suivi</div></div>
+          <div class="pl-step"><div class="pl-step-dot"></div><div class="pl-step-lbl">Placé</div></div>
+        </div>
+      </div>
+      <div class="ff">
+        <label>Note interne (visible par ATERISK)</label>
+        <textarea placeholder="Ex : Étudiant très motivé, besoin d'aide sur la LM…" style="min-height:75px"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-m g" onclick="closeModal('view-student')">Fermer</button>
+      <button class="btn-m p" onclick="saveNote()">Enregistrer la note</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL — DÉCLARER UN PLACEMENT
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="modal-declare-placement">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Déclarer un placement</h3>
+      <button class="modal-close" onclick="closeModal('declare-placement')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6">
+        Signalez l'alternance ou le stage obtenu par l'un de vos étudiants. ATERISK vérifiera et enregistrera le placement dans les 48h.
+      </p>
+      <div class="ff">
+        <label>Étudiant</label>
+        <select>
+          <option value="">— Sélectionner un étudiant —</option>
+          <option>Lola Martin</option>
+          <option>Hugo Bertin</option>
+          <option>Axel Morin</option>
+          <option>Inès Souchard</option>
+          <option>Raphaël Costa</option>
+          <option>Juliette Blanc</option>
+          <option>Manon Roux</option>
+          <option>Kévin Dumas</option>
+          <option>Sara El Amrani</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>Entreprise</label>
+        <input type="text" placeholder="Ex : LVMH, BNP Paribas…">
+      </div>
+      <div class="ff">
+        <label>Poste / Intitulé</label>
+        <input type="text" placeholder="Ex : Alternance Marketing Digital">
+      </div>
+      <div class="ff-row">
+        <div class="ff">
+          <label>Type de contrat</label>
+          <select>
+            <option>Alternance (apprentissage)</option>
+            <option>Alternance (pro)</option>
+            <option>Stage conventionné</option>
+            <option>VIE</option>
+            <option>CDI/CDD</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Date de début</label>
+          <input type="date">
+        </div>
+      </div>
+      <div class="ff">
+        <label>Secteur</label>
+        <select>
+          <option>Marketing & Communication</option>
+          <option>Commerce & Ventes</option>
+          <option>Finance & Banque</option>
+          <option>Tech & Data</option>
+          <option>RH & Management</option>
+          <option>Conseil & Audit</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>Commentaire (optionnel)</label>
+        <textarea placeholder="Informations complémentaires, contexte du placement…" style="min-height:70px"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-m g" onclick="closeModal('declare-placement')">Annuler</button>
+      <button class="btn-m p" onclick="declarePlacement()">Soumettre le placement</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL — ACHETER DES TOKENS
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="modal-buy-tokens">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Acheter des tokens supplémentaires</h3>
+      <button class="modal-close" onclick="closeModal('buy-tokens')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6">
+        Ajoutez des tokens à votre solde instantanément. Ils expirent le <strong>1er juin 2026</strong> avec votre pack actuel.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+        <label style="cursor:pointer">
+          <input type="radio" name="token-pack" value="10" style="display:none" onchange="selectTokenPack(this)">
+          <div class="token-pack-opt" style="border:2px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:all 0.15s">
+            <div style="font-family:'Unbounded',monospace;font-size:20px;font-weight:700;color:var(--blue)">10</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">tokens</div>
+            <div style="font-size:14px;font-weight:700;margin-top:8px">35 €</div>
+          </div>
+        </label>
+        <label style="cursor:pointer">
+          <input type="radio" name="token-pack" value="20" style="display:none" onchange="selectTokenPack(this)">
+          <div class="token-pack-opt" style="border:2px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:all 0.15s">
+            <div style="font-family:'Unbounded',monospace;font-size:20px;font-weight:700;color:var(--blue)">20</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">tokens</div>
+            <div style="font-size:14px;font-weight:700;margin-top:8px">65 €</div>
+            <div style="font-size:10px;font-weight:700;color:var(--green);margin-top:4px">− 7%</div>
+          </div>
+        </label>
+        <label style="cursor:pointer">
+          <input type="radio" name="token-pack" value="50" style="display:none" onchange="selectTokenPack(this)">
+          <div class="token-pack-opt" style="border:2px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:all 0.15s">
+            <div style="font-family:'Unbounded',monospace;font-size:20px;font-weight:700;color:var(--blue)">50</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">tokens</div>
+            <div style="font-size:14px;font-weight:700;margin-top:8px">150 €</div>
+            <div style="font-size:10px;font-weight:700;color:var(--green);margin-top:4px">− 14%</div>
+          </div>
+        </label>
+      </div>
+      <div class="ff">
+        <label>Message à inclure (optionnel)</label>
+        <textarea placeholder="Ex : Pour anticiper les séances de la rentrée…" style="min-height:60px"></textarea>
+      </div>
+      <div style="background:var(--blue-pale);border-radius:8px;padding:12px;font-size:12px;color:var(--muted)">
+        La commande sera transmise à votre interlocuteur ATERISK pour facturation par virement selon vos conditions contractuelles.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-m g" onclick="closeModal('buy-tokens')">Annuler</button>
+      <button class="btn-m p" onclick="buyTokens()">Envoyer la demande</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ──────────────────────────────────────────────────────────────────────────
+     SCRIPTS
+────────────────────────────────────────────────────────────────────────── -->
+<script>
+/* ─── Navigation ─── */
+const titles = {
+  overview: 'Tableau de bord',
+  students: 'Mes étudiants',
+  placements: 'Suivi des placements',
+  tokens: 'Tokens & Abonnement',
+  ressources: 'Ressources',
+  contact: 'Contacter ATERISK'
+};
+
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('section-title').textContent = titles[id] || id;
+}
+
+/* ─── Modals ─── */
+function openModal(id) {
+  document.getElementById('modal-' + id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById('modal-' + id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on backdrop click
+document.querySelectorAll('.modal-ov').forEach(ov => {
+  ov.addEventListener('click', e => {
+    if (e.target === ov) {
+      ov.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+/* ─── Toast ─── */
+function toast(msg, type) {
+  const colors = { success: '#16A34A', error: '#DC2626', default: '#1A2E7A' };
+  const bg = colors[type] || colors.default;
+  const t = document.createElement('div');
+  t.style.cssText = `background:${bg};color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:fadeIn 0.2s ease;white-space:nowrap`;
+  t.textContent = msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 350); }, 3000);
+}
+
+/* ─── Student modal ─── */
+const sectorEmojis = { Marketing: '📣', Commerce: '💼', Finance: '💰', Tech: '💻', RH: '👥', Autre: '🔹' };
+const avatarBgs = ['#EDE9FE','#D1FAE5','#FEF3C7','#FCE7F3','#E0E7FF','#FEE2E2'];
+
+function openStudentModal(name, sector, formation, mentors, seances, tokens) {
+  document.getElementById('ms-name').textContent = name;
+  document.getElementById('ms-sub').textContent = formation + ' · ESCP Business School';
+  document.getElementById('ms-seances').textContent = seances;
+  document.getElementById('ms-tokens').textContent = tokens;
+  const mentorList = mentors === '—' ? [] : mentors.split(',').map(s => s.trim());
+  document.getElementById('ms-mentors').textContent = Math.max(mentorList.length, 1) || '—';
+  document.getElementById('ms-sector').textContent = (sectorEmojis[sector] || '🔹') + ' ' + sector;
+  document.getElementById('ms-mentors-list').textContent = mentors;
+  openModal('view-student');
+}
+
+/* ─── Save note ─── */
+function saveNote() {
+  closeModal('view-student');
+  toast('✓ Note enregistrée', 'success');
+}
+
+/* ─── Declare placement ─── */
+function declarePlacement() {
+  closeModal('declare-placement');
+  setTimeout(() => toast('✓ Placement soumis — ATERISK vous confirmera dans 48h', 'success'), 200);
+}
+
+/* ─── Buy tokens ─── */
+function buyTokens() {
+  closeModal('buy-tokens');
+  setTimeout(() => toast('✓ Demande envoyée à votre interlocuteur ATERISK', 'success'), 200);
+}
+
+/* ─── Send contact form ─── */
+function sendContact(btn) {
+  const original = btn.textContent;
+  btn.textContent = '⏳ Envoi en cours…';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✓ Message envoyé !';
+    btn.style.background = 'var(--green)';
+    toast('✓ Votre message a été envoyé à ATERISK', 'success');
+    setTimeout(() => { btn.textContent = original; btn.style.background = ''; btn.disabled = false; }, 3000);
+  }, 1000);
+}
+
+/* ─── Student search / filter ─── */
+function filterStudents(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#students-table tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+function filterStudentSector(sector) {
+  document.querySelectorAll('#students-table tbody tr').forEach(tr => {
+    tr.style.display = (!sector || tr.dataset.sector === sector) ? '' : 'none';
+  });
+}
+function filterStudentStatus(status) {
+  document.querySelectorAll('#students-table tbody tr').forEach(tr => {
+    tr.style.display = (!status || tr.dataset.status === status) ? '' : 'none';
+  });
+}
+
+/* ─── FAQ toggle ─── */
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+/* ─── Token pack selector ─── */
+function selectTokenPack(input) {
+  document.querySelectorAll('.token-pack-opt').forEach(opt => {
+    opt.style.borderColor = 'var(--border)';
+    opt.style.background = '';
+  });
+  const opt = input.closest('label').querySelector('.token-pack-opt');
+  opt.style.borderColor = 'var(--blue)';
+  opt.style.background = 'var(--blue-pale)';
+}
+
+/* ─── Logout ─── */
+function doLogout(e) {
+  e.preventDefault();
+  if (confirm('Se déconnecter de votre espace école ?')) {
+    sessionStorage.removeItem('aterisk_user');
+    location.replace('login.html');
+  }
+}
+
+/* ─── Body opacity restore (failsafe CSS-pure) ─── */
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  document.body.style.opacity = '1';
+  document.body.style.transition = 'opacity 0.25s ease';
+}));
+</script>
+
+<script type="module" src="nav.js"></script>
+<script type="module" src="motion.js"></script>
+</body>
+</html>

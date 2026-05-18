@@ -350,6 +350,11 @@
           <span class="demo-email">admin@aterisk.fr</span>
           <span class="demo-fill">Remplir →</span>
         </div>
+        <div class="demo-row" onclick="fillDemo('ecole@escp.eu','escp2026')">
+          <span class="demo-role">🏫 École</span>
+          <span class="demo-email">ecole@escp.eu</span>
+          <span class="demo-fill">Remplir →</span>
+        </div>
       </div>
     </div>
 
@@ -359,12 +364,13 @@
 <script>
 // ── COMPTES ────────────────────────────────────────────────────────────────────
 const ACCOUNTS = [
-  { email: 'etudiant@aterisk.fr', password: 'etudiant123', role: 'etudiant', redirect: 'dashboard.html',        name: 'Lola M.' },
-  { email: 'mentor@aterisk.fr',   password: 'mentor123',   role: 'mentor',   redirect: 'dashboard-mentor.html', name: 'Sarah L.' },
-  { email: 'admin@aterisk.fr',    password: 'admin123',    role: 'admin',    redirect: 'admin.html',            name: 'Admin' },
+  { email: 'etudiant@aterisk.fr',   password: 'etudiant123', role: 'etudiant',    redirect: 'dashboard.html',        name: 'Lola M.' },
+  { email: 'mentor@aterisk.fr',     password: 'mentor123',   role: 'mentor',      redirect: 'dashboard-mentor.html', name: 'Sarah L.' },
+  { email: 'admin@aterisk.fr',      password: 'admin123',    role: 'admin',       redirect: 'admin.html',            name: 'Admin ATERISK' },
+  { email: 'ecole@escp.eu',         password: 'escp2026',    role: 'admin-ecole', redirect: 'admin-ecole.html',      name: 'ESCP Business School' },
 ];
 // Ajouter des comptes ici :
-// { email: 'prenom@email.fr', password: 'mdp', role: 'etudiant'|'mentor'|'admin', redirect: 'dashboard.html', name: 'Prénom' }
+// { email: 'contact@ecole.fr', password: 'mdp', role: 'admin-ecole', redirect: 'admin-ecole.html', name: 'Nom École' }
 // ──────────────────────────────────────────────────────────────────────────────
 
 function togglePwd() {

@@ -1,0 +1,15 @@
+/*
+  # Content Security Policy — bloque XSS, injection, clickjacking
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://meet.jit.si https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src https://meet.jit.si; object-src 'none'; base-uri 'self'; form-action 'self'
+  # Anti-clickjacking
+  X-Frame-Options: SAMEORIGIN
+  # Empêche MIME sniffing
+  X-Content-Type-Options: nosniff
+  # Force HTTPS
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  # Referrer minimal
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Permissions API
+  Permissions-Policy: camera=(self "https://meet.jit.si"), microphone=(self "https://meet.jit.si"), geolocation=()
+  # Cache par défaut
+  Cache-Control: public, max-age=3600
