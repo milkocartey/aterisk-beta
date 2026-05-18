@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Mon espace</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1A2E7A">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -295,7 +297,7 @@
   <div class="sidebar-user">
     <div class="user-avatar">👩‍🎓</div>
     <div class="user-info">
-      <h4>Lola Martin</h4>
+      <h4 id="sidebarUserName">Lola Martin</h4>
       <p>BTS Commerce · Paris</p>
     </div>
   </div>
@@ -343,12 +345,22 @@
 
     <div class="nav-section">Compte</div>
     <a href="inscription.html" class="nav-item">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Mon profil</span>
+    </a>
+    <a href="tokens.html" class="nav-item">
+      <span class="nav-icon">🪙</span>
+      <span class="nav-label">Mes tokens</span>
+    </a>
+    <a href="mapping.html" class="nav-item">
+      <span class="nav-icon">🗺️</span>
+      <span class="nav-label">Mapping</span>
+    </a>
   </nav>
 
   <div class="sidebar-footer">
-    <a href="admin.html" style="color:rgba(255,255,255,0.4);font-size:11px;text-decoration:none;display:block;padding:3px 0">⚙️ Espace admin</a>
     <a href="index.html">← Retour à l'accueil</a>
-    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+    <a href="login.html" id="logoutLink">Se déconnecter</a>
   </div>
 </aside>
 
@@ -359,7 +371,7 @@
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:12px">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <h1>Bonjour Lola 👋</h1>
+      <h1 id="topbarGreeting">Bonjour 👋</h1>
     </div>
     <div class="topbar-right">
       <button class="notif-btn">🔔<span class="notif-dot"></span></button>
@@ -572,6 +584,7 @@
             </div>
             <div class="rapport-actions">
               <button class="btn-rapport btn-dl" onclick="openRapport()">Voir</button>
+              <button class="btn-rapport btn-dl" onclick="downloadRapport('thomas-15mars')" title="Télécharger">↓</button>
             </div>
           </div>
           <div class="rapport-item">
@@ -582,6 +595,7 @@
             </div>
             <div class="rapport-actions">
               <button class="btn-rapport btn-dl" onclick="openRapport2()">Voir</button>
+              <button class="btn-rapport btn-dl" onclick="downloadRapport('sarah-20mars')" title="Télécharger">↓</button>
             </div>
           </div>
         </div>
@@ -701,10 +715,67 @@
 </div>
 
 <script>
+  // ── USER FROM SESSIONSTORE ──
+  (function() {
+    try {
+      const u = JSON.parse(sessionStorage.getItem('aterisk_user'));
+      if (u && u.name) {
+        const firstName = u.name.split(' ')[0];
+        const greetEl = document.getElementById('topbarGreeting');
+        if (greetEl) greetEl.textContent = 'Bonjour ' + firstName + ' 👋';
+        const sidebarName = document.getElementById('sidebarUserName');
+        if (sidebarName) sidebarName.textContent = u.name;
+      }
+    } catch(e) {}
+    // Token balance
+    const storedTokens = sessionStorage.getItem('aterisk_tokens');
+    if (storedTokens) {
+      const tb = document.querySelector('.token-balance .tb-val');
+      if (tb) tb.innerHTML = storedTokens + '<span style="font-family:\'DM Sans\',sans-serif;font-size:16px;opacity:0.5"> tokens</span>';
+    }
+  })();
+
+  // ── LOGOUT ──
+  document.getElementById('logoutLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+  });
+
+  // ── RAPPORT MODALS ──
   function openRapport() { document.getElementById('modal-rapport').classList.add('open'); document.body.style.overflow='hidden'; }
   function closeRapport() { document.getElementById('modal-rapport').classList.remove('open'); document.body.style.overflow=''; }
   function openRapport2() { document.getElementById('modal-rapport2').classList.add('open'); document.body.style.overflow='hidden'; }
   function closeRapport2() { document.getElementById('modal-rapport2').classList.remove('open'); document.body.style.overflow=''; }
+
+  // ── DOWNLOAD RAPPORT ──
+  function downloadRapport(id) {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '⏳';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = '✓';
+      btn.style.background = 'var(--green)';
+      btn.style.color = 'white';
+      toast('📩 Rapport envoyé sur ton email !');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.disabled = false;
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 2000);
+    }, 900);
+  }
+
+  // ── TOAST ──
+  function toast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
 
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', e => {
@@ -754,5 +825,6 @@
 <script src="dashboard-animations.js"></script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>

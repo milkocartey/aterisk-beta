@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Explorer par secteur</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1A2E7A">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -255,6 +257,7 @@
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
+<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=secteurs.html');return;}var r=JSON.parse(u).role;if(r==='mentor'){location.replace('dashboard-mentor.html');}if(r==='admin'){location.replace('admin.html');}})();</script>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -269,13 +272,13 @@
   <div class="sidebar-user">
     <div class="user-avatar">👩‍🎓</div>
     <div class="user-info">
-      <h4>Lola Martin</h4>
+      <h4 id="sidebarUserName">Lola Martin</h4>
       <p>BTS Commerce · Paris</p>
     </div>
   </div>
   <div class="token-balance">
     <div class="tb-label">Mes tokens</div>
-    <div class="tb-val">3<span style="font-size:14px;opacity:0.5;font-family:'DM Sans',sans-serif;font-weight:400"> tokens</span></div>
+    <div class="tb-val" id="sidebarTokens">3<span style="font-size:14px;opacity:0.5;font-family:'DM Sans',sans-serif;font-weight:400"> tokens</span></div>
     <div class="tb-sub">= 3 séances junior disponibles</div>
     <button class="btn-buy-tokens" onclick="window.location.href='tokens.html'">+ Acheter des tokens</button>
   </div>
@@ -293,7 +296,7 @@
   </nav>
   <div class="sidebar-footer">
     <a href="index.html">← Retour à l'accueil</a>
-    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+    <a href="#" id="logoutLink">Se déconnecter</a>
   </div>
 </aside>
 
@@ -305,7 +308,8 @@
     <h1>Explorer les mentors 🔍</h1>
   </div>
   <div class="topbar-right">
-    <div class="token-pill">🪙 3 tokens</div>
+    <div class="token-pill">🪙 <span id="tokenPillCount">3</span> tokens</div>
+    <a href="tokens.html" style="font-size:12px;color:var(--blue-mid);text-decoration:none;font-weight:500">Acheter →</a>
   </div>
 </div>
 
@@ -449,7 +453,7 @@
           </div>
         </div>
 
-        <div class="mentor-card" data-level="junior" data-dispo="true" data-search="noah commerce vente retail paris junior">
+        <div class="mentor-card" onclick="openQuickModal('noah')" data-level="junior" data-dispo="true" data-search="noah commerce vente retail paris junior">
           <div class="card-photo" style="--card-bg:linear-gradient(135deg,#DC2626,#F87171)">👨‍🎓</div>
           <div class="card-header">
             <span class="level-badge junior">Junior</span>
@@ -464,11 +468,11 @@
               <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.6</span></div>
               <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">6</span></div>
             </div>
-            <button class="btn-card">Réserver →</button>
+            <button class="btn-card" onclick="openQuickModal('noah'); event.stopPropagation()">Réserver →</button>
           </div>
         </div>
 
-        <div class="mentor-card" data-level="senior" data-dispo="false" data-search="marie commerce key account marseille senior">
+        <div class="mentor-card" onclick="openQuickModal('marie')" data-level="senior" data-dispo="false" data-search="marie commerce key account marseille senior">
           <div class="card-photo" style="--card-bg:linear-gradient(135deg,#0369A1,#38BDF8)">👩‍💼</div>
           <div class="card-header">
             <span class="level-badge senior">Senior</span>
@@ -482,7 +486,7 @@
               <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
               <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">22</span></div>
             </div>
-            <button class="btn-card">Réserver →</button>
+            <button class="btn-card" onclick="openQuickModal('marie'); event.stopPropagation()">Réserver →</button>
           </div>
         </div>
       </div>
@@ -496,7 +500,7 @@
         <span class="count">7 mentors</span>
       </div>
       <div class="mentors-row">
-        <div class="mentor-card" data-level="junior" data-dispo="true" data-search="alex développement web react javascript paris junior">
+        <div class="mentor-card" onclick="openQuickModal('alex')" data-level="junior" data-dispo="true" data-search="alex développement web react javascript paris junior">
           <div class="card-photo" style="--card-bg:linear-gradient(135deg,#166534,#4ADE80)">👨‍💻</div>
           <div class="card-header">
             <span class="level-badge junior">Junior</span>
@@ -511,11 +515,11 @@
               <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
               <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">9</span></div>
             </div>
-            <button class="btn-card">Réserver →</button>
+            <button class="btn-card" onclick="openQuickModal('alex'); event.stopPropagation()">Réserver →</button>
           </div>
         </div>
 
-        <div class="mentor-card" data-level="senior" data-dispo="true" data-search="julie product manager digital tech nantes senior">
+        <div class="mentor-card" onclick="openQuickModal('julie')" data-level="senior" data-dispo="true" data-search="julie product manager digital tech nantes senior">
           <div class="card-photo" style="--card-bg:linear-gradient(135deg,#4C1D95,#8B5CF6)">👩‍💻</div>
           <div class="card-header">
             <span class="level-badge senior">Senior</span>
@@ -530,11 +534,11 @@
               <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.9</span></div>
               <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">15</span></div>
             </div>
-            <button class="btn-card">Réserver →</button>
+            <button class="btn-card" onclick="openQuickModal('julie'); event.stopPropagation()">Réserver →</button>
           </div>
         </div>
 
-        <div class="mentor-card" data-level="junior" data-dispo="false" data-search="rayan data analyst python sql bordeaux junior">
+        <div class="mentor-card" onclick="openQuickModal('rayan')" data-level="junior" data-dispo="false" data-search="rayan data analyst python sql bordeaux junior">
           <div class="card-photo" style="--card-bg:linear-gradient(135deg,#C2410C,#FB923C)">👨‍🔬</div>
           <div class="card-header">
             <span class="level-badge junior">Junior</span>
@@ -548,7 +552,7 @@
               <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.7</span></div>
               <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">5</span></div>
             </div>
-            <button class="btn-card">Réserver →</button>
+            <button class="btn-card" onclick="openQuickModal('rayan'); event.stopPropagation()">Réserver →</button>
           </div>
         </div>
       </div>
@@ -562,7 +566,7 @@
         <span class="count">5 mentors</span>
       </div>
       <div class="mentors-row">
-        <div class="mentor-card" data-level="senior" data-dispo="true" data-search="sophie rh recrutement paie droit social paris senior">
+        <div class="mentor-card" onclick="openQuickModal('sophie')" data-level="senior" data-dispo="true" data-search="sophie rh recrutement paie droit social paris senior">
           <div class="card-photo" style="--card-bg:linear-gradient(135deg,#86198F,#E879F9)">👩‍💼</div>
           <div class="card-header">
             <span class="level-badge senior">Senior</span>
@@ -577,11 +581,11 @@
               <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.8</span></div>
               <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">14</span></div>
             </div>
-            <button class="btn-card">Réserver →</button>
+            <button class="btn-card" onclick="openQuickModal('sophie'); event.stopPropagation()">Réserver →</button>
           </div>
         </div>
 
-        <div class="mentor-card" data-level="junior" data-dispo="true" data-search="lena rh gestion talents marque employeur lille junior">
+        <div class="mentor-card" onclick="openQuickModal('lena')" data-level="junior" data-dispo="true" data-search="lena rh gestion talents marque employeur lille junior">
           <div class="card-photo" style="--card-bg:linear-gradient(135deg,#9F1239,#FB7185)">👩‍🎓</div>
           <div class="card-header">
             <span class="level-badge junior">Junior</span>
@@ -596,7 +600,7 @@
               <div class="meta-item"><span class="meta-label">Avis</span><span class="meta-val">★ 4.6</span></div>
               <div class="meta-item"><span class="meta-label">Placés</span><span class="meta-val">7</span></div>
             </div>
-            <button class="btn-card">Réserver →</button>
+            <button class="btn-card" onclick="openQuickModal('lena'); event.stopPropagation()">Réserver →</button>
           </div>
         </div>
       </div>
@@ -618,7 +622,7 @@
       <div class="coming-soon-card">
         <div class="cs-emoji">🚀</div>
         <p>Mentors Finance bientôt disponibles</p>
-        <small><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</small>
+        <button class="notify-btn" onclick="notifyMe(this, 'Finance')" style="margin-top:12px;background:var(--blue);color:white;border:none;padding:9px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">🔔 Me notifier à l'ouverture</button>
       </div>
     </div>
 
@@ -631,7 +635,7 @@
       <div class="coming-soon-card">
         <div class="cs-emoji">🚀</div>
         <p>Mentors Juridique bientôt disponibles</p>
-        <small><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</small>
+        <button class="notify-btn" onclick="notifyMe(this, 'Juridique')" style="margin-top:12px;background:var(--blue);color:white;border:none;padding:9px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">🔔 Me notifier à l'ouverture</button>
       </div>
     </div>
 
@@ -643,8 +647,8 @@
       </div>
       <div class="coming-soon-card">
         <div class="cs-emoji">🚀</div>
-        <p>Mentors Création bientôt disponibles</p>
-        <small><a href="inscription.html" style="color:var(--blue-mid);text-decoration:none;font-weight:600">Inscris-toi →</a> on te préviendra dès l'ouverture du secteur.</small>
+        <p>Mentors Création & Design bientôt disponibles</p>
+        <button class="notify-btn" onclick="notifyMe(this, 'Création & Design')" style="margin-top:12px;background:var(--blue);color:white;border:none;padding:9px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">🔔 Me notifier à l'ouverture</button>
       </div>
     </div>
 
@@ -800,6 +804,95 @@
 </div>
 
 <script>
+  // ── INIT USER ──
+  (function() {
+    try {
+      const u = JSON.parse(sessionStorage.getItem('aterisk_user'));
+      if (u && u.name) {
+        const el = document.getElementById('sidebarUserName');
+        if (el) el.textContent = u.name;
+      }
+      const storedTokens = sessionStorage.getItem('aterisk_tokens');
+      const tokens = storedTokens || '3';
+      const tpEl = document.getElementById('tokenPillCount');
+      if (tpEl) tpEl.textContent = tokens;
+      const stEl = document.getElementById('sidebarTokens');
+      if (stEl) stEl.innerHTML = tokens + '<span style="font-size:14px;opacity:0.5;font-family:\'DM Sans\',sans-serif;font-weight:400"> tokens</span>';
+    } catch(e) {}
+  })();
+
+  // ── LOGOUT ──
+  document.getElementById('logoutLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+  });
+
+  // ── TOAST ──
+  function toast(msg, color) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:' + (color||'#1A2E7A') + ';color:white;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  // ── NOTIFY ME ──
+  function notifyMe(btn, secteur) {
+    btn.textContent = '✓ Notification activée !';
+    btn.style.background = '#16A34A';
+    btn.disabled = true;
+    toast('Tu seras notifié dès l\'ouverture du secteur ' + secteur + ' !', '#16A34A');
+  }
+
+  // ── QUICK MODAL for cards without dedicated modal ──
+  const QUICK_MENTORS = {
+    noah: { name:'Noah B.', role:'Alternant — Commerce Retail · Paris', emoji:'👨‍🎓', level:'junior', tags:['Retail','Négociation','CV'], bio:'Alternant en commerce retail depuis 10 mois à Paris. Expert de la négociation et de la prospection terrain. A aidé 6 étudiants à décrocher leur alternance dans le retail.', note:'★ 4.6', token:'1 token' },
+    marie: { name:'Marie K.', role:'Key Account Manager · Marseille', emoji:'👩‍💼', level:'senior', tags:['Grand comptes','Pitch','CRM'], bio:'Key Account Manager avec 6 ans d\'expérience. Spécialiste des grands comptes et de la négociation B2B. Expert du pitch commercial et de la gestion CRM.', note:'★ 4.9', token:'1,5 token' },
+    alex: { name:'Alex T.', role:'Alternant — Dev Web · Paris', emoji:'👨‍💻', level:'junior', tags:['React','Portfolio','GitHub'], bio:'Alternant développeur web React depuis 8 mois à Paris. Spécialiste du portfolio technique et de la présentation GitHub pour décrocher une alternance tech.', note:'★ 4.8', token:'1 token' },
+    julie: { name:'Julie F.', role:'Product Manager · Nantes', emoji:'👩‍💻', level:'senior', tags:['Product','UX','Agile'], bio:'Product Manager dans une scale-up depuis 3 ans. Ancienne alternante — elle connaît parfaitement les attentes des recruteurs tech et les clés pour se démarquer.', note:'★ 4.9', token:'1,5 token' },
+    rayan: { name:'Rayan A.', role:'Alternant — Data · Bordeaux', emoji:'👨‍🔬', level:'junior', tags:['Python','SQL','Data viz'], bio:'Alternant data analyst depuis 7 mois à Bordeaux. Aide les étudiants data à construire leur portfolio, préparer les tests techniques et convaincre les recruteurs.', note:'★ 4.7', token:'1 token' },
+    sophie: { name:'Sophie M.', role:'RRH · Paris', emoji:'👩‍💼', level:'senior', tags:['Recrutement','Droit social','Paie'], bio:'Responsable RH depuis 5 ans dans le secteur privé. Ancienne recrutante — elle sait exactement ce que les RRH cherchent et comment présenter son profil pour un poste RH en alternance.', note:'★ 4.8', token:'1,5 token' },
+    lena: { name:'Léna P.', role:'Alternante — RH · Lille', emoji:'👩‍🎓', level:'junior', tags:['Talents','Marque employeur'], bio:'Alternante RH depuis 9 mois à Lille. Spécialiste de la marque employeur et de la gestion des talents. Accompagne les étudiants RH sur leur candidature et leur différenciation.', note:'★ 4.6', token:'1 token' },
+  };
+
+  function openQuickModal(id) {
+    const m = QUICK_MENTORS[id];
+    if (!m) return;
+    const existing = document.getElementById('quick-modal');
+    if (existing) existing.remove();
+    const tagsHtml = m.tags.map(t => `<span style="background:var(--blue-light);color:var(--blue-mid);font-size:12px;font-weight:500;padding:4px 10px;border-radius:100px">${t}</span>`).join('');
+    const div = document.createElement('div');
+    div.className = 'modal-overlay open';
+    div.id = 'quick-modal';
+    div.innerHTML = `<div class="modal">
+      <div class="modal-top">
+        <button class="modal-close" onclick="document.getElementById('quick-modal').remove();document.body.style.overflow=''">✕</button>
+        <div class="modal-avatar">${m.emoji}</div>
+        <div class="modal-name">${m.name}</div>
+        <div class="modal-role">${m.role} · ${m.level==='senior'?'Senior':'Junior'}</div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section"><div class="modal-section-title">À propos</div><p>${m.bio}</p></div>
+        <div class="modal-section"><div class="modal-section-title">Compétences</div><div style="display:flex;flex-wrap:wrap;gap:6px">${tagsHtml}</div></div>
+        <div class="modal-section">
+          <div class="modal-section-title">Choisir un créneau — ${m.token}</div>
+          <div class="creneaux">
+            <div class="creneau active" onclick="selectCreneau(this)"><div class="c-date">Lun 23 mars</div><div class="c-time">10h00 — 10h30</div></div>
+            <div class="creneau" onclick="selectCreneau(this)"><div class="c-date">Mar 24 mars</div><div class="c-time">14h00 — 14h30</div></div>
+            <div class="creneau" onclick="selectCreneau(this)"><div class="c-date">Jeu 26 mars</div><div class="c-time">09h00 — 09h30</div></div>
+            <div class="creneau" onclick="selectCreneau(this)"><div class="c-date">Ven 27 mars</div><div class="c-time">11h00 — 11h30</div></div>
+          </div>
+        </div>
+        <div class="gift-banner">🎁 Si c'est ta 1ère séance, elle est offerte — aucun token débité.</div>
+        <button class="btn-reserver" onclick="reserver()">Confirmer la réservation →</button>
+      </div>
+    </div>`;
+    document.body.appendChild(div);
+    document.body.style.overflow = 'hidden';
+    div.addEventListener('click', e => { if(e.target===div){div.remove();document.body.style.overflow='';}});
+  }
+
   function scrollToSector(sector, el) {
     document.querySelectorAll('.sector-pill').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
@@ -964,9 +1057,12 @@
 
   function reserver() {
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+    // Remove quick modal if present
+    const qm = document.getElementById('quick-modal');
+    if (qm) qm.remove();
     document.body.style.overflow = '';
-    const user = sessionStorage.getItem('aterisk_user');
-    window.location.href = user ? 'matching.html' : 'inscription.html';
+    toast('✓ Séance réservée ! Redirection vers ton espace…', '#16A34A');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
   }
 
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -998,5 +1094,6 @@ document.querySelectorAll('.mentor-card').forEach((el, i) => {
     { target: el, offset: ['start end', 'end end'] });
 });
 </script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>

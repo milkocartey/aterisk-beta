@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Acheter des tokens</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1A2E7A">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -219,7 +221,7 @@
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
-<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=tokens.html');}})();</script>
+<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=tokens.html');return;}var r=JSON.parse(u).role;if(r==='mentor'){location.replace('dashboard-mentor.html');}if(r==='admin'){location.replace('admin.html');}})();</script>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -234,7 +236,7 @@
   <div class="sidebar-user">
     <div class="user-avatar">👩‍🎓</div>
     <div class="user-info">
-      <h4>Lola Martin</h4>
+      <h4 id="sidebarUserName">Lola Martin</h4>
       <p>BTS Commerce · Paris</p>
     </div>
   </div>
@@ -282,7 +284,7 @@
   </nav>
   <div class="sidebar-footer">
     <a href="index.html">← Retour à l'accueil</a>
-    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+    <a href="#" id="logoutLink">Se déconnecter</a>
   </div>
 </aside>
 
@@ -427,6 +429,16 @@
       </div>
     </div>
 
+    <!-- BESOIN DE CONSEILS -->
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow)">
+      <span style="font-size:24px;flex-shrink:0">💬</span>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;margin-bottom:3px">Besoin de conseils ?</div>
+        <div style="font-size:13px;color:var(--muted)">Tu ne sais pas quel pack choisir ? On est là pour t'aider à choisir le bon.</div>
+      </div>
+      <a href="mailto:contact@aterisk.fr" style="background:var(--blue);color:white;padding:10px 22px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='var(--blue-mid)'" onmouseout="this.style.background='var(--blue)'">Nous écrire →</a>
+    </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -497,6 +509,33 @@
 <script>
   let selectedTokens = 5, selectedPrice = 63, selectedLabel = '5 tokens (−10%)', customQty = 2;
 
+  // ── INIT USER ──
+  (function() {
+    try {
+      const u = JSON.parse(sessionStorage.getItem('aterisk_user'));
+      if (u && u.name) {
+        const el = document.getElementById('sidebarUserName');
+        if (el) el.textContent = u.name;
+      }
+      // Load token balance from sessionStorage
+      const storedTokens = sessionStorage.getItem('aterisk_tokens');
+      if (storedTokens) {
+        const n = parseInt(storedTokens);
+        const tbVal = document.getElementById('current-balance');
+        if (tbVal) tbVal.innerHTML = n + '<span style="font-size:13px;font-family:\'DM Sans\',sans-serif;opacity:0.5;font-weight:400"> tk</span>';
+        const topbarBal = document.getElementById('topbar-balance');
+        if (topbarBal) topbarBal.textContent = n;
+      }
+    } catch(e) {}
+  })();
+
+  // ── LOGOUT ──
+  document.getElementById('logoutLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+  });
+
   function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebarOverlay').classList.toggle('open');
@@ -534,8 +573,9 @@
   }
 
   function getBalance() {
-    const el = document.getElementById('current-balance');
-    return parseInt(el.textContent);
+    const stored = sessionStorage.getItem('aterisk_tokens');
+    if (stored) return parseInt(stored) || 3;
+    return 3; // default
   }
 
   function updateCheckout() {
@@ -584,11 +624,16 @@
     setTimeout(() => {
       closeModal('payment');
       const newBal = getBalance() + selectedTokens;
+      // Persist new balance in sessionStorage
+      sessionStorage.setItem('aterisk_tokens', String(newBal));
       // Update sidebar token display
-      const tbVal = document.querySelector('.tb-val');
-      tbVal.innerHTML = newBal + '<span style="font-size:13px;font-family:\'DM Sans\',sans-serif;opacity:0.5;font-weight:400"> tk</span>';
-      document.getElementById('topbar-balance').textContent = newBal;
+      const tbVal = document.getElementById('current-balance');
+      if (tbVal) tbVal.innerHTML = newBal + '<span style="font-size:13px;font-family:\'DM Sans\',sans-serif;opacity:0.5;font-weight:400"> tk</span>';
+      const topbarBal = document.getElementById('topbar-balance');
+      if (topbarBal) topbarBal.textContent = newBal;
       document.getElementById('checkoutBar').classList.remove('visible');
+      // Update success modal balance
+      document.getElementById('success-balance').textContent = newBal;
       openModal('success');
       btn.textContent = 'Payer ' + selectedPrice + ' €';
       btn.disabled = false; btn.style.background = '';
@@ -610,5 +655,6 @@
 </script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>

@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1A2E7A">
 <title>ATERISK — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
@@ -261,7 +263,7 @@ tr:hover td{background:#FAFAFA;}
 <style>body{opacity:0;transition:none}</style>
 </head>
 <body>
-<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=admin.html');return;}if(JSON.parse(u).role!=='admin'){location.replace('dashboard.html');}})();</script>
+<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=admin.html');return;}try{var r=JSON.parse(u).role;if(r!=='admin'){location.replace(r==='mentor'?'dashboard-mentor.html':'dashboard.html');}}catch(e){location.replace('login.html');}})();</script>
 
 <aside class="sb">
   <div class="sb-logo">
@@ -285,10 +287,9 @@ tr:hover td{background:#FAFAFA;}
     <button class="sb-item" onclick="show('settings',this)"><span class="sb-icon">⚙️</span><span class="sb-label">Paramètres</span></button>
   </nav>
   <div class="sb-footer">
-    <a href="dashboard.html">← Espace étudiant</a>
-    <a href="index.html">Site public</a>
+    <a href="index.html">← Site public</a>
     <a href="mentor-inscription.html">Candidatures mentor</a>
-    <a href="index.html" onclick="return confirm('Se déconnecter ?')">Se déconnecter</a>
+    <a href="login.html" onclick="sessionStorage.removeItem('aterisk_user');return true;">Se déconnecter</a>
   </div>
 </aside>
 
@@ -898,9 +899,9 @@ tr:hover td{background:#FAFAFA;}
 </div>
 
 <script>
-const titles={overview:"Vue d'ensemble",students:"Gestion étudiants",mentors:"Gestion mentors",seances:"Séances",tokens:"Tokens & Revenus",schools:"Écoles partenaires",reports:"Rapports & Exports",settings:"Paramètres",content:"Contenu — Mentors & Ressources"};
-const tbActions={overview:"+ Étudiant",students:"+ Étudiant",mentors:"+ Inviter",seances:"+ Séance",tokens:"📤 Export",schools:"+ École",reports:"Générer",settings:"Enregistrer",content:"+ Ajouter"};
-const tbModals={overview:"add-student",students:"add-student",mentors:null,seances:null,tokens:null,schools:"add-school",reports:null,settings:null,content:null};
+const titles={overview:"Vue d'ensemble",students:"Gestion étudiants",mentors:"Gestion mentors",candidatures:"Candidatures mentors",seances:"Séances",tokens:"Tokens & Revenus",schools:"Écoles partenaires",reports:"Rapports & Exports",settings:"Paramètres",content:"Contenu — Mentors & Ressources"};
+const tbActions={overview:"+ Étudiant",students:"+ Étudiant",mentors:"+ Inviter",candidatures:"🧪 Simuler",seances:"+ Séance",tokens:"📤 Export",schools:"+ École",reports:"Générer",settings:"Enregistrer",content:"+ Ajouter"};
+const tbModals={overview:"add-student",students:"add-student",mentors:null,candidatures:null,seances:null,tokens:null,schools:"add-school",reports:null,settings:null,content:null};
 
 function show(id,btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -932,9 +933,26 @@ function valider(btn){
   const db=btn.nextElementSibling;if(db)db.style.display='none';
 }
 function addItem(modalId,msg){closeModal(modalId);toast('✓ '+msg+' avec succès');}
-function saveSettings(btn){const o=btn.textContent;btn.textContent='✓ Enregistré !';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=o;btn.style.background='';},2000);}
+function saveSettings(btn){
+  // Save all inputs/selects/toggles in parent card to localStorage
+  const card=btn.closest('.card');
+  if(card){
+    const inputs=card.querySelectorAll('input,select');
+    const settings=JSON.parse(localStorage.getItem('aterisk_settings')||'{}');
+    inputs.forEach((inp,i)=>{
+      const key=inp.id||inp.name||('setting_'+i);
+      if(inp.type!=='password'||inp.value) settings[key]=inp.value;
+    });
+    const toggles=card.querySelectorAll('.toggle');
+    toggles.forEach((t,i)=>{ settings['toggle_'+i]=t.classList.contains('on'); });
+    localStorage.setItem('aterisk_settings',JSON.stringify(settings));
+  }
+  const o=btn.textContent;btn.textContent='✓ Enregistré !';btn.style.background='var(--green)';
+  toast('✓ Paramètres enregistrés avec succès');
+  setTimeout(()=>{btn.textContent=o;btn.style.background='';},2000);
+}
 function genReport(btn){const o=btn.textContent;btn.textContent='⏳ Génération…';btn.disabled=true;setTimeout(()=>{btn.textContent='✓ Rapport prêt !';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=o;btn.disabled=false;btn.style.background='';},2000);},1500);}
-function toast(msg){const t=document.createElement('div');t.style.cssText='position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+function toast(msg){const t=document.createElement('div');t.style.cssText='position:fixed;bottom:24px;right:24px;background:#1A2E7A;color:white;padding:11px 18px;border-radius:100px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2)';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
 
 /* ─── CMS ─── */
 
@@ -1569,6 +1587,7 @@ document.getElementById('btn-save-ressource').addEventListener('click', function
   });
 });
 </script>
+<script src="cookie-banner.js"></script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
 </body>

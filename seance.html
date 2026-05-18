@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>ATERISK — Séance en cours</title>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
@@ -374,8 +375,8 @@
     <div class="side-block" id="post-block">
       <div class="side-label" id="post-label" style="display:none">Après la séance</div>
       <div class="post-actions" id="post-actions">
-        <a class="btn-post primary" id="btn-rapport" href="aterisk_rapport_mentor.html">📋 Rédiger le rapport</a>
-        <button class="btn-post ghost" onclick="goToDashboard()">← Retour au dashboard</button>
+        <a class="btn-post primary" id="btn-rapport" href="aterisk_rapport_mentor.html" style="display:none">📋 Rédiger le rapport</a>
+        <button class="btn-post ghost" onclick="goToDashboard()">← Retour à mon espace</button>
       </div>
     </div>
 
@@ -400,10 +401,10 @@
           </button>
         </div>
 
-        <button class="btn-join" onclick="joinCall()">
+        <button class="btn-join" id="btn-join-call" onclick="joinCall()">
           📹 Rejoindre la séance
         </button>
-        <div class="precall-note">La séance est chiffrée · aucune donnée n'est enregistrée</div>
+        <div class="precall-note">La séance est chiffrée de bout en bout · aucune donnée n'est enregistrée</div>
       </div>
     </div>
 
@@ -437,6 +438,7 @@
 </div>
 
 <!-- Jitsi API -->
+<script src="cookie-banner.js"></script>
 <script src="https://meet.jit.si/external_api.js"></script>
 <script>
 // ── URL PARAMS ───────────────────────────────────────────────────────────────
@@ -463,17 +465,22 @@ document.title = 'ATERISK — Séance avec ' + partner;
 
 // Post-session: redirect to right dashboard
 const dashboardUrl = role === 'mentor' ? 'dashboard-mentor.html' : 'dashboard.html';
-document.getElementById('btn-end-rapport').href = 'aterisk_rapport_mentor.html?room=' + roomName;
+const rapportUrl = 'aterisk_rapport_mentor.html?room=' + encodeURIComponent(roomName) + '&mentor=' + encodeURIComponent(mentor) + '&student=' + encodeURIComponent(student);
+document.getElementById('btn-end-rapport').href = rapportUrl;
+document.getElementById('btn-rapport').href = rapportUrl;
 
 // Adapt end screen text based on role
 if(role === 'etudiant'){
   document.getElementById('endscreen-sub').textContent = 'Séance avec ' + mentor + ' terminée. Ton rapport arrivera sous 12h dans ton espace.';
   document.getElementById('btn-end-rapport').textContent = '← Retour à mon espace';
-  document.getElementById('btn-end-rapport').href = 'dashboard.html';
+  document.getElementById('btn-end-rapport').href = dashboardUrl;
   document.getElementById('btn-end-rapport').className = 'ea-btn primary';
   document.querySelector('.endscreen-actions .ea-btn.ghost').style.display = 'none';
+  // hide rapport sidebar btn for students
+  document.getElementById('btn-rapport').style.display = 'none';
 } else {
-  document.getElementById('post-label').style.display = '';
+  // mentor sees rapport link
+  document.getElementById('btn-rapport').style.display = '';
 }
 
 // ── TIMER ────────────────────────────────────────────────────────────────────
@@ -608,6 +615,7 @@ function endSession() {
   // Show post actions in sidebar
   document.getElementById('post-label').style.display = '';
   document.getElementById('post-actions').classList.add('visible');
+  if(role === 'mentor') document.getElementById('btn-rapport').style.display = '';
   // Show end screen
   document.getElementById('endscreen').classList.add('visible');
 
@@ -626,7 +634,17 @@ function endSession() {
 function goToDashboard() { window.location.href = dashboardUrl; }
 
 // ── CHECKLIST ────────────────────────────────────────────────────────────────
-function toggleCheck(el) { el.classList.toggle('done'); }
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  // Enable join button only when mic item (2nd checklist item) is checked
+  const micItem = document.querySelectorAll('.check-item')[1];
+  const joinBtn = document.getElementById('btn-join-call');
+  if(joinBtn && micItem) {
+    const micChecked = micItem.classList.contains('done');
+    joinBtn.style.opacity = micChecked ? '1' : '0.55';
+    joinBtn.title = micChecked ? '' : 'Vérifiez que votre micro fonctionne avant de rejoindre';
+  }
+}
 
 // ── STAR RATING ───────────────────────────────────────────────────────────────
 function rateStar(n) {

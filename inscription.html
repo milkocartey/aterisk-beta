@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ATERISK — Créer mon profil</title>
+<title>S'inscrire — ATERISK</title>
+<meta name="description" content="Crée ton profil ATERISK et trouve ton mentor. 1ère séance offerte, matching en 48h.">
+<meta name="theme-color" content="#030712">
+<meta property="og:title" content="S'inscrire — ATERISK">
+<meta property="og:url" content="https://aterisk.fr/inscription.html">
+<meta property="og:image" content="https://aterisk.fr/og-image.jpg">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="ATERISK">
+<link rel="canonical" href="https://aterisk.fr/inscription.html">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -385,6 +393,7 @@
   <div class="form-hero-glow"></div>
   <div class="form-hero-grid"></div>
   <div class="form-hero-inner">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,0.45);text-decoration:none;margin-bottom:20px;transition:color 0.15s;" onmouseover="this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">← Retour au site</a>
     <div class="hero-tag"><span class="hero-tag-dot"></span>Inscription gratuite</div>
     <h1>Crée ton profil <em class="gradient-text">étudiant.</em></h1>
     <p>1ère séance offerte. Matching en 48h. Sans engagement.</p>
@@ -612,7 +621,7 @@
           <div class="success-step-text"><strong>Ensuite</strong> — Tu réserves des séances à la carte selon tes besoins, quand tu veux.</div>
         </div>
       </div>
-      <a href="dashboard.html" style="display:inline-block; background:var(--blue); color:white; padding:14px 32px; border-radius:100px; text-decoration:none; font-weight:600; font-size:15px;">Accéder à mon espace →</a>
+      <a href="login.html" style="display:inline-block; background:var(--blue); color:white; padding:14px 32px; border-radius:100px; text-decoration:none; font-weight:600; font-size:15px;">Se connecter à mon espace →</a>
     </div>
 
   </div>
@@ -967,12 +976,9 @@
   }
 
   function downloadContract() {
-    const a = document.createElement('a');
-    a.href = 'ATERISK_Contrat_Abonnement_Etudiant.docx';
-    a.download = 'ATERISK_Contrat_Abonnement_Etudiant.docx';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // Le fichier contrat sera disponible au lancement commercial.
+    // En attendant, le contenu est consultable dans ce modal.
+    alert('Le téléchargement du contrat en .docx sera disponible au lancement. Le contenu intégral est consultable dans cette fenêtre.');
   }
 
   document.getElementById('contract-modal').addEventListener('click', function(e) {
@@ -981,5 +987,6 @@
 </script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>

@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATERISK — Espace Mentor</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1A2E7A">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -26,7 +28,7 @@
   .sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:flex-start;justify-content:space-between;}
   .sb-logo a{font-family:'DM Serif Display',serif;font-size:20px;color:white;text-decoration:none;letter-spacing:1px;}
   .sb-logo p{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;}
-  .sidebar-close{display:none;background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;padding:4px 8px;margin-left:auto;transition:color 0.2s;}
+  .sidebar-close{display:block;background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;padding:4px 8px;margin-left:auto;transition:color 0.2s;}
   .sidebar-close:hover{color:white;}
   .sb-mentor{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:10px;}
   .sb-avatar{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:2px solid rgba(255,255,255,0.2);}
@@ -263,15 +265,19 @@
   .section.active{display:block;}
 
   @media(max-width:1024px){.two-col{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
-  .hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;padding:6px;color:var(--ink);}
+  .hamburger{display:flex;align-items:center;justify-content:center;background:none;border:none;font-size:22px;cursor:pointer;padding:6px;color:var(--ink);border-radius:8px;transition:background 0.15s;}
+  .hamburger:hover{background:var(--blue-pale);}
   .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:40;}
+  .sidebar{transition:transform 0.3s ease;}
+  .sidebar.closed{transform:translateX(-100%);}
+  .main{transition:margin-left 0.3s ease;}
+  .main.expanded{margin-left:0;}
   @media(max-width:768px){
-    .hamburger{display:block;}
-    .sidebar-close{display:block;}
-    .sidebar{transform:translateX(-100%);transition:transform 0.3s ease;}
+    .sidebar{transform:translateX(-100%);}
     .sidebar.open{transform:translateX(0);}
+    .sidebar.closed{transform:translateX(-100%);}
     .sidebar-overlay.open{display:block;}
-    .main{margin-left:0;}
+    .main,.main.expanded{margin-left:0;}
     .content{padding:20px;}
     .stats-row{grid-template-columns:repeat(2,1fr);}
     .welcome-banner{flex-direction:column;align-items:flex-start;gap:20px;padding:24px 22px;}
@@ -345,7 +351,7 @@
   <div class="sb-footer">
     <a href="aterisk_rapport_mentor.html">✦ Outil rapport IA</a>
     <a href="index.html">← Retour à l'accueil</a>
-    <a href="login.html" onclick="sessionStorage.clear()">Se déconnecter</a>
+    <a href="#" id="logoutLink">Se déconnecter</a>
   </div>
 </aside>
 
@@ -362,6 +368,7 @@
       <button class="status-pill online" id="statusPill" onclick="toggleStatus()">
         <span class="status-dot"></span>Disponible
       </button>
+      <button class="btn-rapport" onclick="openModal('placement')" style="background:var(--green)">🏆 Déclarer un placement</button>
       <a href="aterisk_rapport_mentor.html" class="btn-rapport">✦ Rédiger un rapport</a>
     </div>
   </div>
@@ -751,7 +758,7 @@
     <div class="section" id="sec-profil">
       <div class="two-col">
         <div class="card">
-          <div class="card-head"><h3>Mon profil public</h3><button class="abtn primary" onclick="saveProfil(this)">Enregistrer</button></div>
+          <div class="card-head"><h3>Mon profil public</h3><div style="display:flex;gap:8px"><a href="secteurs.html" class="abtn" target="_blank">Voir profil public →</a><button class="abtn primary" onclick="saveProfil(this)">Enregistrer</button></div></div>
           <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
             <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--blue-pale);border-radius:8px">
               <div style="width:52px;height:52px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">👨‍💼</div>
@@ -809,6 +816,44 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- MODAL DÉCLARER UN PLACEMENT -->
+<div class="modal-overlay" id="modal-placement">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal('placement')">✕</button>
+      <h2>🏆 Déclarer un placement</h2>
+      <p>Un(e) de tes étudiants a trouvé son alternance !</p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Étudiant placé</div>
+        <select style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:14px" id="placement-student">
+          <option value="">-- Sélectionner l'étudiant --</option>
+          <option value="lola">Lola Martin</option>
+          <option value="nabil">Nabil Oussama</option>
+          <option value="yanis">Yanis Ferhat</option>
+          <option value="sara">Sara Leblanc</option>
+          <option value="adam">Adam Benali</option>
+        </select>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Entreprise & poste</div>
+        <input type="text" placeholder="Ex: Publicis — Chargé(e) Marketing" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:14px" id="placement-company">
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Date de début de contrat</div>
+        <input type="date" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:14px" id="placement-date">
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Salaire brut mensuel (facultatif)</div>
+        <input type="number" placeholder="Ex: 1200" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:4px" id="placement-salary">
+        <p style="font-size:11px;color:var(--muted)">Commission ATERISK : 4% × 4 mois — déclenchée après confirmation</p>
+      </div>
+      <button class="btn-modal green" onclick="confirmPlacement()">Confirmer le placement ✓</button>
+    </div>
   </div>
 </div>
 
@@ -918,6 +963,36 @@
 </div>
 
 <script>
+// ── INIT USER FROM SESSIONSTORAGE ──
+(function() {
+  try {
+    const u = JSON.parse(sessionStorage.getItem('aterisk_user'));
+    if (u && u.name) {
+      const firstName = u.name.split(' ')[0];
+      document.getElementById('topbar-title').textContent = 'Bonjour ' + firstName + ' 👋';
+    }
+  } catch(e) {}
+})();
+
+// ── LOGOUT ──
+document.getElementById('logoutLink').addEventListener('click', function(e) {
+  e.preventDefault();
+  sessionStorage.clear();
+  window.location.href = 'login.html';
+});
+
+// ── CONFIRM PLACEMENT ──
+function confirmPlacement() {
+  const student = document.getElementById('placement-student').value;
+  const company = document.getElementById('placement-company').value;
+  if (!student || !company) {
+    toast('⚠️ Merci de remplir l\'étudiant et l\'entreprise');
+    return;
+  }
+  closeModal('placement');
+  toast('🏆 Placement déclaré ! L\'équipe ATERISK va vérifier et te confirmer.');
+}
+
 // Sections
 function showSection(id, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -925,8 +1000,13 @@ function showSection(id, btn) {
   const sec = document.getElementById('sec-' + id);
   if (sec) sec.classList.add('active');
   if (btn) btn.classList.add('active');
+  let mentorFirstName = 'Thomas';
+  try {
+    const u = JSON.parse(sessionStorage.getItem('aterisk_user'));
+    if (u && u.name) mentorFirstName = u.name.split(' ')[0];
+  } catch(e) {}
   const titles = {
-    overview:'Bonjour Thomas 👋', seances:'Mes séances', etudiants:'Mes étudiants',
+    overview:'Bonjour ' + mentorFirstName + ' 👋', seances:'Mes séances', etudiants:'Mes étudiants',
     rapports:'Rapports à rédiger', gains:'Mes gains',
     disponibilites:'Mes disponibilités', profil:'Mon profil'
   };
@@ -993,14 +1073,30 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-// Mobile sidebar toggle
+// Sidebar toggle (desktop + mobile)
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.querySelector('.main');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (window.innerWidth <= 768) {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  } else {
+    sidebar.classList.toggle('closed');
+    main.classList.toggle('expanded');
+  }
 }
 function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.querySelector('.main');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    sidebar.classList.add('closed');
+    main.classList.add('expanded');
+  }
 }
 document.querySelectorAll('.sidebar .nav-item').forEach(a => {
   a.addEventListener('click', () => { if(window.innerWidth <= 768) closeSidebar(); });
@@ -1009,5 +1105,6 @@ document.querySelectorAll('.sidebar .nav-item').forEach(a => {
 <script src="dashboard-animations.js"></script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>

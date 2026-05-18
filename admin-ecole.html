@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1A2E7A">
 <title>ATERISK — Espace École</title>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
@@ -494,7 +496,18 @@ tr:hover td { background: #FAFBFF; }
 <body>
 
 <!-- AUTH GUARD -->
-<script>(function(){var u=sessionStorage.getItem('aterisk_user');if(!u){location.replace('login.html?redirect=admin-ecole.html');return;}var r=JSON.parse(u).role;if(r!=='admin-ecole'){location.replace('login.html');}})();</script>
+<script>
+(function(){
+  var u=sessionStorage.getItem('aterisk_user');
+  if(!u){location.replace('login.html?redirect=admin-ecole.html');return;}
+  try{
+    var parsed=JSON.parse(u);
+    if(parsed.role!=='admin-ecole'){location.replace('login.html?redirect=admin-ecole.html');return;}
+    /* Store for later population after DOM ready */
+    window._ateriskUser=parsed;
+  }catch(e){location.replace('login.html');}
+})();
+</script>
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
@@ -1303,7 +1316,7 @@ tr:hover td { background: #FAFBFF; }
         <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;margin-bottom:4px">Nous sommes là pour vous</h3>
         <p style="font-size:13px;color:var(--muted);margin-bottom:0">Votre interlocuteur ATERISK répond en moins de 24h aux jours ouvrés.</p>
         <div class="contact-channels">
-          <a class="channel-btn" href="mailto:contact@aterisk.fr">
+          <a class="channel-btn" href="mailto:contact@aterisk.fr?subject=Question%20%C3%A9cole%20partenaire">
             <div class="channel-icon">📧</div>
             <div class="channel-info">
               <h4>Email</h4>
@@ -1635,7 +1648,7 @@ function toast(msg, type) {
   const colors = { success: '#16A34A', error: '#DC2626', default: '#1A2E7A' };
   const bg = colors[type] || colors.default;
   const t = document.createElement('div');
-  t.style.cssText = `background:${bg};color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:fadeIn 0.2s ease;white-space:nowrap`;
+  t.style.cssText = `background:${bg};color:white;padding:11px 18px;border-radius:100px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:fadeIn 0.2s ease;white-space:nowrap`;
   t.textContent = msg;
   document.getElementById('toastContainer').appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 350); }, 3000);
@@ -1739,8 +1752,24 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   document.body.style.opacity = '1';
   document.body.style.transition = 'opacity 0.25s ease';
 }));
+
+/* ─── Populate school/user name from sessionStorage ─── */
+(function(){
+  const user = window._ateriskUser;
+  if(!user) return;
+  if(user.name){
+    const nameEl = document.querySelector('.sb-school-name');
+    if(nameEl) nameEl.textContent = user.name;
+    const h4 = document.querySelector('.sb-user-info h4');
+    if(h4) h4.textContent = user.name;
+    // Also update welcome banner
+    const wbTitle = document.querySelector('.wb-title em');
+    if(wbTitle) wbTitle.textContent = user.name;
+  }
+})();
 </script>
 
+<script src="cookie-banner.js"></script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
 </body>

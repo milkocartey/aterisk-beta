@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ATERISK — Générateur de rapport mentor</title>
+<meta name="robots" content="noindex, nofollow">
+<title>ATERISK — Rapport de séance</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -442,6 +443,25 @@
     font-weight: 600;
   }
 
+  /* SAVE / PDF ACTIONS */
+  .report-save-actions {
+    display: flex; gap: 10px; margin-top: 14px;
+  }
+  .btn-save-report {
+    flex: 1; background: var(--blue); color: white; border: none;
+    padding: 12px 20px; border-radius: 100px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; justify-content: center;
+  }
+  .btn-save-report:hover { background: var(--blue-mid); }
+  .btn-pdf-report {
+    background: white; color: var(--muted); border: 1px solid var(--border);
+    padding: 12px 20px; border-radius: 100px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .btn-pdf-report:hover { border-color: var(--blue-mid); color: var(--blue); }
+
   .btn-send {
     background: #16A34A;
     color: white;
@@ -580,10 +600,16 @@
       </div>
     </div>
 
+    <!-- SAVE + PDF -->
+    <div class="report-save-actions">
+      <button class="btn-save-report" onclick="saveReport()">💾 Enregistrer le rapport</button>
+      <button class="btn-pdf-report" onclick="exportPDF()">📄 Télécharger PDF</button>
+    </div>
+
     <!-- SEND -->
-    <div class="send-block" id="sendBlock">
+    <div class="send-block" id="sendBlock" style="margin-top:14px">
       <div class="email-display">
-        Envoyer à <strong>lola.martin@email.com</strong>
+        Envoyer à <strong id="student-email-display">l'étudiant</strong>
       </div>
       <button class="btn-send" onclick="sendReport()">
         ✉ Envoyer à l'étudiant
@@ -592,13 +618,49 @@
 
     <div class="sent-banner" id="sentBanner">
       <span>✓</span>
-      <span>Rapport envoyé à Lola Martin — elle recevra un email dans quelques secondes.</span>
+      <span id="sentBannerMsg">Rapport envoyé — l'étudiant recevra un email dans quelques secondes.</span>
     </div>
   </div>
 
 </main>
 
 <script>
+  // ── URL PARAMS ─────────────────────────────────────────────────────────────
+  const urlParams = new URLSearchParams(location.search);
+  const roomParam   = urlParams.get('room')    || '';
+  const mentorParam = urlParams.get('mentor')  || '';
+  const studentParam= urlParams.get('student') || '';
+
+  // Populate student card from URL params if provided
+  (function(){
+    const u = sessionStorage.getItem('aterisk_user');
+    const userName = u ? (JSON.parse(u).name || '') : '';
+
+    if(mentorParam || studentParam) {
+      const h3 = document.querySelector('.student-info h3');
+      const p  = document.querySelector('.student-info p');
+      const rh2 = document.querySelector('.report-header h2');
+      if(h3 && studentParam)  h3.textContent = studentParam;
+      if(rh2 && studentParam) rh2.textContent = 'Rapport de séance — ' + studentParam;
+      const emailDisp = document.getElementById('student-email-display');
+      if(emailDisp && studentParam) emailDisp.textContent = studentParam;
+      const sentMsg = document.getElementById('sentBannerMsg');
+      if(sentMsg && studentParam) sentMsg.textContent = 'Rapport envoyé à ' + studentParam + ' — il/elle recevra un email dans quelques secondes.';
+    }
+
+    // Pre-load notes from session if available
+    if(roomParam) {
+      const savedNotes = localStorage.getItem('notes_' + roomParam);
+      if(savedNotes) {
+        document.getElementById('notes').value = savedNotes;
+        const n = savedNotes.length;
+        document.getElementById('charCount').textContent = n + (n <= 1 ? ' caractère' : ' caractères');
+      }
+    }
+  })();
+
+  let lastGeneratedReport = null;
+
   const textarea = document.getElementById('notes');
   const charCount = document.getElementById('charCount');
 
@@ -678,6 +740,7 @@ Les actions doivent être très concrètes et réalisables cette semaine. Maximu
   }
 
   function renderReport(data) {
+    lastGeneratedReport = data;
     const body = document.getElementById('reportBody');
 
     const pointsHTML = (data.points_cles || []).map(p =>
@@ -719,6 +782,42 @@ Les actions doivent être très concrètes et réalisables cette semaine. Maximu
     document.getElementById('sentBanner').classList.add('visible');
   }
 
+  function saveReport() {
+    if(!lastGeneratedReport) {
+      showError('Génère d\'abord un rapport avant de l\'enregistrer.');
+      return;
+    }
+    const key = 'rapport_' + (roomParam || Date.now());
+    const payload = {
+      room: roomParam,
+      mentor: mentorParam,
+      student: studentParam,
+      notes: textarea.value,
+      report: lastGeneratedReport,
+      savedAt: new Date().toISOString(),
+    };
+    localStorage.setItem(key, JSON.stringify(payload));
+    // Also keep a list
+    const list = JSON.parse(localStorage.getItem('aterisk_rapports') || '[]');
+    const idx = list.findIndex(r => r.room === roomParam);
+    if(idx >= 0) list[idx] = payload; else list.push(payload);
+    localStorage.setItem('aterisk_rapports', JSON.stringify(list));
+    showSuccessToast('✓ Rapport enregistré dans votre espace');
+  }
+
+  function exportPDF() {
+    showSuccessToast('Export PDF — utilise Ctrl+P / ⌘+P pour imprimer en PDF');
+    setTimeout(() => window.print(), 600);
+  }
+
+  function showSuccessToast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#16A34A;color:white;padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);font-family:DM Sans,sans-serif';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0';t.style.transition='opacity 0.3s';setTimeout(()=>t.remove(),350); }, 3000);
+  }
+
   function setLoading(active) {
     const btn = document.getElementById('btnGenerate');
     const icon = document.getElementById('btnIcon');
@@ -749,7 +848,13 @@ Les actions doivent être très concrètes et réalisables cette semaine. Maximu
       alert(msg);
     }
   }
+
+  function hideError() {
+    const banner = document.getElementById('errorBanner');
+    if(banner) { banner.style.display = 'none'; banner.classList.remove('visible'); }
+  }
 </script>
+<script src="cookie-banner.js"></script>
 <script type="module" src="nav.js"></script>
 <script type="module" src="motion.js"></script>
 </body>
