@@ -1757,14 +1757,32 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
 (function(){
   const user = window._ateriskUser;
   if(!user) return;
-  if(user.name){
+  const schoolName = user.name || 'Votre école';
+  if(schoolName){
     const nameEl = document.querySelector('.sb-school-name');
-    if(nameEl) nameEl.textContent = user.name;
+    if(nameEl) nameEl.textContent = schoolName;
     const h4 = document.querySelector('.sb-user-info h4');
-    if(h4) h4.textContent = user.name;
-    // Also update welcome banner
+    if(h4) h4.textContent = schoolName;
     const wbTitle = document.querySelector('.wb-title em');
-    if(wbTitle) wbTitle.textContent = user.name;
+    if(wbTitle) wbTitle.textContent = schoolName;
+  }
+
+  // Real student count for this school
+  const allStudents = JSON.parse(localStorage.getItem('aterisk_students') || '[]');
+  const myStudents  = allStudents.filter(s => s.school === schoolName || s.email?.endsWith(user.email?.split('@')[1] || '__none__'));
+  const allSessions = JSON.parse(localStorage.getItem('aterisk_sessions') || '[]');
+
+  // Update KPI cards
+  const kpiVals = document.querySelectorAll('.kpi-val');
+  if(kpiVals[0]) kpiVals[0].textContent = myStudents.length;   // étudiants
+  if(kpiVals[1]) kpiVals[1].textContent = allSessions.length;  // séances
+  if(kpiVals[2]) kpiVals[2].textContent = '—';                 // placement (pas de données encore)
+  if(kpiVals[3]) kpiVals[3].textContent = '—';                 // tokens
+
+  // Empty state for students table
+  const studentsTbody = document.querySelector('#students-table tbody');
+  if(studentsTbody && myStudents.length === 0) {
+    studentsTbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)"><div style="font-size:28px;margin-bottom:8px">👩‍🎓</div><div style="font-size:14px;font-weight:600">Aucun étudiant enregistré</div><div style="font-size:12px;margin-top:4px">Les étudiants de votre école apparaîtront ici une fois inscrits sur ATERISK.</div></td></tr>`;
   }
 })();
 </script>

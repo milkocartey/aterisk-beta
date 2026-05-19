@@ -776,16 +776,42 @@
       err.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+    const _email   = document.getElementById('email').value.trim().toLowerCase();
+    const _prenom  = document.getElementById('prenom').value.trim();
+    const _nom     = document.getElementById('nom').value.trim();
+    const _name    = (_prenom + ' ' + _nom).trim() || _email.split('@')[0];
+    const _sectors = Array.from(document.querySelectorAll('#secteurs-chips .chip.selected')).map(el => el.textContent.trim());
+
+    // Save student to localStorage for admin counting
+    const _student = {
+      id: 'stu_' + Date.now(),
+      name: _name,
+      email: _email,
+      school: document.getElementById('formation')?.value?.trim() || '',
+      city: document.getElementById('ville')?.value?.trim() || '',
+      sector: _sectors,
+      tokens: 1,
+      status: 'active',
+      submittedAt: new Date().toISOString(),
+      role: 'etudiant'
+    };
+    const _students = JSON.parse(localStorage.getItem('aterisk_students') || '[]');
+    if(!_students.find(s => s.email === _email)) {
+      _students.push(_student);
+      localStorage.setItem('aterisk_students', JSON.stringify(_students));
+    }
+
     // Store session as subscriber
     sessionStorage.setItem('aterisk_subscriber', '1');
+    sessionStorage.setItem('aterisk_tokens', '1');
     sessionStorage.setItem('aterisk_user', JSON.stringify({
-      email: document.getElementById('email').value.trim(),
+      email: _email,
       role: 'etudiant',
-      name: document.getElementById('prenom').value.trim() + ' ' + document.getElementById('nom').value.trim().charAt(0) + '.',
-      prenom: document.getElementById('prenom').value.trim(),
+      name: _name,
+      prenom: _prenom,
       formation: document.getElementById('formation').value.trim(),
       ville: document.getElementById('ville').value.trim(),
-      secteurs: Array.from(document.querySelectorAll('#secteurs-chips .chip.selected')).map(el => el.textContent.trim()),
+      secteurs: _sectors,
       niveau: document.querySelector('.niveau-card.selected')?.querySelector('.n-label')?.textContent?.trim() || '',
       objectifs: Array.from(document.querySelectorAll('.objectif-item.selected')).map(el => el.querySelector('.objectif-text')?.textContent?.trim())
     }));

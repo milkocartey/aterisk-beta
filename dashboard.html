@@ -728,10 +728,46 @@
       }
     } catch(e) {}
     // Token balance
-    const storedTokens = sessionStorage.getItem('aterisk_tokens');
-    if (storedTokens) {
-      const tb = document.querySelector('.token-balance .tb-val');
-      if (tb) tb.innerHTML = storedTokens + '<span style="font-family:\'DM Sans\',sans-serif;font-size:16px;opacity:0.5"> tokens</span>';
+    const _tokens = parseInt(sessionStorage.getItem('aterisk_tokens') || '1');
+    const tb = document.querySelector('.token-balance .tb-val');
+    if(tb) tb.innerHTML = _tokens + '<span style="font-family:\'DM Sans\',sans-serif;font-size:16px;opacity:0.5"> tokens</span>';
+
+    // Real session count
+    const _user = (function(){ try{return JSON.parse(sessionStorage.getItem('aterisk_user'));}catch{return null;} })();
+    const _name = _user?.name || '';
+    const _allSessions = JSON.parse(localStorage.getItem('aterisk_sessions') || '[]');
+    const _mySessions = _allSessions.filter(s => s.student === _name || s.mentor === _name);
+    const _now = new Date();
+    const _monthSessions = _mySessions.filter(s => {
+      const d = new Date(s.endedAt || 0);
+      return d.getFullYear() === _now.getFullYear() && d.getMonth() === _now.getMonth();
+    });
+
+    // Update stat cards
+    const _svals = document.querySelectorAll('.stat-card .s-val');
+    if(_svals[0]) _svals[0].textContent = _mySessions.length;    // séances totales
+    if(_svals[1]) _svals[1].textContent = '—';                   // jours (placeholder)
+    if(_svals[2]) _svals[2].textContent = '0';                   // candidatures
+    if(_svals[3]) _svals[3].textContent = _tokens;               // tokens
+
+    // Progress ring
+    const _pct = Math.min(_mySessions.length * 20, 100);
+    const _pctEl = document.querySelector('.progress-ring-label .pct');
+    if(_pctEl) _pctEl.textContent = _pct + '%';
+    const _ring = document.querySelector('.progress-ring-wrap svg circle:last-child');
+    if(_ring) {
+      const r = 56, circ = 2 * Math.PI * r;
+      _ring.style.strokeDasharray = (_pct/100 * circ) + ' ' + circ;
+    }
+
+    // Welcome banner text
+    const _welcomeP = document.querySelector('.welcome-text p');
+    if(_welcomeP) {
+      if(_mySessions.length === 0) {
+        _welcomeP.textContent = 'Tu n\'as pas encore eu de séance. Ta 1ère séance découverte est offerte — réserve-la maintenant.';
+      } else {
+        _welcomeP.textContent = `Tu as eu ${_monthSessions.length} séance${_monthSessions.length>1?'s':''} ce mois. Continue comme ça !`;
+      }
     }
   })();
 

@@ -967,9 +967,54 @@
 (function() {
   try {
     const u = JSON.parse(sessionStorage.getItem('aterisk_user'));
-    if (u && u.name) {
-      const firstName = u.name.split(' ')[0];
-      document.getElementById('topbar-title').textContent = 'Bonjour ' + firstName + ' 👋';
+    if(!u) return;
+    const name = u.name || 'Mentor';
+    const firstName = name.split(' ')[0];
+
+    // Greeting + sidebar name
+    const titleEl = document.getElementById('topbar-title');
+    if(titleEl) titleEl.textContent = 'Bonjour ' + firstName + ' 👋';
+    const sideNameEl = document.querySelector('.user-info h4, .sb-user h4');
+    if(sideNameEl) sideNameEl.textContent = name;
+    // Welcome banner h2
+    document.querySelectorAll('.wb-text h2 em, .welcome-text h2 em').forEach(el => el.textContent = firstName + ' !');
+
+    // Real sessions
+    const allSessions = JSON.parse(localStorage.getItem('aterisk_sessions') || '[]');
+    const mySessions = allSessions.filter(s => s.mentor === name || s.mentor === firstName);
+    const now = new Date();
+    const monthSessions = mySessions.filter(s => {
+      const d = new Date(s.endedAt || 0);
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    });
+
+    // Revenue: 70% of session price
+    const revenueTotal = mySessions.reduce((sum, s) => sum + (s.type==='senior'?22:14)*0.70*(parseFloat(s.tokens)||1), 0);
+    const revenueMonth = monthSessions.reduce((sum, s) => sum + (s.type==='senior'?22:14)*0.70*(parseFloat(s.tokens)||1), 0);
+
+    // Update sidebar earnings
+    const evEl = document.querySelector('.sb-earnings .ev');
+    if(evEl) evEl.innerHTML = revenueMonth.toFixed(0) + ' <span>€</span>';
+
+    // Update stat cards
+    const svEls = document.querySelectorAll('.stat-card .sv');
+    if(svEls[0]) svEls[0].textContent = monthSessions.length;  // séances ce mois
+    if(svEls[1]) svEls[1].textContent = '0';                   // étudiants actifs
+    if(svEls[2]) svEls[2].textContent = revenueMonth.toFixed(0) + '€'; // gains mois
+    if(svEls[3]) svEls[3].textContent = mySessions.length > 0 ? '★ —' : '—'; // note
+
+    // Total revenue
+    const totalValEl = document.querySelector('.earn-total-val');
+    if(totalValEl) totalValEl.textContent = revenueTotal.toFixed(0) + ' €';
+
+    // Welcome text
+    const welcomeP = document.querySelector('.wb-text p, .welcome-text p');
+    if(welcomeP) {
+      if(mySessions.length === 0) {
+        welcomeP.textContent = 'Aucune séance encore. Complète ton profil pour être visible des étudiants.';
+      } else {
+        welcomeP.textContent = `${monthSessions.length} séance${monthSessions.length>1?'s':''} ce mois · ${revenueMonth.toFixed(0)} € gagnés.`;
+      }
     }
   } catch(e) {}
 })();

@@ -900,8 +900,100 @@ tr:hover td{background:#FAFAFA;}
 
 <script>
 const titles={overview:"Vue d'ensemble",students:"Gestion étudiants",mentors:"Gestion mentors",candidatures:"Candidatures mentors",seances:"Séances",tokens:"Tokens & Revenus",schools:"Écoles partenaires",reports:"Rapports & Exports",settings:"Paramètres",content:"Contenu — Mentors & Ressources"};
-const tbActions={overview:"+ Étudiant",students:"+ Étudiant",mentors:"+ Inviter",candidatures:"🧪 Simuler",seances:"+ Séance",tokens:"📤 Export",schools:"+ École",reports:"Générer",settings:"Enregistrer",content:"+ Ajouter"};
-const tbModals={overview:"add-student",students:"add-student",mentors:null,candidatures:null,seances:null,tokens:null,schools:"add-school",reports:null,settings:null,content:null};
+const tbActions={overview:"+ Étudiant",students:"+ Étudiant",mentors:"+ Inviter",candidatures:"🧪 Démo",seances:"+ Séance",tokens:"📤 Export",schools:"+ École",reports:"Générer",settings:"Enregistrer",content:"+ Ajouter"};
+const tbModals={overview:"add-student",students:"add-student",mentors:null,candidatures:'_demo',seances:null,tokens:null,schools:"add-school",reports:null,settings:null,content:null};
+
+// ─── LIVE STATS ────────────────────────────────────────────────────────────────
+function getLiveStats(){
+  const students     = JSON.parse(localStorage.getItem('aterisk_students') || '[]');
+  const candidatures = JSON.parse(localStorage.getItem('aterisk_candidatures') || '[]');
+  const sessions     = JSON.parse(localStorage.getItem('aterisk_sessions') || '[]');
+  const now = new Date();
+  const thisMonth = sessions.filter(s=>{
+    const d=new Date(s.endedAt||s.date||0);
+    return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+  });
+  const approved = candidatures.filter(c=>c.status==='approved');
+  const pending  = candidatures.filter(c=>c.status==='pending');
+  const revenue  = thisMonth.reduce((sum,s)=>{
+    return sum+(s.type==='senior'?22:14)*0.30*(parseFloat(s.tokens)||1);
+  },0);
+  return {
+    studentsActive: students.filter(s=>s.status!=='blocked').length,
+    studentsTotal:  students.length,
+    mentorsActive:  approved.length,
+    mentorsPending: pending.length,
+    sessionsMonth:  thisMonth.length,
+    sessionsTotal:  sessions.length,
+    revenueMonth:   Math.round(revenue),
+  };
+}
+
+function updateAdminKPIs(){
+  const s = getLiveStats();
+  // Overview KPIs
+  const ov = document.querySelectorAll('#sec-overview .kpi-val');
+  if(ov[0]) ov[0].textContent = s.studentsActive;
+  if(ov[1]) ov[1].textContent = s.mentorsActive;
+  if(ov[2]) ov[2].textContent = s.sessionsMonth;
+  if(ov[3]) ov[3].textContent = s.revenueMonth + ' €';
+  // Students section KPIs
+  const stv = document.querySelectorAll('#sec-students .kpi-val');
+  if(stv[0]) stv[0].textContent = s.studentsTotal;
+  if(stv[1]) stv[1].textContent = s.studentsActive;
+  if(stv[2]) stv[2].textContent = '0';
+  if(stv[3]) stv[3].textContent = '0';
+  // Mentors section KPIs
+  const mv = document.querySelectorAll('#sec-mentors .kpi-val');
+  if(mv[0]) mv[0].textContent = s.mentorsActive;
+  if(mv[3]) mv[3].textContent = s.mentorsPending;
+  // Séances KPIs
+  const sv = document.querySelectorAll('#sec-seances .kpi-val');
+  if(sv[0]) sv[0].textContent = s.sessionsMonth;
+  if(sv[1]) sv[1].textContent = '0';
+  if(sv[2]) sv[2].textContent = '0';
+  if(sv[3]) sv[3].textContent = '0';
+  // Sidebar badges
+  const sbitems = document.querySelectorAll('.sb-item');
+  const bStudents = sbitems[1]?.querySelector('.sb-badge');
+  const bMentors  = sbitems[2]?.querySelector('.sb-badge');
+  if(bStudents){ bStudents.textContent = s.studentsActive; bStudents.style.display = s.studentsActive?'':'none'; }
+  if(bMentors) { bMentors.textContent  = s.mentorsPending; bMentors.style.display  = s.mentorsPending?'':'none'; }
+  // Candidatures badge
+  const bCand = document.getElementById('badge-candidatures');
+  if(bCand){ bCand.textContent = s.mentorsPending; bCand.style.display = s.mentorsPending?'':'none'; }
+}
+
+function renderStudentsTable(){
+  const students = JSON.parse(localStorage.getItem('aterisk_students') || '[]');
+  const tbody = document.getElementById('st');
+  if(!tbody) return;
+  const header = tbody.querySelector('tr:first-child');
+  // Remove non-header rows
+  Array.from(tbody.querySelectorAll('tr:not(:first-child)')).forEach(r=>r.remove());
+  if(students.length===0){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td colspan="7" style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:32px;margin-bottom:10px">👩‍🎓</div><div style="font-size:14px;font-weight:600;margin-bottom:4px">Aucun étudiant inscrit</div><div style="font-size:12px">Les inscriptions apparaîtront ici automatiquement.</div></td>`;
+    tbody.appendChild(tr); return;
+  }
+  students.forEach(stu=>{
+    const name=stu.name||((stu.prenom||'')+(stu.nom?' '+stu.nom:''));
+    const sector=Array.isArray(stu.sector)?stu.sector[0]:(stu.sector||'—');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="td-av" style="background:#EEF2FF">👩</span><b>${name}</b></td><td>${stu.school||'—'}</td><td>${sector}</td><td>${stu.tokens||1}</td><td>0</td><td><span class="badge ${stu.status==='blocked'?'red':'green'}">${stu.status==='blocked'?'Bloqué':'Actif'}</span></td><td><button class="abtn" onclick="openModal('view-student')">Voir</button> <button class="abtn danger" onclick="bloquerUser(this)">Bloquer</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderSessionsTable(){
+  const sessions = JSON.parse(localStorage.getItem('aterisk_sessions') || '[]');
+  const table = document.querySelector('#sec-seances .card:first-of-type table');
+  if(!table||sessions.length>0) return;
+  Array.from(table.querySelectorAll('tr:not(:first-child)')).forEach(r=>r.remove());
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td colspan="7" style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:32px;margin-bottom:10px">📅</div><div style="font-size:14px;font-weight:600">Aucune séance pour l'instant</div><div style="font-size:12px;margin-top:4px">Elles apparaîtront ici une fois les premières séances réalisées.</div></td>`;
+  table.appendChild(tr);
+}
 
 function show(id,btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -912,10 +1004,12 @@ function show(id,btn){
   const tb=document.getElementById('tb-action');
   tb.textContent=tbActions[id]||'+ Ajouter';
   const m=tbModals[id];
-  tb.onclick=m?()=>openModal(m):null;
-  tb.style.opacity=m?'1':'0.35';
-  tb.style.cursor=m?'pointer':'default';
+  if(m==='_demo'){ tb.onclick=()=>injectDemoCandidatures(); tb.style.opacity='1'; tb.style.cursor='pointer'; }
+  else { tb.onclick=m?()=>openModal(m):null; tb.style.opacity=m?'1':'0.35'; tb.style.cursor=m?'pointer':'default'; }
   if(id==='content'){renderMentors();renderRessources();}
+  if(id==='candidatures'){renderCandidatures();}
+  if(id==='students'){renderStudentsTable();}
+  if(id==='seances'){renderSessionsTable();}
 }
 function openModal(id){document.getElementById('modal-'+id).classList.add('open');document.body.style.overflow='hidden';}
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('open');document.body.style.overflow='';}
@@ -1586,6 +1680,12 @@ document.getElementById('btn-save-ressource').addEventListener('click', function
     reader.readAsArrayBuffer(currentFile);
   });
 });
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+updateAdminKPIs();
+renderStudentsTable();
+renderSessionsTable();
+renderCandidatures();
 </script>
 <script src="cookie-banner.js"></script>
 <script type="module" src="nav.js"></script>
