@@ -264,6 +264,82 @@
   .section{display:none;}
   .section.active{display:block;}
 
+  /* GUIDE MENTOR */
+  .guide-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+  .guide-tab{padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;color:var(--muted);}
+  .guide-tab:hover{border-color:var(--blue-mid);color:var(--blue);}
+  .guide-tab.active{background:var(--blue);color:white;border-color:var(--blue);}
+  .guide-section{display:none;}
+  .guide-section.active{display:block;}
+  .guide-hero{background:#030712;border-radius:20px;padding:32px 36px;margin-bottom:24px;position:relative;overflow:hidden;}
+  .guide-hero .gh-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 15% 50%, rgba(42,69,176,0.55) 0%, transparent 65%), radial-gradient(ellipse 50% 60% at 85% 50%, rgba(26,46,122,0.35) 0%, transparent 65%);}
+  .guide-hero .gh-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);background-size:48px 48px;}
+  .guide-hero .gh-content{position:relative;z-index:1;}
+  .guide-hero h2{font-family:'DM Serif Display',serif;font-size:24px;color:white;font-weight:400;margin-bottom:6px;}
+  .guide-hero p{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;}
+  .guide-hero .gh-quote{font-family:'DM Serif Display',serif;font-style:italic;font-size:16px;color:rgba(255,255,255,0.8);border-left:3px solid rgba(255,255,255,0.3);padding-left:16px;margin-top:16px;}
+  .guide-cards-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+  .guide-benefit-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);text-align:center;}
+  .guide-benefit-card .gbc-val{font-family:'Unbounded',monospace;font-size:28px;font-weight:700;color:var(--blue);margin:8px 0;}
+  .guide-benefit-card .gbc-label{font-size:13px;color:var(--muted);line-height:1.4;}
+  .guide-list{padding:0;list-style:none;}
+  .guide-list li{padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5;}
+  .guide-list li:last-child{border-bottom:none;}
+  .guide-list li::before{content:'■';color:var(--blue);font-size:10px;margin-top:3px;flex-shrink:0;}
+  .guide-step{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:14px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start;}
+  .guide-step-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',monospace;font-size:16px;font-weight:700;flex-shrink:0;color:white;}
+  .guide-step-body h4{font-size:15px;font-weight:700;margin-bottom:2px;}
+  .guide-step-body .gsb-sub{font-size:12px;color:var(--blue-mid);font-style:italic;margin-bottom:10px;}
+  .guide-step-body ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:5px;}
+  .guide-step-body ul li{font-size:13px;color:#374151;display:flex;align-items:flex-start;gap:8px;}
+  .guide-step-body ul li::before{content:'●';color:var(--blue-mid);font-size:8px;margin-top:5px;flex-shrink:0;}
+  .guide-prereq{background:var(--blue-pale);border:1.5px solid var(--blue-light);border-radius:var(--radius);padding:14px 18px;font-size:13px;color:var(--ink);}
+  .guide-prereq strong{color:var(--blue);}
+  .guide-rule-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+  .guide-rule-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+  .guide-rule-card h4{font-size:13px;font-weight:700;margin-bottom:12px;}
+  .guide-rule-card ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:7px;}
+  .guide-rule-card ul li{font-size:12px;color:#374151;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+  .guide-rule-card ul li::before{content:'●';font-size:8px;margin-top:4px;flex-shrink:0;}
+  .guide-rule-card .grc-base{font-size:11px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border);}
+  .guide-penalty{background:#FEF2F2;border:2px solid var(--red);border-radius:var(--radius);padding:18px 22px;display:flex;align-items:center;gap:18px;margin-bottom:18px;}
+  .guide-penalty .gp-amount{font-family:'Unbounded',monospace;font-size:28px;font-weight:700;color:var(--red);flex-shrink:0;}
+  .guide-penalty .gp-text h4{font-size:14px;font-weight:700;color:var(--red);margin-bottom:4px;}
+  .guide-penalty .gp-text p{font-size:13px;color:#374151;line-height:1.5;}
+  .guide-rem-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+  .guide-rem-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);text-align:center;}
+  .guide-rem-card .grc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+  .guide-rem-card .grc-amount{font-family:'Unbounded',monospace;font-size:26px;font-weight:700;margin-bottom:4px;}
+  .guide-rem-card .grc-sub{font-size:12px;color:var(--muted);}
+  .guide-rem-card .grc-rate{font-size:12px;font-weight:700;margin-top:4px;}
+  .guide-split{background:var(--blue);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:0;overflow:hidden;margin-bottom:18px;}
+  .guide-split .gs-mentor{flex:7;background:var(--blue-mid);border-radius:8px 0 0 8px;padding:14px 18px;color:white;}
+  .guide-split .gs-aterisk{flex:3;background:rgba(255,255,255,0.15);border-radius:0 8px 8px 0;padding:14px 18px;color:white;text-align:right;}
+  .guide-split .gs-label{font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+  .guide-split .gs-val{font-family:'Unbounded',monospace;font-size:18px;font-weight:700;}
+  .guide-projection{background:var(--blue-pale);border:1.5px solid var(--blue-light);border-radius:var(--radius);padding:16px 20px;font-size:13px;}
+  .guide-projection strong{color:var(--blue);}
+  .guide-flow{display:flex;align-items:center;gap:0;margin-top:16px;flex-wrap:wrap;gap:4px;}
+  .guide-flow-step{background:white;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:var(--ink);}
+  .guide-flow-arrow{color:var(--muted);font-size:14px;flex-shrink:0;}
+  .guide-flow-step.final{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+  .guide-level-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+  .guide-level-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+  .guide-level-card .glc-tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;}
+  .guide-level-card .glc-name{font-family:'Unbounded',monospace;font-size:20px;font-weight:700;margin-bottom:4px;}
+  .guide-level-card .glc-price{font-size:28px;font-weight:700;margin-bottom:12px;}
+  .guide-level-card .glc-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);}
+  .guide-level-card .glc-row:last-child{border-bottom:none;}
+  .guide-level-card .glc-row .glr-label{color:var(--muted);}
+  .guide-level-card .glc-row .glr-val{font-weight:700;}
+  .guide-alumni{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px;}
+  .guide-alumni-col h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;}
+  .guide-alumni-col ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .guide-alumni-col ul li{font-size:12px;color:#374151;display:flex;gap:8px;align-items:flex-start;}
+  .guide-alumni-col ul li::before{content:'●';font-size:8px;margin-top:4px;flex-shrink:0;}
+  @media(max-width:1024px){.guide-cards-3,.guide-rule-3,.guide-rem-cards,.guide-level-cards,.guide-alumni{grid-template-columns:1fr 1fr;}.guide-step{flex-direction:column;gap:10px;}}
+  @media(max-width:768px){.guide-cards-3,.guide-rule-3,.guide-rem-cards,.guide-level-cards,.guide-alumni{grid-template-columns:1fr;}.guide-nav{gap:6px;}.guide-tab{font-size:11px;padding:6px 12px;}}
+
   @media(max-width:1024px){.two-col{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}}
   .hamburger{display:flex;align-items:center;justify-content:center;background:none;border:none;font-size:22px;cursor:pointer;padding:6px;color:var(--ink);border-radius:8px;transition:background 0.15s;}
   .hamburger:hover{background:var(--blue-pale);}
@@ -345,6 +421,10 @@
     </button>
     <button class="nav-item" onclick="showSection('profil',this)">
       <span class="nav-icon">⚙️</span><span class="nav-label">Mon profil</span>
+    </button>
+    <div class="sb-section">Ressources</div>
+    <button class="nav-item" onclick="showSection('guide',this)">
+      <span class="nav-icon">📖</span><span class="nav-label">Guide Mentor</span>
     </button>
   </nav>
 
@@ -754,6 +834,395 @@
       </div>
     </div>
 
+    <!-- ── GUIDE MENTOR ── -->
+    <div class="section" id="sec-guide">
+
+      <div class="guide-hero">
+        <div class="gh-glow"></div>
+        <div class="gh-grid"></div>
+        <div class="gh-content">
+          <h2>Guide Mentor ATERISK</h2>
+          <p>Parcours d'accompagnement · Synthèse de la Charte · Document confidentiel réservé aux Mentors</p>
+          <div class="gh-quote">"On ne prend notre part que quand tu as réussi."<br><span style="font-size:13px;opacity:0.7;font-style:normal">La promesse ATERISK — valable pour nos étudiants, et pour vous aussi.</span></div>
+        </div>
+      </div>
+
+      <!-- Navigation sections A–G -->
+      <nav class="guide-nav">
+        <button class="guide-tab active" onclick="showGuide('a',this)">A · Vos droits</button>
+        <button class="guide-tab" onclick="showGuide('b',this)">B · Protocole</button>
+        <button class="guide-tab" onclick="showGuide('c',this)">C · Qualité</button>
+        <button class="guide-tab" onclick="showGuide('d',this)">D · Confidentialité</button>
+        <button class="guide-tab" onclick="showGuide('e',this)">E · Rémunération</button>
+        <button class="guide-tab" onclick="showGuide('f',this)">F · Évolution</button>
+        <button class="guide-tab" onclick="showGuide('g',this)">G · Sanctions</button>
+      </nav>
+
+      <!-- A — Droits -->
+      <div class="guide-section active" id="guide-a">
+        <div class="guide-cards-3">
+          <div class="guide-benefit-card" style="border-color:#BFDBFE">
+            <div style="font-size:28px">💶</div>
+            <div class="gbc-val">100 €</div>
+            <div class="gbc-label">par mois<br>pour 8–10 séances</div>
+          </div>
+          <div class="guide-benefit-card" style="border-color:#BBF7D0">
+            <div style="font-size:28px">🎓</div>
+            <div class="gbc-val" style="font-size:20px">Badge</div>
+            <div class="gbc-label">Mentor officiel<br>LinkedIn + CV reconnu</div>
+          </div>
+          <div class="guide-benefit-card" style="border-color:#FDE68A">
+            <div style="font-size:28px">📈</div>
+            <div class="gbc-val" style="font-size:20px">3 niveaux</div>
+            <div class="gbc-label">Junior → Senior<br>critères objectifs</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>A — Ce qu'ATERISK s'engage à vous apporter</h3></div>
+          <div style="padding:18px 24px;display:grid;grid-template-columns:1fr 1fr;gap:0">
+            <ul class="guide-list" style="padding-right:24px;border-right:1px solid var(--border)">
+              <li><div><strong>Rémunération</strong><br><span style="color:var(--muted)">Paiement sous 30 jours via Stripe après validation de chaque séance</span></div></li>
+              <li><div><strong>Badge officiel</strong><br><span style="color:var(--muted)">Mention « Mentor ATERISK » affichable sur LinkedIn et CV</span></div></li>
+              <li><div><strong>Tableau de bord</strong><br><span style="color:var(--muted)">Séances, évaluations, revenus — tout visible dans votre espace personnel</span></div></li>
+            </ul>
+            <ul class="guide-list" style="padding-left:24px">
+              <li><div><strong>Formation</strong><br><span style="color:var(--muted)">Accès à la méthode ATERISK et aux ressources pédagogiques</span></div></li>
+              <li><div><strong>Évolution</strong><br><span style="color:var(--muted)">Junior → Confirmé → Senior sur critères objectifs et transparents</span></div></li>
+              <li><div><strong>Communauté</strong><br><span style="color:var(--muted)">Réseau mentors, événements exclusifs, bonnes pratiques partagées</span></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- B — Protocole -->
+      <div class="guide-section" id="guide-b">
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-head"><h3>B — Le protocole des 4 étapes</h3><span class="badge blue">Méthode prescriptive · à respecter dans l'ordre</span></div>
+          <div style="padding:18px 24px;display:flex;flex-direction:column;gap:0">
+
+            <div class="guide-step">
+              <div class="guide-step-num" style="background:#1A2E7A">1</div>
+              <div class="guide-step-body">
+                <h4>Séance 1 — Exploration des débouchés</h4>
+                <div class="gsb-sub">Élargir la vision de l'étudiant sur son projet professionnel</div>
+                <ul>
+                  <li>Identifier les options qu'il n'a pas envisagées</li>
+                  <li>Cartographier les secteurs, entreprises et types de postes</li>
+                  <li>Montrer toutes les portes possibles vers son objectif</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="guide-step">
+              <div class="guide-step-num" style="background:#2A45B0">2</div>
+              <div class="guide-step-body">
+                <h4>Séance 2 — CV & lettre de motivation</h4>
+                <div class="gsb-sub">Révéler ce qui distingue vraiment l'étudiant</div>
+                <ul>
+                  <li>Poser des questions sur son parcours pro et perso à partir du CV et LDM</li>
+                  <li>Mettre en lumière les points forts sous-estimés</li>
+                  <li>CV non compatible ATS → rediriger vers l'outil intégré ATERISK</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="guide-step">
+              <div class="guide-step-num" style="background:#92400E">3</div>
+              <div class="guide-step-body">
+                <h4>Séance 3 — Coaching entretien</h4>
+                <div class="gsb-sub" style="color:#92400E">Le rendre autonome et confiant face à tout recruteur</div>
+                <ul>
+                  <li>Travailler la posture, le discours et la présence</li>
+                  <li>Approfondir la connaissance secteur et des entreprises ciblées</li>
+                  <li>Anticiper les questions récurrentes en entretien</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="guide-step" style="background:#F0FDF4;border-color:var(--green)">
+              <div class="guide-step-num" style="background:var(--green)">4</div>
+              <div class="guide-step-body">
+                <h4>Post-séances — Activation réseau & offres cachées</h4>
+                <div class="gsb-sub" style="color:var(--green)">Ouvrir le marché caché à l'étudiant</div>
+                <ul>
+                  <li>Connexion LinkedIn Mentor / Étudiant après l'étape 3</li>
+                  <li>Partager des opportunités non publiées si vous croyez au profil</li>
+                  <li>Suite par mail — ATERISK gère la candidature via jobboard + IA</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="guide-prereq">
+          <strong>Avant toute séance :</strong> Profil consulté · CV et LDM chargés avant l'appel · Ponctualité requise · Annulation 24h à l'avance minimum
+        </div>
+      </div>
+
+      <!-- C — Qualité -->
+      <div class="guide-section" id="guide-c">
+        <div class="card">
+          <div class="card-head"><h3>C — Standards de qualité ATERISK</h3></div>
+          <div style="padding:18px 24px;display:grid;grid-template-columns:1fr 1fr;gap:18px">
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Avant la séance</div>
+              <ul class="guide-list">
+                <li>Consulter le profil de l'étudiant au moins 30 min avant</li>
+                <li>Lire le CV et la LDM chargés dans la plateforme</li>
+                <li>Prendre connaissance des séances précédentes (historique)</li>
+                <li>Préparer 2–3 questions ciblées sur le parcours</li>
+              </ul>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Pendant la séance</div>
+              <ul class="guide-list">
+                <li>Démarrer à l'heure — ponctualité requise</li>
+                <li>Suivre le protocole des 4 étapes dans l'ordre</li>
+                <li>Terminer avec des actions concrètes et mesurables</li>
+                <li>Pas de coaching hors plateforme ni de contact direct</li>
+              </ul>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Après la séance</div>
+              <ul class="guide-list">
+                <li>Rédiger le rapport post-séance sous 48h via l'outil IA</li>
+                <li>Rapport envoyé = paiement débloqué automatiquement</li>
+                <li>Répondre aux questions étudiants dans un délai raisonnable</li>
+              </ul>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Indicateurs de suivi</div>
+              <ul class="guide-list">
+                <li>Note moyenne minimum : 4.0 / 5 pour rester actif</li>
+                <li>Taux de recommandation cible : ≥ 70%</li>
+                <li>Taux d'annulation : 1 annulation tardive = avertissement</li>
+                <li>Rapport non envoyé sous 72h = rappel automatique</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- D — Confidentialité -->
+      <div class="guide-section" id="guide-d">
+
+        <div class="guide-rule-3" style="margin-bottom:18px">
+          <div class="guide-rule-card" style="border-color:#BFDBFE">
+            <h4 style="color:var(--blue)">Confidentialité totale</h4>
+            <ul>
+              <li style="color:#374151">Méthodes, outils et process ATERISK sont confidentiels</li>
+              <li style="color:#374151">Données étudiants : usage exclusif au coaching</li>
+              <li style="color:#374151">Engagement permanent, même après la fin de la collaboration</li>
+            </ul>
+            <div class="grc-base">Base légale : art. L.151-1 Code de commerce + RGPD</div>
+          </div>
+          <div class="guide-rule-card" style="border-color:#FDE68A">
+            <h4 style="color:#92400E">Zéro contournement</h4>
+            <ul>
+              <li style="color:#374151">Aucun coaching en direct hors plateforme ATERISK</li>
+              <li style="color:#374151">Tous les échanges via les outils officiels uniquement</li>
+              <li style="color:#374151">Aucun paiement hors système de tokens</li>
+            </ul>
+            <div class="grc-base">Base légale : art. 1104 Code civil (bonne foi)</div>
+          </div>
+          <div class="guide-rule-card" style="border-color:#FECACA">
+            <h4 style="color:var(--red)">Non-concurrence 6 mois</h4>
+            <ul>
+              <li style="color:#374151">France entière après la fin de la collaboration</li>
+              <li style="color:#374151">Interdit : créer, rejoindre ou conseiller un concurrent</li>
+              <li style="color:#374151">Secteur : mentorat alternance enseignement supérieur</li>
+            </ul>
+            <div class="grc-base">Base légale : art. 1240 Code civil + droit d'auteur</div>
+          </div>
+        </div>
+
+        <div class="guide-penalty">
+          <div class="gp-amount">5 000 €</div>
+          <div class="gp-text">
+            <h4>Clause pénale — Art. 1231-5 Code civil</h4>
+            <p>Toute violation entraîne l'exclusion immédiate et une indemnité forfaitaire de 5 000 € sans préjudice de poursuites judiciaires.<br>Droit applicable : droit français · Juridiction : Lyon</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Protection des données étudiants (RGPD)</h3><span class="badge red">Données sensibles</span></div>
+          <div style="padding:16px 20px;font-size:13px;color:#374151;line-height:1.7">
+            CV, LDM, coordonnées et parcours sont des données sensibles. Usage exclusif au coaching ATERISK.<br>
+            <span style="color:var(--red);font-weight:600">Sanction pénale en cas de détournement : jusqu'à 5 ans d'emprisonnement et 300 000 € d'amende (art. 226-18 Code pénal).</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- E — Rémunération -->
+      <div class="guide-section" id="guide-e">
+
+        <div class="guide-rem-cards">
+          <div class="guide-rem-card" style="border-color:#BBF7D0">
+            <div class="grc-label" style="color:var(--green)">Séance découverte</div>
+            <div class="grc-amount" style="color:var(--green)">10 €</div>
+            <div class="grc-sub">versé par ATERISK</div>
+            <div class="grc-rate" style="color:var(--green)">coût d'acquisition offert</div>
+          </div>
+          <div class="guide-rem-card" style="border-color:#BFDBFE">
+            <div class="grc-label" style="color:var(--blue)">Junior — 30 min</div>
+            <div class="grc-amount" style="color:var(--blue)">9,80 €</div>
+            <div class="grc-sub">70% de 14 €</div>
+            <div class="grc-rate" style="color:var(--blue)">≈ 19,60 € / heure</div>
+          </div>
+          <div class="guide-rem-card" style="border-color:#FDE68A">
+            <div class="grc-label" style="color:#92400E">Senior — 30 min</div>
+            <div class="grc-amount" style="color:#92400E">15,40 €</div>
+            <div class="grc-sub">70% de 22 €</div>
+            <div class="grc-rate" style="color:#92400E">≈ 30,80 € / heure</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-head"><h3>Répartition de chaque séance</h3></div>
+          <div style="padding:16px 20px">
+            <div class="guide-split">
+              <div class="gs-mentor">
+                <div class="gs-label">Mentor</div>
+                <div class="gs-val">70 %</div>
+                <div style="font-size:11px;opacity:0.7;margin-top:2px">Vous percevez directement</div>
+              </div>
+              <div class="gs-aterisk">
+                <div class="gs-label">ATERISK</div>
+                <div class="gs-val">30 %</div>
+                <div style="font-size:11px;opacity:0.7;margin-top:2px">Commission plateforme</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:8px">Paiement après validation · Aucune retenue à la source · Déclaration fiscale à votre charge</div>
+          </div>
+        </div>
+
+        <div class="guide-projection">
+          <strong>Projection mensuelle :</strong> Un Mentor Junior actif avec 8 à 10 séances / mois génère entre <strong>78 € et 98 €</strong> de revenus complémentaires — en plus du badge officiel et de la valorisation LinkedIn.
+          <div class="guide-flow">
+            <div class="guide-flow-step">Séance réalisée</div>
+            <div class="guide-flow-arrow">→</div>
+            <div class="guide-flow-step">Étudiant évalue</div>
+            <div class="guide-flow-arrow">→</div>
+            <div class="guide-flow-step">Validation auto</div>
+            <div class="guide-flow-arrow">→</div>
+            <div class="guide-flow-step">Stripe déclenche</div>
+            <div class="guide-flow-arrow">→</div>
+            <div class="guide-flow-step final">Paiement reçu</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- F — Évolution -->
+      <div class="guide-section" id="guide-f">
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-head"><h3>F — Votre évolution chez ATERISK</h3><span style="font-size:12px;color:var(--muted)">Progression proposée automatiquement dans les 15 jours ouvrés</span></div>
+          <div style="padding:18px 24px">
+            <div class="guide-level-cards" style="margin-bottom:0">
+              <div class="guide-level-card" style="border-color:#BFDBFE">
+                <div class="glc-tag" style="background:var(--blue-light);color:var(--blue)">Départ</div>
+                <div class="glc-name" style="color:var(--blue)">Junior</div>
+                <div class="glc-price" style="color:var(--blue)">9,80 €<span style="font-size:13px;font-weight:400;color:var(--muted)"> / séance</span></div>
+                <div class="glc-row"><span class="glr-label">Profil</span><span class="glr-val">Bac+4/5</span></div>
+                <div class="glc-row"><span class="glr-label">Séances</span><span class="glr-val">En cours</span></div>
+                <div class="glc-row"><span class="glr-label">Note</span><span class="glr-val">—</span></div>
+                <div class="glc-row"><span class="glr-label">Reco.</span><span class="glr-val">—</span></div>
+              </div>
+              <div class="guide-level-card" style="border-color:var(--blue);border-width:2px">
+                <div class="glc-tag" style="background:var(--blue);color:white">Confirmé</div>
+                <div class="glc-name" style="color:var(--blue)">Confirmé</div>
+                <div class="glc-price" style="color:var(--blue)">9,80 €+<span style="font-size:13px;font-weight:400;color:var(--muted)"> accès prioritaire</span></div>
+                <div class="glc-row"><span class="glr-label">Séances</span><span class="glr-val" style="color:var(--blue)">30 validées</span></div>
+                <div class="glc-row"><span class="glr-label">Note moy.</span><span class="glr-val" style="color:var(--blue)">≥ 4,2 / 5</span></div>
+                <div class="glc-row"><span class="glr-label">Ancienneté</span><span class="glr-val" style="color:var(--blue)">3 mois</span></div>
+                <div class="glc-row"><span class="glr-label">Reco.</span><span class="glr-val" style="color:var(--blue)">≥ 70 %</span></div>
+              </div>
+              <div class="guide-level-card" style="border-color:#FDE68A">
+                <div class="glc-tag" style="background:var(--amber-bg);color:var(--amber)">Expert</div>
+                <div class="glc-name" style="color:#92400E">Senior</div>
+                <div class="glc-price" style="color:#92400E">15,40 €<span style="font-size:13px;font-weight:400;color:var(--muted)"> / séance</span></div>
+                <div class="glc-row"><span class="glr-label">Séances</span><span class="glr-val" style="color:#92400E">60 validées</span></div>
+                <div class="glc-row"><span class="glr-label">Note moy.</span><span class="glr-val" style="color:#92400E">≥ 4,5 / 5</span></div>
+                <div class="glc-row"><span class="glr-label">Ancienneté</span><span class="glr-val" style="color:#92400E">9 mois</span></div>
+                <div class="glc-row"><span class="glr-label">Reco.</span><span class="glr-val" style="color:#92400E">≥ 80 %</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Réseau alumni — vos avantages en tant que Mentor ATERISK</h3></div>
+          <div style="padding:18px 24px">
+            <div class="guide-alumni">
+              <div class="guide-alumni-col">
+                <h4 style="color:var(--blue)">Pour vous</h4>
+                <ul>
+                  <li>Badge Mentor ATERISK officiel</li>
+                  <li>Accès prioritaire aux séances payantes</li>
+                  <li>Évolution possible Mentor Référent</li>
+                </ul>
+              </div>
+              <div class="guide-alumni-col">
+                <h4 style="color:#92400E">Pour la communauté</h4>
+                <ul>
+                  <li>Réseau de pairs mentors actifs</li>
+                  <li>Accès aux témoignages alumni</li>
+                  <li>Événements et webinaires exclusifs</li>
+                </ul>
+              </div>
+              <div class="guide-alumni-col">
+                <h4 style="color:var(--green)">Pour ATERISK</h4>
+                <ul>
+                  <li>Vivier de mentors qualifiés</li>
+                  <li>Bouche-à-oreille organique</li>
+                  <li>Preuve de résultats pour les écoles</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- G — Sanctions -->
+      <div class="guide-section" id="guide-g">
+        <div class="guide-penalty" style="margin-bottom:18px">
+          <div class="gp-amount">5 000 €</div>
+          <div class="gp-text">
+            <h4>Clause pénale — Art. 1231-5 Code civil</h4>
+            <p>Toute violation des règles (confidentialité, non-contournement, non-concurrence) entraîne l'exclusion immédiate et une indemnité forfaitaire de 5 000 €, sans préjudice de poursuites judiciaires.<br>Droit applicable : droit français · Juridiction : Lyon</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-head"><h3>Échelle des sanctions</h3></div>
+          <div style="padding:0">
+            <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px">
+              <span class="badge amber" style="flex-shrink:0;min-width:90px;justify-content:center">Avertissement</span>
+              <span style="font-size:13px;color:#374151">1 rapport non envoyé sous 72h · 1 annulation tardive sans justification · Non-réponse aux étudiants</span>
+            </div>
+            <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px">
+              <span class="badge red" style="flex-shrink:0;min-width:90px;justify-content:center">Suspension</span>
+              <span style="font-size:13px;color:#374151">Note moyenne < 4.0 sur 10 séances consécutives · 2 avertissements dans le même mois · Contact direct hors plateforme</span>
+            </div>
+            <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px">
+              <span class="badge" style="background:#1F2937;color:white;flex-shrink:0;min-width:90px;justify-content:center">Exclusion</span>
+              <span style="font-size:13px;color:#374151">Violation des 3 règles absolues (confidentialité, non-contournement, non-concurrence) · Détournement de données RGPD · Fraude aux tokens</span>
+            </div>
+            <div style="padding:14px 20px;display:flex;align-items:flex-start;gap:14px">
+              <span class="badge red" style="background:#7F1D1D;color:white;flex-shrink:0;min-width:90px;justify-content:center">Pénal</span>
+              <span style="font-size:13px;color:#374151">Détournement de données étudiants : jusqu'à 5 ans d'emprisonnement et 300 000 € d'amende (art. 226-18 Code pénal)</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--blue-pale);border:1.5px solid var(--blue-light);border-radius:var(--radius);padding:16px 20px;font-size:13px;color:var(--ink)">
+          En signant la Charte, vous acceptez l'intégralité de ces dispositions. Des questions ? <a href="mailto:contact@aterisk.fr" style="color:var(--blue-mid);font-weight:600">contact@aterisk.fr</a> · Ce document est un résumé — la Charte complète fait foi en cas de litige.
+        </div>
+      </div>
+
+    </div>
+
     <!-- ── PROFIL ── -->
     <div class="section" id="sec-profil">
       <div class="two-col">
@@ -1053,7 +1522,7 @@ function showSection(id, btn) {
   const titles = {
     overview:'Bonjour ' + mentorFirstName + ' 👋', seances:'Mes séances', etudiants:'Mes étudiants',
     rapports:'Rapports à rédiger', gains:'Mes gains',
-    disponibilites:'Mes disponibilités', profil:'Mon profil'
+    disponibilites:'Mes disponibilités', profil:'Mon profil', guide:'Guide Mentor'
   };
   document.getElementById('topbar-title').textContent = titles[id] || 'Espace Mentor';
   window.scrollTo({top:0, behavior:'smooth'});
@@ -1098,6 +1567,15 @@ function saveProfil(btn) {
   btn.style.background = 'var(--green)';
   btn.style.borderColor = 'var(--green)';
   setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.borderColor = ''; }, 2000);
+}
+
+// Guide sections
+function showGuide(id, btn) {
+  document.querySelectorAll('.guide-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.guide-tab').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('guide-' + id);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
 }
 
 // Toast
